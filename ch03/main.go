@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 func main() {
 	name := "go学习"
@@ -23,5 +26,16 @@ func main() {
 	userMsg := fmt.Sprintf("用户名：%v, 年龄： %d, 地址: %s \r\n", username, age, address)
 
 	fmt.Print(userMsg)
+
+	// string builder
+	var builder strings.Builder
+	builder.WriteString("用户名：")
+	builder.WriteString(username)
+	builder.WriteString(", 年龄：")
+	builder.WriteString(fmt.Sprintf("%d", age))
+	builder.WriteString(", 地址：")
+	builder.WriteString(address)
+
+	fmt.Println(builder.String())
 
 }
