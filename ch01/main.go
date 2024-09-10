@@ -22,5 +22,5 @@ func main() {
 	// same PI name
 	fmt.Println(PI1, name2)
 
-	// add test99
+	// add test66
 }
