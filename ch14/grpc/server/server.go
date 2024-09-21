@@ -13,7 +13,14 @@ type Server struct {
 }
 
 func (s *Server) SayHello(ctx context.Context, request *proto.HelloRequest) (*proto.HelloReply, error) {
-	return &proto.HelloReply{Message: "Hello " + request.Name}, nil
+
+	return &proto.HelloReply{
+		Message: "Hello " + request.Name,
+		Data: &proto.HelloReply_Result{
+			Name: "Ali",
+			Url:  "https:/test.com",
+		},
+	}, nil
 }
 
 func main() {

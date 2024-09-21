@@ -4,9 +4,16 @@ import (
 	"context"
 	"fmt"
 	"go-learn/ch14/grpc/proto"
+	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/types/known/timestamppb"
+)
+
+const (
+	timestampFormat = time.StampNano // "Jan _2 15:04:05.000"
+	streamingCount  = 10
 )
 
 func main() {
@@ -19,8 +26,17 @@ func main() {
 	defer conn.Close()
 
 	c := proto.NewGreeterClient(conn)
+
+	// md := metadata.Pairs("timestamp", time.Now().Format(timestampFormat))
+	// ctx := metadata.NewOutgoingContext(context.Background(), md)
+
 	r, err := c.SayHello(context.Background(), &proto.HelloRequest{
 		Name: "ali",
+		G:    proto.Gender_FEMALE,
+		Mp: map[string]string{
+			"key": "value",
+		},
+		AddTime: timestamppb.New(time.Now()),
 	})
 
 	if err != nil {

@@ -1,4 +1,6 @@
 syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+
 option go_package = ".;proto";
 
 service Greeter {
@@ -7,9 +9,24 @@ service Greeter {
 
 message HelloRequest {
   string Name = 1;
+  Gender g = 2;
+  map<string, string> mp = 3;
+  google.protobuf.Timestamp addTime = 5;
+}
+
+enum Gender {
+  MALE = 0;
+  FEMALE = 1;
 }
 
 message HelloReply {
   string message = 1;
+
+  Result data = 2;
+
+  message Result {
+    string name = 1;
+    string url = 2;
+  }
 }
 
