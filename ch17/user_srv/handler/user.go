@@ -2,7 +2,7 @@ package handler
 
 import (
 	"context"
-	"crypto/md5"
+	"crypto/sha512"
 	"fmt"
 	"go-learn/ch17/user_srv/global"
 	"go-learn/ch17/user_srv/model"
@@ -128,7 +128,7 @@ func (s *UserService) CreateUser(ctx context.Context, req *proto.CreateUserInfo)
 	user.Mobile = req.Mobile
 	user.NickName = req.NickName
 
-	options := &password.Options{SaltLen: 10, Iterations: 10000, KeyLen: 50, HashFunction: md5.New}
+	options := &password.Options{16, 100, 32, sha512.New}
 	salt, encodedPwd := password.Encode(req.PassWord, options)
 	user.Password = fmt.Sprintf("$pbkdf2-sha512$%s$%s", salt, encodedPwd)
 
@@ -167,7 +167,7 @@ func (s *UserService) UpdateUser(ctx context.Context, req *proto.UpdateUserInfo)
 
 func (s *UserService) CheckPassWord(ctx context.Context, req *proto.PasswordCheckInfo) (*proto.CheckResponse, error) {
 	// 检查密码
-	options := &password.Options{SaltLen: 10, Iterations: 10000, KeyLen: 50, HashFunction: md5.New}
+	options := &password.Options{16, 100, 32, sha512.New}
 	passwordInfo := strings.Split(req.EncryptPassword, "$")
 	check := password.Verify("generic password", passwordInfo[2], passwordInfo[3], options)
 

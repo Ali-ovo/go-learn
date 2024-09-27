@@ -8,7 +8,7 @@ service User {
   rpc GetUserById(IdRequest) returns (UserInfoResponse); // 通过 id 查询用户
   rpc CreateUser(CreateUserInfo) returns (UserInfoResponse); // 创建用户
   rpc UpdateUser(UpdateUserInfo) returns (google.protobuf.Empty); // 更新用户
-  rpc CheckPassword(PasswordCheckInfo) returns (CheckResponse); // 检查密码
+  rpc CheckPassWord(PasswordCheckInfo) returns (CheckResponse); // 检查密码
 }
 
 message CheckResponse {

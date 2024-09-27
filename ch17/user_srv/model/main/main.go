@@ -2,13 +2,16 @@ package main
 
 import (
 	"crypto/md5"
+	"crypto/sha512"
 	"encoding/hex"
+	"fmt"
 	"go-learn/ch17/user_srv/model"
 	"io"
 	"log"
 	"os"
 	"time"
 
+	"github.com/anaskhan96/go-password-encoder"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -22,7 +25,7 @@ func genMd5(code string) string {
 }
 
 func main() {
-	dsn := "root:123456@tcp(172.16.89.130:3306)/user_srv?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := "root:123456@tcp(192.168.189.128:3306)/user_srv?charset=utf8mb4&parseTime=True&loc=Local"
 
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
@@ -47,4 +50,20 @@ func main() {
 	}
 
 	db.AutoMigrate(&model.User{})
+
+	options := &password.Options{SaltLen: 16, Iterations: 100, KeyLen: 32, HashFunction: sha512.New}
+	salt, encodedPwd := password.Encode("admin123", options)
+	newPassword := fmt.Sprintf("$pbkdf2-sha512$%s$%s", salt, encodedPwd)
+	fmt.Println(newPassword)
+
+	for i := 0; i < 10; i++ {
+		user := model.User{
+			NickName: fmt.Sprintf("user_%d", i),
+			Mobile:   fmt.Sprintf("1350000000%d", i),
+			Password: newPassword,
+		}
+
+		db.Save(&user)
+	}
+
 }
