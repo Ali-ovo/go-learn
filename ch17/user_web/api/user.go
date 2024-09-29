@@ -3,8 +3,10 @@ package api
 import (
 	"context"
 	"fmt"
+	"go-learn/ch17/user_web/global/response"
 	"go-learn/ch17/user_web/proto"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -72,14 +74,17 @@ func GetUserList(ctx *gin.Context) {
 
 	result := make([]interface{}, 0)
 	for _, value := range rsp.Data {
-		data := make(map[string]interface{})
-		data["id"] = value.Id
-		data["name"] = value.NickName
-		data["birthday"] = value.BirthDay
-		data["mobile"] = value.Mobile
-		data["gender"] = value.Gender
+		user := response.UserResponse{
+			Id:       value.Id,
+			NickName: value.NickName,
+			// BirthDay: time.Time(time.Unix(int64(value.BirthDay), 0)),
+			// BirthDay: time.Time(time.Unix(int64(value.BirthDay), 0)).Format("2006-01-02 15:04:05"),
+			BirthDay: response.JsonTime(time.Unix(int64(value.BirthDay), 0)),
+			Gender:   value.Gender,
+			Mobile:   value.Mobile,
+		}
 
-		result = append(result, data)
+		result = append(result, user)
 
 	}
 
