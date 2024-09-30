@@ -16,7 +16,7 @@ var (
 )
 
 func init() {
-	dsn := "root:123456@tcp(192.168.189.128:3306)/user_srv?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := "root:123456@tcp(172.16.89.130:3306)/user_srv?charset=utf8mb4&parseTime=True&loc=Local"
 
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer

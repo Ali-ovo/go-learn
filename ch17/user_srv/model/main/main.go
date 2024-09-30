@@ -51,7 +51,7 @@ func main() {
 
 	db.AutoMigrate(&model.User{})
 
-	options := &password.Options{SaltLen: 16, Iterations: 100, KeyLen: 32, HashFunction: sha512.New}
+	options := &password.Options{16, 100, 32, sha512.New}
 	salt, encodedPwd := password.Encode("admin123", options)
 	newPassword := fmt.Sprintf("$pbkdf2-sha512$%s$%s", salt, encodedPwd)
 	fmt.Println(newPassword)
