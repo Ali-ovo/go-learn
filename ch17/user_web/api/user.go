@@ -6,12 +6,15 @@ import (
 	"go-learn/ch17/user_web/forms"
 	"go-learn/ch17/user_web/global"
 	"go-learn/ch17/user_web/global/response"
+	"go-learn/ch17/user_web/middlewares"
+	"go-learn/ch17/user_web/models"
 	"go-learn/ch17/user_web/proto"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 
@@ -167,7 +170,6 @@ func PassWordLogin(ctx *gin.Context) {
 	} else {
 
 		// 验证密码
-
 		if checkRsp, pasErr := userSrvClient.CheckPassWord(ctx, &proto.PasswordCheckInfo{
 			Password:        passwordLoginForm.PassWord,
 			EncryptPassword: rsp.PassWord,
@@ -177,8 +179,32 @@ func PassWordLogin(ctx *gin.Context) {
 			})
 		} else {
 			if checkRsp.Success {
-				ctx.JSON(http.StatusOK, map[string]string{
-					"msg": "登录成功",
+				// 生成 token
+				j := middlewares.JWT{}
+				claims := models.CustomClaims{
+					ID:          uint(rsp.Id),
+					NickName:    rsp.NickName,
+					AuthorityId: uint(rsp.Role),
+					StandardClaims: jwt.StandardClaims{
+						NotBefore: time.Now().Unix(),               // 生效时间
+						ExpiresAt: time.Now().Unix() + 60*60*24*30, // 过期时间
+						Issuer:    "Ali",
+					},
+				}
+
+				token, err := j.CreateToken(claims)
+				if err != nil {
+					ctx.JSON(http.StatusInternalServerError, gin.H{
+						"msg": "生成token失败",
+					})
+					return
+				}
+
+				ctx.JSON(http.StatusOK, gin.H{
+					"id":         rsp.Id,
+					"nick_name":  rsp.NickName,
+					"token":      token,
+					"expired_at": (time.Now().Unix() + 60*60*24*30) * 1000,
 				})
 			} else {
 				ctx.JSON(http.StatusBadRequest, map[string]string{
