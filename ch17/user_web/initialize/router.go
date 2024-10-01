@@ -3,14 +3,19 @@ package initialize
 import (
 	"github.com/gin-gonic/gin"
 
-	router2 "go-learn/ch17/user_web/router"
+	"go-learn/ch17/user_web/middlewares"
+	"go-learn/ch17/user_web/router"
 )
 
 func Routers() *gin.Engine {
 	Router := gin.Default()
 
+	// cors
+	Router.Use(middlewares.Cors())
+
 	ApiGroup := Router.Group("/u/v1")
-	router2.InitUserRouter(ApiGroup)
+	router.InitUserRouter(ApiGroup)
+	router.InitBaseRouter(ApiGroup)
 
 	return Router
 }

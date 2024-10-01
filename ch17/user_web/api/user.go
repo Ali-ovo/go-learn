@@ -17,6 +17,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/redis/go-redis/v9"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -91,6 +92,11 @@ func GetUserList(ctx *gin.Context) {
 	}
 	defer conn.Close()
 
+	claims, _ := ctx.Get("claims")
+	currentUser := claims.(*models.CustomClaims)
+
+	zap.S().Infof("访问用户： %d", currentUser.ID)
+
 	// 初始化客户端
 	userSrvClient := proto.NewUserClient(conn)
 	pn := ctx.DefaultQuery("pn", "0")
@@ -137,6 +143,14 @@ func PassWordLogin(ctx *gin.Context) {
 		return
 	}
 
+	if !store.Verify(passwordLoginForm.CaptchaId, passwordLoginForm.Captcha, true) {
+
+		ctx.JSON(http.StatusBadRequest, map[string]string{
+			"captcha": "验证码错误",
+		})
+		return
+	}
+
 	// 链接用户 grpc
 	conn, err := grpc.NewClient(fmt.Sprintf("%s:%d", global.ServerConfig.UserSrvInfo.Host, global.ServerConfig.UserSrvInfo.Port), grpc.WithTransportCredentials(insecure.NewCredentials()))
 
@@ -180,7 +194,7 @@ func PassWordLogin(ctx *gin.Context) {
 		} else {
 			if checkRsp.Success {
 				// 生成 token
-				j := middlewares.JWT{}
+				j := middlewares.NewJWT()
 				claims := models.CustomClaims{
 					ID:          uint(rsp.Id),
 					NickName:    rsp.NickName,
@@ -215,5 +229,88 @@ func PassWordLogin(ctx *gin.Context) {
 		}
 
 	}
+
+}
+
+func Register(ctx *gin.Context) {
+	// 用户注册
+
+	// 表单验证
+	registerForm := forms.RegisterForm{}
+
+	if err := ctx.ShouldBind(&registerForm); err != nil {
+		HandleValidatorError(ctx, err)
+		return
+	}
+
+	// 验证码校验
+	rdb := redis.NewClient(&redis.Options{
+		Addr: fmt.Sprintf("%s:%d", global.ServerConfig.RedisInfo.Host, global.ServerConfig.RedisInfo.Port),
+	})
+
+	value, err := rdb.Get(context.Background(), registerForm.Mobile).Result()
+	if err == redis.Nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"captcha": "验证码错误",
+		})
+		return
+	} else {
+		if value != registerForm.Code {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"captcha": "验证码错误",
+			})
+			return
+		}
+	}
+
+	// 链接用户 grpc
+	conn, err := grpc.NewClient(fmt.Sprintf("%s:%d", global.ServerConfig.UserSrvInfo.Host, global.ServerConfig.UserSrvInfo.Port), grpc.WithTransportCredentials(insecure.NewCredentials()))
+
+	if err != nil {
+		zap.S().Error("[GetUserList] 链接 [用户服务失败]", "msg", err.Error())
+	}
+	defer conn.Close()
+
+	// 初始化客户端
+	userSrvClient := proto.NewUserClient(conn)
+	user, err := userSrvClient.CreateUser(context.Background(), &proto.CreateUserInfo{
+		Mobile:   registerForm.Mobile,
+		PassWord: registerForm.PassWord,
+		NickName: registerForm.Mobile,
+	})
+
+	if err != nil {
+		zap.S().Error("[Register] 创建用户失败", "msg", err.Error())
+		HandleGrpcErrorToHttp(err, ctx)
+		return
+	}
+
+	// 生成 token
+	j := middlewares.NewJWT()
+	claims := models.CustomClaims{
+		ID:          uint(user.Id),
+		NickName:    user.NickName,
+		AuthorityId: uint(user.Role),
+		StandardClaims: jwt.StandardClaims{
+			NotBefore: time.Now().Unix(),               // 生效时间
+			ExpiresAt: time.Now().Unix() + 60*60*24*30, // 过期时间
+			Issuer:    "Ali",
+		},
+	}
+
+	token, err := j.CreateToken(claims)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg": "生成token失败",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"id":         user.Id,
+		"nick_name":  user.NickName,
+		"token":      token,
+		"expired_at": (time.Now().Unix() + 60*60*24*30) * 1000,
+	})
 
 }
