@@ -30,6 +30,9 @@ func main() {
 		panic(err)
 	}
 
+	// 初始化 srv 链接
+	initialize.InitSrvConn()
+
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		_ = v.RegisterValidation("mobile", myvalidator.ValidateMobile)
 

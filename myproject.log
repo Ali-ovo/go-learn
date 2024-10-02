@@ -1,2 +1,0 @@
-{"level":"info","ts":1727498301.9216638,"caller":"zap_log_file/main.go:35","msg":"failed to fetch URL","url":"http://example.com","attempt":3,"backoff":1}
-{"level":"info","ts":1727498438.7420666,"caller":"zap_log_file/main.go:36","msg":"failed to fetch URL","url":"http://example.com","attempt":3,"backoff":1}

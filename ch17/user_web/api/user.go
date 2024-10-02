@@ -20,9 +20,7 @@ import (
 	"github.com/redis/go-redis/v9"
 
 	"go.uber.org/zap"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 )
 
@@ -81,30 +79,59 @@ func HandleValidatorError(ctx *gin.Context, err error) {
 }
 
 func GetUserList(ctx *gin.Context) {
-	// ip := "127.0.0.1"
-	// port := 50051
+	// // 从注册中心获取服务器的信息
+	// cfg := api.DefaultConfig()
+	// consulInfo := global.ServerConfig.ConsulInfo
+	// cfg.Address = fmt.Sprintf("%s:%d", consulInfo.Host, consulInfo.Port)
 
-	// 链接用户 grpc
-	conn, err := grpc.NewClient(fmt.Sprintf("%s:%d", global.ServerConfig.UserSrvInfo.Host, global.ServerConfig.UserSrvInfo.Port), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	// userSrvHost := ""
+	// userSrvPort := 0
+	// client, err := api.NewClient(cfg)
 
-	if err != nil {
-		zap.S().Error("[GetUserList] 链接 [用户服务失败]", "msg", err.Error())
-	}
-	defer conn.Close()
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// data, err := client.Agent().ServicesWithFilter(fmt.Sprintf("Service == \"%s\"", global.ServerConfig.UserSrvInfo.Name))
+
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// for _, value := range data {
+	// 	userSrvHost = value.Address
+	// 	userSrvPort = value.Port
+	// 	zap.S().Infof("userSrvHost: %s, userSrvPort: %d", userSrvHost, userSrvPort)
+	// 	break
+	// }
+
+	// if userSrvHost == "" {
+	// 	ctx.JSON(http.StatusBadRequest, gin.H{
+	// 		"msg": "用户服务不可用",
+	// 	})
+	// }
+
+	// // 链接用户 grpc
+	// conn, err := grpc.NewClient(fmt.Sprintf("%s:%d", userSrvHost, userSrvPort), grpc.WithTransportCredentials(insecure.NewCredentials()))
+
+	// if err != nil {
+	// 	zap.S().Error("[GetUserList] 链接 [用户服务失败]", "msg", err.Error())
+	// }
+	// defer conn.Close()
+	// // 初始化客户端
+	// userSrvClient := proto.NewUserClient(conn)
 
 	claims, _ := ctx.Get("claims")
 	currentUser := claims.(*models.CustomClaims)
 
 	zap.S().Infof("访问用户： %d", currentUser.ID)
 
-	// 初始化客户端
-	userSrvClient := proto.NewUserClient(conn)
 	pn := ctx.DefaultQuery("pn", "0")
 	pnInt, _ := strconv.Atoi(pn)
 
 	pSize := ctx.DefaultQuery("psize", "10")
 	pSizeInt, _ := strconv.Atoi(pSize)
-	rsp, err := userSrvClient.GetUserList(context.Background(), &proto.PageInfo{
+	rsp, err := global.UserSrvClient.GetUserList(context.Background(), &proto.PageInfo{
 		Pn:    uint32(pnInt),
 		PSize: uint32(pSizeInt),
 	})
@@ -151,19 +178,8 @@ func PassWordLogin(ctx *gin.Context) {
 		return
 	}
 
-	// 链接用户 grpc
-	conn, err := grpc.NewClient(fmt.Sprintf("%s:%d", global.ServerConfig.UserSrvInfo.Host, global.ServerConfig.UserSrvInfo.Port), grpc.WithTransportCredentials(insecure.NewCredentials()))
-
-	if err != nil {
-		zap.S().Error("[GetUserList] 链接 [用户服务失败]", "msg", err.Error())
-	}
-	defer conn.Close()
-
-	// 初始化客户端
-	userSrvClient := proto.NewUserClient(conn)
-
 	// 登录逻辑
-	if rsp, err := userSrvClient.GetUserByMobile(ctx, &proto.MobileRequest{
+	if rsp, err := global.UserSrvClient.GetUserByMobile(ctx, &proto.MobileRequest{
 		Mobile: passwordLoginForm.Mobile,
 	}); err != nil {
 		if e, ok := status.FromError(err); ok {
@@ -184,7 +200,7 @@ func PassWordLogin(ctx *gin.Context) {
 	} else {
 
 		// 验证密码
-		if checkRsp, pasErr := userSrvClient.CheckPassWord(ctx, &proto.PasswordCheckInfo{
+		if checkRsp, pasErr := global.UserSrvClient.CheckPassWord(ctx, &proto.PasswordCheckInfo{
 			Password:        passwordLoginForm.PassWord,
 			EncryptPassword: rsp.PassWord,
 		}); pasErr != nil {
@@ -263,17 +279,7 @@ func Register(ctx *gin.Context) {
 		}
 	}
 
-	// 链接用户 grpc
-	conn, err := grpc.NewClient(fmt.Sprintf("%s:%d", global.ServerConfig.UserSrvInfo.Host, global.ServerConfig.UserSrvInfo.Port), grpc.WithTransportCredentials(insecure.NewCredentials()))
-
-	if err != nil {
-		zap.S().Error("[GetUserList] 链接 [用户服务失败]", "msg", err.Error())
-	}
-	defer conn.Close()
-
-	// 初始化客户端
-	userSrvClient := proto.NewUserClient(conn)
-	user, err := userSrvClient.CreateUser(context.Background(), &proto.CreateUserInfo{
+	user, err := global.UserSrvClient.CreateUser(context.Background(), &proto.CreateUserInfo{
 		Mobile:   registerForm.Mobile,
 		PassWord: registerForm.PassWord,
 		NickName: registerForm.Mobile,
