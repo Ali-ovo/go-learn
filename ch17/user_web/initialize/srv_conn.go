@@ -6,12 +6,32 @@ import (
 	"go-learn/ch17/user_web/proto"
 
 	"github.com/hashicorp/consul/api"
+	_ "github.com/mbobakov/grpc-consul-resolver" // It's important
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 func InitSrvConn() {
+	consulInfo := global.ServerConfig.ConsulInfo
+
+	conn, err := grpc.NewClient(
+		fmt.Sprintf("consul://%s:%d/%s?wait=14s", consulInfo.Host, consulInfo.Port, global.ServerConfig.UserSrvInfo.Name),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy": "round_robin"}`),
+	)
+
+	if err != nil {
+		zap.S().Fatalf("[InitSrvConn] 链接 [用户服务失败]: %v", err)
+	}
+
+	// 初始化客户端
+	userSrvClient := proto.NewUserClient(conn)
+
+	global.UserSrvClient = userSrvClient
+}
+
+func InitSrvConn2() {
 	// 从注册中心获取服务器的信息
 	cfg := api.DefaultConfig()
 	consulInfo := global.ServerConfig.ConsulInfo

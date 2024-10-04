@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"go-learn/ch17/user_web/global"
 	"go-learn/ch17/user_web/initialize"
+	"go-learn/ch17/user_web/utils"
 
 	myvalidator "go-learn/ch17/user_web/validator"
 
 	"github.com/gin-gonic/gin/binding"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
+	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
 
@@ -32,6 +34,16 @@ func main() {
 
 	// 初始化 srv 链接
 	initialize.InitSrvConn()
+
+	viper.AutomaticEnv()
+	// 如果是本地开发环境端口号固定
+	debug := viper.GetBool("DEBUG")
+	if debug {
+		port, err := utils.GetFreePort()
+		if err == nil {
+			global.ServerConfig.Port = port
+		}
+	}
 
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		_ = v.RegisterValidation("mobile", myvalidator.ValidateMobile)

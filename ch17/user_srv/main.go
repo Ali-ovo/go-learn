@@ -7,9 +7,14 @@ import (
 	"go-learn/ch17/user_srv/handler"
 	"go-learn/ch17/user_srv/initialize"
 	"go-learn/ch17/user_srv/proto"
+	"go-learn/ch17/user_srv/utils"
 	"net"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/hashicorp/consul/api"
+	uuid "github.com/satori/go.uuid"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
@@ -18,7 +23,7 @@ import (
 
 func main() {
 	IP := flag.String("ip", "0.0.0.0", "ip 地址")
-	Port := flag.Int("port", 50051, "端口号")
+	Port := flag.Int("port", 0, "端口号")
 
 	// 初始化
 	initialize.InitLogger()
@@ -26,7 +31,12 @@ func main() {
 	initialize.InitDB()
 
 	flag.Parse()
-	zap.S().Info("ip:", *IP, "port:", *Port)
+
+	if *Port == 0 {
+		*Port, _ = utils.GetFreePort()
+	}
+
+	zap.S().Info("ip: ", *IP, "  port: ", *Port)
 
 	server := grpc.NewServer()
 	proto.RegisterUserServer(server, &handler.UserService{})
@@ -60,7 +70,8 @@ func main() {
 	// 生成注册对象
 	registration := new(api.AgentServiceRegistration)
 	registration.Name = global.ServerConfig.Name
-	registration.ID = global.ServerConfig.Name
+	serviceID := fmt.Sprintf("%s", uuid.NewV4())
+	registration.ID = serviceID
 	registration.Port = *Port
 	registration.Tags = []string{"user", "srv", "ali"}
 	registration.Address = "192.168.6.124"
@@ -72,8 +83,19 @@ func main() {
 		panic(err)
 	}
 
-	err = server.Serve(listen)
-	if err != nil {
-		panic(err)
+	go func() {
+		err = server.Serve(listen)
+		if err != nil {
+			panic(err)
+		}
+	}()
+
+	// 优雅退出
+	quit := make(chan os.Signal)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	if err = client.Agent().ServiceDeregister(serviceID); err != nil {
+		zap.S().Info("[main] 服务注销失败")
 	}
+	zap.S().Info("[main] 注销成功")
 }
