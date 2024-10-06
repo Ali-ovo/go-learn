@@ -1,8 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"time"
+	"go-learn/ch18/nacos_test/config"
 
 	"github.com/nacos-group/nacos-sdk-go/v2/clients"
 	"github.com/nacos-group/nacos-sdk-go/v2/common/constant"
@@ -43,7 +44,7 @@ func main() {
 	}
 
 	content, err := configClient.GetConfig(vo.ConfigParam{
-		DataId: "user_web.yaml",
+		DataId: "user_web.json",
 		Group:  "dev",
 	})
 
@@ -51,16 +52,21 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(content)
+	// fmt.Println(content)
+	serverConfig := config.ServerConfig{}
 
-	err = configClient.ListenConfig(vo.ConfigParam{
-		DataId: "user_web.yaml",
-		Group:  "dev",
-		OnChange: func(namespace, group, dataId, data string) {
-			fmt.Println("配置文件发生变化")
-			fmt.Println("group:" + group + ", dataId:" + dataId + ", data:" + data)
-		},
-	})
+	json.Unmarshal([]byte(content), &serverConfig)
 
-	time.Sleep(3000 * time.Second)
+	fmt.Println(serverConfig)
+
+	// err = configClient.ListenConfig(vo.ConfigParam{
+	// 	DataId: "user_web.yaml",
+	// 	Group:  "dev",
+	// 	OnChange: func(namespace, group, dataId, data string) {
+	// 		fmt.Println("配置文件发生变化")
+	// 		fmt.Println("group:" + group + ", dataId:" + dataId + ", data:" + data)
+	// 	},
+	// })
+
+	// time.Sleep(3000 * time.Second)
 }
