@@ -61,7 +61,7 @@ func main() {
 
 	// 检查对象
 	check := &api.AgentServiceCheck{
-		GRPC:                           fmt.Sprintf("%s:%d", "192.168.6.124", *Port),
+		GRPC:                           fmt.Sprintf("%s:%d", global.ServerConfig.Host, *Port),
 		Timeout:                        "5s",
 		Interval:                       "5s",
 		DeregisterCriticalServiceAfter: "15s",
@@ -73,8 +73,8 @@ func main() {
 	serviceID := fmt.Sprintf("%s", uuid.NewV4())
 	registration.ID = serviceID
 	registration.Port = *Port
-	registration.Tags = []string{"user", "srv", "ali"}
-	registration.Address = "192.168.6.124"
+	registration.Tags = global.ServerConfig.Tags
+	registration.Address = global.ServerConfig.Host
 	registration.Check = check
 
 	err = client.Agent().ServiceRegister(registration)

@@ -74,6 +74,8 @@ func main() {
 	registration.ID = serviceID
 	registration.Port = *Port
 	registration.Tags = global.ServerConfig.Tags
+
+	// ipconfig address
 	registration.Address = global.ServerConfig.Host
 	registration.Check = check
 
