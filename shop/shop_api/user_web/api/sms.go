@@ -71,6 +71,7 @@ func SendSms(ctx *gin.Context) {
 		Addr: fmt.Sprintf("%s:%d", global.ServerConfig.RedisInfo.Host, global.ServerConfig.RedisInfo.Port),
 	})
 
+	fmt.Println("smsCode: ", smsCode)
 	rdb.Set(context.Background(), sendSmsForm.Mobile, smsCode, time.Duration(global.ServerConfig.RedisInfo.Expire)*time.Second)
 
 	ctx.JSON(http.StatusOK, gin.H{

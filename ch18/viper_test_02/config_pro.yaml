@@ -1,4 +1,0 @@
-name: "root"
-mysql:
-  host: "8.8.8.8"
-  port: 3306
