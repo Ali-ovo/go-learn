@@ -48,7 +48,7 @@ type Goods struct {
 	IsNew    bool `gorm:"default:false;not null"`
 	IsHot    bool `gorm:"default:false;not null"`
 
-	Image           string   `gorm:"type:varchar(50);not null"`
+	Name            string   `gorm:"type:varchar(50);not null"`
 	GoodsSn         string   `gorm:"type:varchar(50);not null"`
 	ClickNum        int32    `gorm:"type:int;default:0;not null"`
 	SoldNum         int32    `gorm:"type:int;default:0;not null"`

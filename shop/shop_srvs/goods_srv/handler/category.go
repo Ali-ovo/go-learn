@@ -78,7 +78,7 @@ func (s *GoodsServer) CreateCategory(ctx context.Context, req *proto.CategoryInf
 	return &proto.CategoryInfoResponse{Id: int32(category.ID)}, nil
 }
 
-func (s *GoodsServer) DeleteGoods(ctx context.Context, req *proto.DeleteGoodsInfo) (*emptypb.Empty, error) {
+func (s *GoodsServer) DeleteCategory(ctx context.Context, req *proto.DeleteCategoryRequest) (*emptypb.Empty, error) {
 	if result := global.DB.Delete(&model.Category{}, req.Id); result.RowsAffected == 0 {
 		return nil, status.Errorf(codes.NotFound, "商品分类不存在")
 	}

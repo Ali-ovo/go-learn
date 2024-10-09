@@ -26,7 +26,11 @@ func main() {
 
 	// TestGetBrandList()
 	// TestCategoryList()
-	TestGetSubCategory()
+	// TestGetSubCategory()
+	// TestGetCategoryBrandList()
+	// TesGoodsList()
+	// TesBatchGetGoods()
+	TesGetGoodsDetail()
 
 	defer conn.Close()
 }
