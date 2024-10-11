@@ -23,17 +23,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// 请填写您的AccessKeyId。
-//var accessKeyId string = "LTAI4FzVU3GMnFDof6xZHSbd"
-//// 请填写您的AccessKeySecret。
-//var accessKeySecret string = "DP7mDPQGy9JHfZnwYdUhDuy3Q4pm87"
-//// host的格式为 bucketname.endpoint ，请替换为您的真实信息。
-//var host string = "http://py-go.oss-cn-beijing.aliyuncs.com"
-//// callbackUrl为 上传回调服务器的URL，请将下面的IP和Port配置为您自己的真实信息。
-//var callbackUrl string = "http://39.107.30.137:8082/callback";
-//// 用户上传文件时指定的前缀。
-//var upload_dir string = "user-dir-prefix/"
-
 var expire_time int64 = 3000
 
 const (
