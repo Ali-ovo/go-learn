@@ -73,6 +73,7 @@ require (
 
 require (
 	github.com/aliyun/alibaba-cloud-sdk-go v1.63.23
+	github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible
 	github.com/anaskhan96/go-password-encoder v0.0.0-20201010210601-c765b799fd72
 	github.com/bytedance/sonic v1.11.6 // indirect
 	github.com/bytedance/sonic/loader v0.1.1 // indirect
