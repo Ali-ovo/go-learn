@@ -5,6 +5,7 @@ import (
 	"go-learn/shop/shop_srvs/inventory_srv/global"
 	"go-learn/shop/shop_srvs/inventory_srv/model"
 	"go-learn/shop/shop_srvs/inventory_srv/proto"
+	"sync"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -42,9 +43,12 @@ func (i *InventoryServer) InvDetail(ctx context.Context, req *proto.GoodsInvInfo
 	}, nil
 }
 
+var m sync.Mutex
+
 func (i *InventoryServer) Sell(ctx context.Context, req *proto.SellInfo) (*emptypb.Empty, error) {
 	//   数据一致性 数据库事务
 	tx := global.DB.Begin()
+	m.Lock() // 加锁
 
 	for _, goodInfo := range req.GoodsInfo {
 		var inv model.Inventory
@@ -59,19 +63,23 @@ func (i *InventoryServer) Sell(ctx context.Context, req *proto.SellInfo) (*empty
 		}
 
 		// 扣减库存
-		// TODO 分布式锁解决数据不一致的问题
 		inv.Stocks -= goodInfo.Num
 		tx.Save(&inv)
+
 	}
 
 	tx.Commit() // 需要手动提交修改
+	m.Unlock()  // 释放锁
 
 	return &emptypb.Empty{}, nil
 }
 
+var m1 sync.Mutex
+
 func (i *InventoryServer) Reback(ctx context.Context, req *proto.SellInfo) (*emptypb.Empty, error) {
 	//   数据一致性 数据库事务
 	tx := global.DB.Begin()
+	m1.Lock() // 加锁
 
 	// 库存归还 1.订单超时归还 2.订单创建失败 归还之前扣减  3.手动归还
 	for _, goodInfo := range req.GoodsInfo {
@@ -86,6 +94,7 @@ func (i *InventoryServer) Reback(ctx context.Context, req *proto.SellInfo) (*emp
 	}
 
 	tx.Commit()
+	m1.Unlock()
 
 	return &emptypb.Empty{}, nil
 }

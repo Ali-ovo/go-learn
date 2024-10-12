@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"go-learn/shop/shop_srvs/inventory_srv/proto"
+	"sync"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -14,7 +15,7 @@ var conn *grpc.ClientConn
 
 func Init() {
 	var err error
-	conn, err = grpc.NewClient("127.0.0.1:55137", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err = grpc.NewClient("127.0.0.1:63882", grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	if err != nil {
 		panic(err)
@@ -46,16 +47,12 @@ func TestInvDetail() {
 	fmt.Println(rsp, "InvDetail")
 }
 
-func TestSell() {
+func TestSell(w *sync.WaitGroup) {
 	rsp, err := inventoryClient.Sell(context.Background(), &proto.SellInfo{
 		GoodsInfo: []*proto.GoodsInvInfo{
 			{
-				GoodsId: 2,
-				Num:     10,
-			},
-			{
-				GoodsId: 1,
-				Num:     10,
+				GoodsId: 421,
+				Num:     1,
 			},
 		},
 	})
@@ -94,9 +91,19 @@ func main() {
 	// TestSell()
 	// TestReback()
 
-	for i := 421; i <= 840; i++ {
-		TestSetInv(int32(i), 100)
+	// for i := 421; i <= 840; i++ {
+	// 	TestSetInv(int32(i), 100)
+	// }
+
+	var wg sync.WaitGroup
+	wg.Add(100)
+	for i := 0; i < 100; i++ {
+		go func() {
+			go TestSell(&wg)
+		}()
 	}
+
+	wg.Wait()
 
 	defer conn.Close()
 }
