@@ -2,10 +2,15 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"go-learn/shop/shop_srvs/inventory_srv/global"
 	"go-learn/shop/shop_srvs/inventory_srv/model"
 	"go-learn/shop/shop_srvs/inventory_srv/proto"
 	"sync"
+
+	"github.com/go-redsync/redsync/v4"
+	"github.com/go-redsync/redsync/v4/redis/goredis/v9"
+	goredislib "github.com/redis/go-redis/v9"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -43,15 +48,34 @@ func (i *InventoryServer) InvDetail(ctx context.Context, req *proto.GoodsInvInfo
 	}, nil
 }
 
-var m sync.Mutex
+// var m sync.Mutex
 
 func (i *InventoryServer) Sell(ctx context.Context, req *proto.SellInfo) (*emptypb.Empty, error) {
+	client := goredislib.NewClient(&goredislib.Options{
+		Addr: fmt.Sprintf("%s:%d", global.ServerConfig.RedisInfo.Host, global.ServerConfig.RedisInfo.Port),
+	})
+	pool := goredis.NewPool(client)
+	rs := redsync.New(pool)
+
 	//   数据一致性 数据库事务
 	tx := global.DB.Begin()
-	m.Lock() // 加锁
+	// m.Lock() // 加锁
 
 	for _, goodInfo := range req.GoodsInfo {
 		var inv model.Inventory
+		// if result := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Where(&model.Inventory{Goods: goodInfo.GoodsId}).First(&inv); result.RowsAffected == 0 {
+		// 	tx.Rollback() // 回滚之前的操作
+		// 	return nil, status.Errorf(codes.InvalidArgument, "库存信息不存在")
+		// }
+
+		// for {
+
+		mutex := rs.NewMutex(fmt.Sprintf("goods_%d", goodInfo.GoodsId))
+
+		if err := mutex.Lock(); err != nil {
+			return nil, status.Errorf(codes.Internal, "获取redis锁失败")
+		}
+
 		if result := global.DB.Where(&model.Inventory{Goods: goodInfo.GoodsId}).First(&inv); result.RowsAffected == 0 {
 			tx.Rollback() // 回滚之前的操作
 			return nil, status.Errorf(codes.InvalidArgument, "库存信息不存在")
@@ -66,10 +90,21 @@ func (i *InventoryServer) Sell(ctx context.Context, req *proto.SellInfo) (*empty
 		inv.Stocks -= goodInfo.Num
 		tx.Save(&inv)
 
+		if ok, err := mutex.Unlock(); !ok || err != nil {
+			return nil, status.Errorf(codes.Internal, "释放redis锁失败")
+		}
+
+		// 乐观锁
+		// if result := tx.Model(&model.Inventory{}).Select("Stocks", "Version").Where("goods = ? and version = ?", goodInfo.GoodsId, inv.Version).Updates(model.Inventory{Stocks: inv.Stocks, Version: inv.Version + 1}); result.RowsAffected == 0 {
+		// 	zap.S().Info("库存扣减失败")
+		// } else {
+		// 	break
+		// }
+		// }
 	}
 
 	tx.Commit() // 需要手动提交修改
-	m.Unlock()  // 释放锁
+	// m.Unlock()  // 释放锁
 
 	return &emptypb.Empty{}, nil
 }

@@ -15,7 +15,7 @@ var conn *grpc.ClientConn
 
 func Init() {
 	var err error
-	conn, err = grpc.NewClient("127.0.0.1:63882", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err = grpc.NewClient("127.0.0.1:61803", grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	if err != nil {
 		panic(err)
@@ -96,8 +96,8 @@ func main() {
 	// }
 
 	var wg sync.WaitGroup
-	wg.Add(100)
-	for i := 0; i < 100; i++ {
+	wg.Add(30)
+	for i := 0; i < 30; i++ {
 		go func() {
 			go TestSell(&wg)
 		}()
