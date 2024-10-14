@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"go-learn/shop/shop_srvs/order_srv/global"
+	"go-learn/shop/shop_srvs/order_srv/handler"
 	"go-learn/shop/shop_srvs/order_srv/initialize"
 	"go-learn/shop/shop_srvs/order_srv/proto"
 	"go-learn/shop/shop_srvs/order_srv/utils"
@@ -39,7 +40,7 @@ func main() {
 	zap.S().Info("ip: ", *IP, "  port: ", *Port)
 
 	server := grpc.NewServer()
-	proto.RegisterOrderServer(server, proto.UnimplementedOrderServer{})
+	proto.RegisterOrderServer(server, &handler.OrderServer{})
 
 	listen, err := net.Listen("tcp", fmt.Sprintf("%s:%d", *IP, *Port))
 	if err != nil {

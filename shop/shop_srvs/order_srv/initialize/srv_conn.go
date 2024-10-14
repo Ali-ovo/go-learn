@@ -5,6 +5,8 @@ import (
 	"go-learn/shop/shop_srvs/order_srv/global"
 	"go-learn/shop/shop_srvs/order_srv/proto"
 
+	_ "github.com/mbobakov/grpc-consul-resolver"
+
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

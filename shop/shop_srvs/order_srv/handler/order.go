@@ -155,6 +155,7 @@ func (*OrderServer) CreateOrder(ctx context.Context, req *proto.OrderRequest) (*
 		SignerName:   req.Name,
 		SingerMobile: req.Mobile,
 		Post:         req.Post,
+		User:         req.UserId,
 	}
 
 	if result := tx.Save(&order); result.RowsAffected == 0 {
@@ -194,7 +195,7 @@ func (*OrderServer) OrderList(ctx context.Context, req *proto.OrderFilterRequest
 	var total int64
 	global.DB.Where(&model.OrderInfo{User: req.UserId}).Count(&total)
 
-	global.DB.Scopes(Paginate(int(req.Pages), int(req.PagePerNums))).Find(&orders)
+	global.DB.Scopes(Paginate(int(req.Pages), int(req.PagePerNums))).Where(&model.OrderInfo{User: req.UserId}).Find(&orders)
 
 	for _, order := range orders {
 		rsp.Data = append(rsp.Data, &proto.OrderInfoResponse{
@@ -222,16 +223,19 @@ func (*OrderServer) OrderDetail(ctx context.Context, req *proto.OrderRequest) (*
 		return nil, status.Errorf(codes.NotFound, "订单不存在")
 	}
 
-	rsp.OrderInfo.Id = order.ID
-	rsp.OrderInfo.UserId = order.User
-	rsp.OrderInfo.OrderSn = order.OrderSn
-	rsp.OrderInfo.PayType = order.PayType
-	rsp.OrderInfo.Status = order.Status
-	rsp.OrderInfo.Post = order.Post
-	rsp.OrderInfo.Total = order.OrderMount
-	rsp.OrderInfo.Address = order.Address
-	rsp.OrderInfo.Name = order.SignerName
-	rsp.OrderInfo.Mobile = order.SingerMobile
+	orderInfo := proto.OrderInfoResponse{}
+	orderInfo.Id = order.ID
+	orderInfo.UserId = order.User
+	orderInfo.OrderSn = order.OrderSn
+	orderInfo.PayType = order.PayType
+	orderInfo.Status = order.Status
+	orderInfo.Post = order.Post
+	orderInfo.Total = order.OrderMount
+	orderInfo.Address = order.Address
+	orderInfo.Name = order.SignerName
+	orderInfo.Mobile = order.SingerMobile
+
+	rsp.OrderInfo = &orderInfo
 
 	var orderGoods []model.OrderGoods
 	if result := global.DB.Where(&model.OrderGoods{Order: order.ID}).Find(&orderGoods); result.Error != nil {
