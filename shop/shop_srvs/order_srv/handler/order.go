@@ -247,8 +247,9 @@ func (*OrderServer) OrderDetail(ctx context.Context, req *proto.OrderRequest) (*
 		rsp.Goods = append(rsp.Goods, &proto.OrderItemResponse{
 			GoodsId:    orderGood.Goods,
 			GoodsName:  orderGood.GoodsName,
-			Nums:       orderGood.Nums,
 			GoodsPrice: orderGood.GoodsPrice,
+			GoodsImage: orderGood.GoodsImage,
+			Nums:       orderGood.Nums,
 		})
 	}
 

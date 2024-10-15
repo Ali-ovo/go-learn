@@ -2,6 +2,7 @@ package order
 
 import (
 	"go-learn/shop/shop_api/order_web/api"
+	"go-learn/shop/shop_api/order_web/forms"
 	"go-learn/shop/shop_api/order_web/global"
 	"go-learn/shop/shop_api/order_web/models"
 	"go-learn/shop/shop_api/order_web/proto"
@@ -66,9 +67,86 @@ func List(ctx *gin.Context) {
 }
 
 func New(ctx *gin.Context) {
+	orderForm := forms.CreateOrderForm{}
+
+	if err := ctx.ShouldBindJSON(&orderForm); err != nil {
+		api.HandleValidatorError(ctx, err)
+	}
+
+	userId, _ := ctx.Get("userId")
+	rsp, err := global.OrderSrvClient.CreateOrder(ctx, &proto.OrderRequest{
+		UserId:  int32(userId.(uint)),
+		Name:    orderForm.Name,
+		Mobile:  orderForm.Mobile,
+		Address: orderForm.Address,
+		Post:    orderForm.Post,
+	})
+
+	if err != nil {
+		zap.S().Errorw("创建订单失败")
+		api.HandleGrpcErrorToHttp(err, ctx)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"id": rsp.Id,
+	})
 
 }
 
 func Detail(ctx *gin.Context) {
+	id := ctx.Param("id")
+	orderId, err := strconv.Atoi(id)
+	userId, _ := ctx.Get("userId")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg": "参数错误",
+		})
+		return
+	}
 
+	request := proto.OrderRequest{
+		Id: int32(orderId),
+	}
+	claims, _ := ctx.Get("claims")
+	model := claims.(*models.CustomClaims)
+
+	if model.AuthorityId == 1 {
+		request.UserId = int32(userId.(uint))
+	}
+
+	rsp, err := global.OrderSrvClient.OrderDetail(ctx, &request)
+	if err != nil {
+		zap.S().Errorw("获取订单详情失败")
+		api.HandleGrpcErrorToHttp(err, ctx)
+		return
+	}
+
+	reMap := gin.H{
+		"id":       rsp.OrderInfo.Id,
+		"status":   rsp.OrderInfo.Status,
+		"user":     rsp.OrderInfo.UserId,
+		"post":     rsp.OrderInfo.Post,
+		"total":    rsp.OrderInfo.Total,
+		"address":  rsp.OrderInfo.Address,
+		"name":     rsp.OrderInfo.Name,
+		"mobile":   rsp.OrderInfo.Mobile,
+		"pay_type": rsp.OrderInfo.PayType,
+		"order_sn": rsp.OrderInfo.OrderSn,
+	}
+
+	goodsList := make([]interface{}, 0)
+	for _, item := range rsp.Goods {
+		goodsList = append(goodsList, map[string]interface{}{
+			"id":    item.GoodsId,
+			"name":  item.GoodsName,
+			"price": item.GoodsPrice,
+			"image": item.GoodsImage,
+			"nums":  item.Nums,
+		})
+	}
+
+	reMap["goods"] = goodsList
+
+	ctx.JSON(http.StatusOK, reMap)
 }
