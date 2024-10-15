@@ -96,7 +96,7 @@ func TestOrderList() {
 
 func Init() {
 	var err error
-	conn, err = grpc.NewClient("127.0.0.1:50808", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err = grpc.NewClient("127.0.0.1:61007", grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	if err != nil {
 		panic(err)
@@ -113,7 +113,6 @@ func main() {
 	// TestCartItemList(21)
 	// TestUpdateCartItem(2)
 	// TestCreateOrder()
-
 	// TestGetOrderDetail(1)
 
 	TestOrderList()
