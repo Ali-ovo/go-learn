@@ -92,23 +92,6 @@ func New(ctx *gin.Context) {
 
 	// 生成支付 url
 	AliPayInfo := global.ServerConfig.AliPayInfo
-	client, err := alipay.New(AliPayInfo.AppID, AliPayInfo.PrivateKey, false)
-	if err != nil {
-		zap.S().Errorw("创建支付宝客户端失败")
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"msg": err.Error(),
-		})
-		return
-	}
-
-	err = client.LoadAliPayPublicKey(AliPayInfo.AliPublicKey)
-	if err != nil {
-		zap.S().Errorw("获取支付宝公钥失败")
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"msg": err.Error(),
-		})
-		return
-	}
 
 	var p = alipay.TradePagePay{}
 	p.NotifyURL = AliPayInfo.NotifyURL
@@ -118,7 +101,7 @@ func New(ctx *gin.Context) {
 	p.TotalAmount = strconv.FormatFloat(float64(rsp.Total), 'f', 2, 64)
 	p.ProductCode = "FAST_INSTANT_TRADE_PAY"
 
-	url, err := client.TradePagePay(p)
+	url, err := global.AliPayClient.TradePagePay(p)
 	if err != nil {
 		zap.S().Errorw("生成支付 url 失败")
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -192,23 +175,6 @@ func Detail(ctx *gin.Context) {
 
 	// 生成支付 url
 	AliPayInfo := global.ServerConfig.AliPayInfo
-	client, err := alipay.New(AliPayInfo.AppID, AliPayInfo.PrivateKey, false)
-	if err != nil {
-		zap.S().Errorw("创建支付宝客户端失败")
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"msg": err.Error(),
-		})
-		return
-	}
-
-	err = client.LoadAliPayPublicKey(AliPayInfo.AliPublicKey)
-	if err != nil {
-		zap.S().Errorw("获取支付宝公钥失败")
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"msg": err.Error(),
-		})
-		return
-	}
 
 	var p = alipay.TradePagePay{}
 	p.NotifyURL = AliPayInfo.NotifyURL
@@ -218,7 +184,7 @@ func Detail(ctx *gin.Context) {
 	p.TotalAmount = strconv.FormatFloat(float64(rsp.OrderInfo.Total), 'f', 2, 64)
 	p.ProductCode = "FAST_INSTANT_TRADE_PAY"
 
-	url, err := client.TradePagePay(p)
+	url, err := global.AliPayClient.TradePagePay(p)
 	if err != nil {
 		zap.S().Errorw("生成支付 url 失败")
 		ctx.JSON(http.StatusInternalServerError, gin.H{

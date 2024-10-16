@@ -5,6 +5,7 @@ import (
 	"go-learn/shop/shop_api/order_web/proto"
 
 	ut "github.com/go-playground/universal-translator"
+	"github.com/smartwalle/alipay/v3"
 )
 
 var (
@@ -15,4 +16,5 @@ var (
 	GoodsSrvClient     proto.GoodsClient
 	OrderSrvClient     proto.OrderClient
 	InventorySrvClient proto.InventoryClient
+	AliPayClient       *alipay.Client
 )
