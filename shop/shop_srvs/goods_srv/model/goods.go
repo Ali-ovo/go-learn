@@ -1,5 +1,13 @@
 package model
 
+import (
+	"context"
+	"go-learn/shop/shop_srvs/goods_srv/global"
+	"strconv"
+
+	"gorm.io/gorm"
+)
+
 type Category struct {
 	BaseModel
 	Name             string      `gorm:"type:varchar(20);not null" json:"name"`
@@ -59,4 +67,63 @@ type Goods struct {
 	Images          GormList `gorm:"type:varchar(1000);not null"`
 	DescImages      GormList `gorm:"type:varchar(1000);not null"`
 	GoodsFrontImage string   `gorm:"type:varchar(200);not null"`
+}
+
+func (g *Goods) AfterCreate(tx *gorm.DB) (err error) {
+	esModel := EsGoods{
+		ID:          g.ID,
+		CategoryID:  g.CategoryID,
+		BrandsID:    g.BrandsID,
+		OnSale:      g.OnSale,
+		ShipFree:    g.ShipFree,
+		IsNew:       g.IsNew,
+		IsHot:       g.IsHot,
+		Name:        g.Name,
+		ClickNum:    g.ClickNum,
+		SoldNum:     g.SoldNum,
+		FavNum:      g.FavNum,
+		MarketPrice: g.MarketPrice,
+		GoodsBrief:  g.GoodsBrief,
+		ShopPrice:   g.ShopPrice,
+	}
+
+	_, err = global.EsClient.Index().Index(esModel.GetIndexName()).BodyJson(esModel).Id(strconv.Itoa(int(g.ID))).Do(context.Background())
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (g *Goods) AfterUpdate(tx *gorm.DB) (err error) {
+	esModel := EsGoods{
+		ID:          g.ID,
+		CategoryID:  g.CategoryID,
+		BrandsID:    g.BrandsID,
+		OnSale:      g.OnSale,
+		ShipFree:    g.ShipFree,
+		IsNew:       g.IsNew,
+		IsHot:       g.IsHot,
+		Name:        g.Name,
+		ClickNum:    g.ClickNum,
+		SoldNum:     g.SoldNum,
+		FavNum:      g.FavNum,
+		MarketPrice: g.MarketPrice,
+		GoodsBrief:  g.GoodsBrief,
+		ShopPrice:   g.ShopPrice,
+	}
+
+	_, err = global.EsClient.Update().Index(esModel.GetIndexName()).
+		Doc(esModel).Id(strconv.Itoa(int(g.ID))).Do(context.Background())
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (g *Goods) AfterDelete(tx *gorm.DB) (err error) {
+	_, err = global.EsClient.Delete().Index(EsGoods{}.GetIndexName()).Id(strconv.Itoa(int(g.ID))).Do(context.Background())
+	if err != nil {
+		return err
+	}
+	return nil
 }
