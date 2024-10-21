@@ -56,7 +56,7 @@ func (s *GoodsServer) GoodsList(ctx context.Context, req *proto.GoodsFilterReque
 	q := elastic.NewBoolQuery()
 
 	// var goods []model.Goods
-	localDB := global.DB.Model(&model.Goods{})
+	localDB := global.DB.Model(model.Goods{})
 
 	if req.KeyWords != "" {
 		// localDB = localDB.Where("name like ?", "%"+req.KeyWords+"%")
@@ -111,10 +111,10 @@ func (s *GoodsServer) GoodsList(ctx context.Context, req *proto.GoodsFilterReque
 		type Result struct {
 			ID int32 `json:"id"`
 		}
-		var result []Result
-		global.DB.Model(model.Category{}).Raw(subQuery).Scan(&result)
+		var results []Result
+		global.DB.Model(model.Category{}).Raw(subQuery).Scan(&results)
 
-		for _, r := range result {
+		for _, r := range results {
 			categoryIds = append(categoryIds, r.ID)
 		}
 
