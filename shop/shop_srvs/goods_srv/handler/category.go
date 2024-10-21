@@ -66,15 +66,16 @@ func (s *GoodsServer) GetSubCategory(ctx context.Context, req *proto.CategoryLis
 func (s *GoodsServer) CreateCategory(ctx context.Context, req *proto.CategoryInfoRequest) (*proto.CategoryInfoResponse, error) {
 	category := model.Category{}
 
-	category.Name = req.Name
-	category.Level = req.Level
-	category.IsTab = req.IsTab
+	cMap := map[string]interface{}{}
+	cMap["name"] = req.Name
+	cMap["level"] = req.Level
+	cMap["is_tab"] = req.IsTab
 
 	if req.Level != 1 {
-		category.ParentCategoryID = req.ParentCategory
+		cMap["parent_category_id"] = req.ParentCategory
 	}
+	global.DB.Model(&model.Category{}).Create(cMap)
 
-	global.DB.Save(&category)
 	return &proto.CategoryInfoResponse{Id: int32(category.ID)}, nil
 }
 
@@ -105,7 +106,10 @@ func (s *GoodsServer) UpdateCategory(ctx context.Context, req *proto.CategoryInf
 		category.IsTab = req.IsTab
 	}
 
-	global.DB.Save(&category)
+	err := global.DB.Save(&category)
+	if err.Error != nil {
+		return nil, err.Error
+	}
 
 	return &emptypb.Empty{}, nil
 }

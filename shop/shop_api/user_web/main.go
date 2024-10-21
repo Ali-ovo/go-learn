@@ -4,13 +4,18 @@ import (
 	"fmt"
 	"go-learn/shop/shop_api/user_web/global"
 	"go-learn/shop/shop_api/user_web/initialize"
+	"go-learn/shop/shop_api/user_web/router/register/consul"
 	"go-learn/shop/shop_api/user_web/utils"
+	"os"
+	"os/signal"
+	"syscall"
 
 	myvalidator "go-learn/shop/shop_api/user_web/validator"
 
 	"github.com/gin-gonic/gin/binding"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
+	uuid "github.com/satori/go.uuid"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
@@ -56,9 +61,36 @@ func main() {
 		})
 	}
 
-	zap.S().Infof("启动服务, 端口: %d", global.ServerConfig.Port)
-	if err := Router.Run(fmt.Sprintf(":%d", global.ServerConfig.Port)); err != nil {
-		zap.S().Panic("启动失败", err.Error())
+	registerClient := consul.NewRegistryClient(global.ServerConfig.ConsulInfo.Host, global.ServerConfig.ConsulInfo.Port)
+
+	serviceId := uuid.NewV4().String()
+	err := registerClient.Register(
+		global.ServerConfig.Host,
+		global.ServerConfig.Port,
+		global.ServerConfig.Name,
+		global.ServerConfig.Tags,
+		serviceId,
+	)
+
+	if err != nil {
+		zap.S().Panic("注册服务失败", err.Error())
 	}
 
+	zap.S().Infof("启动服务, 端口: %d", global.ServerConfig.Port)
+	go func() {
+		if err := Router.Run(fmt.Sprintf(":%d", global.ServerConfig.Port)); err != nil {
+			zap.S().Panic("启动失败", err.Error())
+		}
+
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	err = registerClient.DeRegister(serviceId)
+	if err != nil {
+		zap.S().Panic("注销服务失败", err.Error())
+	}
+	zap.S().Info("注销服务成功")
 }

@@ -158,6 +158,7 @@ func Detail(ctx *gin.Context) {
 		"id":          r.Id,
 		"name":        r.Name,
 		"goods_brief": r.GoodsBrief,
+		"goods_sn":    r.GoodsSn,
 		"desc":        r.GoodsDesc,
 		"ship_free":   r.ShipFree,
 		"images":      r.Images,

@@ -141,6 +141,10 @@ func GetUserList(ctx *gin.Context) {
 		return
 	}
 
+	reMap := gin.H{
+		"total": rsp.Total,
+	}
+
 	result := make([]interface{}, 0)
 	for _, value := range rsp.Data {
 		user := response.UserResponse{
@@ -157,7 +161,8 @@ func GetUserList(ctx *gin.Context) {
 
 	}
 
-	ctx.JSON(http.StatusOK, result)
+	reMap["data"] = result
+	ctx.JSON(http.StatusOK, reMap)
 }
 
 func PassWordLogin(ctx *gin.Context) {
