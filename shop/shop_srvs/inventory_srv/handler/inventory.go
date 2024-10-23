@@ -38,13 +38,13 @@ func (i *InventoryServer) SetInv(ctx context.Context, req *proto.GoodsInvInfo) (
 }
 
 func (i *InventoryServer) InvDetail(ctx context.Context, req *proto.GoodsInvInfo) (*proto.GoodsInvInfo, error) {
-	var inv model.Inventory
+	var inv model.InventoryNew
 	if result := global.DB.Where(&model.Inventory{Goods: req.GoodsId}).First(&inv); result.RowsAffected == 0 {
 		return nil, status.Errorf(codes.NotFound, "库存信息不存在")
 	}
 	return &proto.GoodsInvInfo{
 		GoodsId: inv.Goods,
-		Num:     inv.Stocks,
+		Num:     inv.Stocks - inv.Freeze,
 	}, nil
 }
 
@@ -109,6 +109,50 @@ func (i *InventoryServer) Sell(ctx context.Context, req *proto.SellInfo) (*empty
 	return &emptypb.Empty{}, nil
 }
 
+func (i *InventoryServer) TrySell(ctx context.Context, req *proto.SellInfo) (*emptypb.Empty, error) {
+	client := goredislib.NewClient(&goredislib.Options{
+		Addr: fmt.Sprintf("%s:%d", global.ServerConfig.RedisInfo.Host, global.ServerConfig.RedisInfo.Port),
+	})
+	pool := goredis.NewPool(client)
+	rs := redsync.New(pool)
+
+	//   数据一致性 数据库事务
+	tx := global.DB.Begin()
+
+	for _, goodInfo := range req.GoodsInfo {
+		var inv model.InventoryNew
+
+		mutex := rs.NewMutex(fmt.Sprintf("goods_%d", goodInfo.GoodsId))
+
+		if err := mutex.Lock(); err != nil {
+			return nil, status.Errorf(codes.Internal, "获取redis锁失败")
+		}
+
+		if result := global.DB.Where(&model.Inventory{Goods: goodInfo.GoodsId}).First(&inv); result.RowsAffected == 0 {
+			tx.Rollback() // 回滚之前的操作
+			return nil, status.Errorf(codes.InvalidArgument, "库存信息不存在")
+		}
+
+		if inv.Stocks < goodInfo.Num {
+			tx.Rollback() // 回滚之前的操作
+			return nil, status.Errorf(codes.ResourceExhausted, "库存不足")
+		}
+
+		// 扣减库存
+		inv.Freeze += goodInfo.Num
+		tx.Save(&inv)
+
+		if ok, err := mutex.Unlock(); !ok || err != nil {
+			return nil, status.Errorf(codes.Internal, "释放redis锁失败")
+		}
+
+	}
+
+	tx.Commit() // 需要手动提交修改
+
+	return &emptypb.Empty{}, nil
+}
+
 var m1 sync.Mutex
 
 func (i *InventoryServer) Reback(ctx context.Context, req *proto.SellInfo) (*emptypb.Empty, error) {
@@ -131,5 +175,82 @@ func (i *InventoryServer) Reback(ctx context.Context, req *proto.SellInfo) (*emp
 	tx.Commit()
 	m1.Unlock()
 
+	return &emptypb.Empty{}, nil
+}
+
+func (*InventoryServer) ConfirmSell(ctx context.Context, req *proto.SellInfo) (*emptypb.Empty, error) {
+	client := goredislib.NewClient(&goredislib.Options{
+		Addr: fmt.Sprintf("%s:%d", global.ServerConfig.RedisInfo.Host, global.ServerConfig.RedisInfo.Port),
+	})
+	pool := goredis.NewPool(client) // or, pool := redigo.NewPool(...)
+	rs := redsync.New(pool)
+
+	tx := global.DB.Begin()
+	for _, goodInfo := range req.GoodsInfo {
+		var inv model.InventoryNew
+
+		//for {
+		mutex := rs.NewMutex(fmt.Sprintf("goods_%d", goodInfo.GoodsId))
+		if err := mutex.Lock(); err != nil {
+			return nil, status.Errorf(codes.Internal, "获取redis分布式锁异常")
+		}
+
+		if result := global.DB.Where(&model.Inventory{Goods: goodInfo.GoodsId}).First(&inv); result.RowsAffected == 0 {
+			tx.Rollback() //回滚之前的操作
+			return nil, status.Errorf(codes.InvalidArgument, "没有库存信息")
+		}
+		//判断库存是否充足
+		if inv.Stocks < goodInfo.Num {
+			tx.Rollback() //回滚之前的操作
+			return nil, status.Errorf(codes.ResourceExhausted, "库存不足")
+		}
+		inv.Stocks -= goodInfo.Num
+		inv.Freeze -= goodInfo.Num
+		tx.Save(&inv)
+
+		if ok, err := mutex.Unlock(); !ok || err != nil {
+			return nil, status.Errorf(codes.Internal, "释放redis分布式锁异常")
+		}
+
+	}
+	tx.Commit() // 需要自己手动提交操作
+	return &emptypb.Empty{}, nil
+}
+
+func (*InventoryServer) CancelSell(ctx context.Context, req *proto.SellInfo) (*emptypb.Empty, error) {
+	client := goredislib.NewClient(&goredislib.Options{
+		Addr: fmt.Sprintf("%s:%d", global.ServerConfig.RedisInfo.Host, global.ServerConfig.RedisInfo.Port),
+	})
+	pool := goredis.NewPool(client) // or, pool := redigo.NewPool(...)
+	rs := redsync.New(pool)
+
+	tx := global.DB.Begin()
+	for _, goodInfo := range req.GoodsInfo {
+		var inv model.InventoryNew
+
+		mutex := rs.NewMutex(fmt.Sprintf("goods_%d", goodInfo.GoodsId))
+		if err := mutex.Lock(); err != nil {
+			return nil, status.Errorf(codes.Internal, "获取redis分布式锁异常")
+		}
+
+		if result := global.DB.Where(&model.Inventory{Goods: goodInfo.GoodsId}).First(&inv); result.RowsAffected == 0 {
+			tx.Rollback() //回滚之前的操作
+			return nil, status.Errorf(codes.InvalidArgument, "没有库存信息")
+		}
+		//判断库存是否充足
+		if inv.Stocks < goodInfo.Num {
+			tx.Rollback() //回滚之前的操作
+			return nil, status.Errorf(codes.ResourceExhausted, "库存不足")
+		}
+		//扣减， 会出现数据不一致的问题 - 锁，分布式锁
+		inv.Freeze -= goodInfo.Num
+		tx.Save(&inv)
+
+		if ok, err := mutex.Unlock(); !ok || err != nil {
+			return nil, status.Errorf(codes.Internal, "释放redis分布式锁异常")
+		}
+
+	}
+	tx.Commit() // 需要自己手动提交操作
 	return &emptypb.Empty{}, nil
 }
