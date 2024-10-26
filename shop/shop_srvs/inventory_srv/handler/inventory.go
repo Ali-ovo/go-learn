@@ -2,15 +2,20 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"go-learn/shop/shop_srvs/inventory_srv/global"
 	"go-learn/shop/shop_srvs/inventory_srv/model"
 	"go-learn/shop/shop_srvs/inventory_srv/proto"
 	"sync"
 
+	"github.com/apache/rocketmq-client-go/v2/consumer"
+	"github.com/apache/rocketmq-client-go/v2/primitive"
 	"github.com/go-redsync/redsync/v4"
 	"github.com/go-redsync/redsync/v4/redis/goredis/v9"
 	goredislib "github.com/redis/go-redis/v9"
+	"go.uber.org/zap"
+	"gorm.io/gorm"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -61,7 +66,17 @@ func (i *InventoryServer) Sell(ctx context.Context, req *proto.SellInfo) (*empty
 	tx := global.DB.Begin()
 	// m.Lock() // 加锁
 
+	sellDetail := model.StockSellDetail{
+		OrderSn: req.OrderSn,
+		Status:  1,
+	}
+	var details []model.GoodsDetail
+
 	for _, goodInfo := range req.GoodsInfo {
+		details = append(details, model.GoodsDetail{
+			Goods: goodInfo.GoodsId,
+			Num:   goodInfo.Num,
+		})
 		var inv model.Inventory
 		// if result := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Where(&model.Inventory{Goods: goodInfo.GoodsId}).First(&inv); result.RowsAffected == 0 {
 		// 	tx.Rollback() // 回滚之前的操作
@@ -101,6 +116,12 @@ func (i *InventoryServer) Sell(ctx context.Context, req *proto.SellInfo) (*empty
 		// 	break
 		// }
 		// }
+	}
+	sellDetail.Detail = details
+
+	if result := tx.Create(&sellDetail); result.RowsAffected == 0 {
+		tx.Rollback()
+		return nil, status.Errorf(codes.Internal, "保存库存操作记录失败")
 	}
 
 	tx.Commit() // 需要手动提交修改
@@ -253,4 +274,40 @@ func (*InventoryServer) CancelSell(ctx context.Context, req *proto.SellInfo) (*e
 	}
 	tx.Commit() // 需要自己手动提交操作
 	return &emptypb.Empty{}, nil
+}
+
+func AutoReback(ctx context.Context, msgs ...*primitive.MessageExt) (consumer.ConsumeResult, error) {
+	type OrderInfo struct {
+		OrderSn string
+	}
+	for i := range msgs {
+		var orderInfo OrderInfo
+		err := json.Unmarshal(msgs[i].Body, &orderInfo)
+		if err != nil {
+			zap.S().Errorf("AutoReback Unmarshal failed, err:%v", err)
+			return consumer.ConsumeSuccess, nil
+		}
+
+		tx := global.DB.Begin()
+		var sellDetail model.StockSellDetail
+		if result := tx.Model(&model.StockSellDetail{}).Where(&model.StockSellDetail{OrderSn: orderInfo.OrderSn, Status: 1}).First(&sellDetail); result.RowsAffected == 0 {
+			return consumer.ConsumeSuccess, nil
+		}
+
+		for _, orderGood := range sellDetail.Detail {
+			if result := tx.Model(&model.Inventory{}).Where(&model.Inventory{Goods: orderGood.Goods}).Update("stocks", gorm.Expr("stocks+?", orderGood.Num)); result.RowsAffected == 0 {
+				tx.Rollback()
+				return consumer.ConsumeRetryLater, nil
+			}
+		}
+
+		if result := tx.Model(&model.StockSellDetail{}).Where(&model.StockSellDetail{OrderSn: orderInfo.OrderSn}).Update("status", 2); result.RowsAffected == 0 {
+			tx.Rollback()
+			return consumer.ConsumeRetryLater, nil
+		}
+		tx.Commit()
+		return consumer.ConsumeSuccess, nil
+	}
+
+	return consumer.ConsumeSuccess, nil
 }

@@ -19,6 +19,9 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
+
+	"github.com/apache/rocketmq-client-go/v2"
+	"github.com/apache/rocketmq-client-go/v2/consumer"
 )
 
 func main() {
@@ -77,10 +80,23 @@ func main() {
 		}
 	}()
 
+	// 监听归还topic
+	c, _ := rocketmq.NewPushConsumer(
+		consumer.WithNameServer([]string{"192.168.189.128:9876"}),
+		consumer.WithGroupName("shop_inventory"),
+	)
+
+	if err := c.Subscribe("order_reback", consumer.MessageSelector{}, handler.AutoReback); err != nil {
+		fmt.Println("订阅失败")
+	}
+
+	_ = c.Start()
+
 	// 优雅退出
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
+	_ = c.Shutdown()
 	if err = registerClient.DeRegister(serviceId); err != nil {
 		zap.S().Info("服务注销失败")
 		return
