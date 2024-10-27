@@ -17,6 +17,11 @@ type SrvInfo struct {
 	Name string `mapstructure:"name" json:"name"`
 }
 
+type RocketMqConfig struct {
+	Host string `mapstructure:"host" json:"host"`
+	Port int    `mapstructure:"port" json:"port"`
+}
+
 type ServerConfig struct {
 	Name       string       `mapstructure:"name" json:"name"`
 	Host       string       `mapstructure:"host" json:"host"`
@@ -29,6 +34,8 @@ type ServerConfig struct {
 
 	// 库存微服务配置
 	InventorySrvInfo SrvInfo `mapstructure:"inventory_srv" json:"inventory_srv"`
+
+	RocketMqInfo RocketMqConfig `mapstructure:"rocketmq" json:"rocketmq"`
 }
 
 type NacosConfig struct {

@@ -34,8 +34,9 @@ var p1 rocketmq.Producer
 
 func initP1() error {
 	var err error
+	rocketmqInfo := global.ServerConfig.RocketMqInfo
 	p1, err = rocketmq.NewProducer(
-		producer.WithNameServer([]string{"192.168.189.128:9876"}),
+		producer.WithNameServer([]string{fmt.Sprintf("%s:%d", rocketmqInfo.Host, rocketmqInfo.Port)}),
 		producer.WithGroupName("timeout_order"),
 	)
 
@@ -49,9 +50,11 @@ func initP1() error {
 
 func initProducer(orderListener *OrderListener) error {
 	var err error
+	rocketmqInfo := global.ServerConfig.RocketMqInfo
+
 	p, err = rocketmq.NewTransactionProducer(
 		orderListener,
-		producer.WithNameServer([]string{"192.168.189.128:9876"}),
+		producer.WithNameServer([]string{fmt.Sprintf("%s:%d", rocketmqInfo.Host, rocketmqInfo.Port)}),
 	)
 	if err != nil {
 		zap.S().Errorf("生成 producer 失败: %s", err.Error())

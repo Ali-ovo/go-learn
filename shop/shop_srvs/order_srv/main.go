@@ -81,9 +81,11 @@ func main() {
 		}
 	}()
 
+	rocketmqInfo := global.ServerConfig.RocketMqInfo
+
 	//监听订单超时topic
 	c, _ := rocketmq.NewPushConsumer(
-		consumer.WithNameServer([]string{"192.168.189.128:9876"}),
+		consumer.WithNameServer([]string{fmt.Sprintf("%s:%d", rocketmqInfo.Host, rocketmqInfo.Port)}),
 		consumer.WithGroupName("shop_order"),
 	)
 

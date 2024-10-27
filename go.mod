@@ -103,6 +103,7 @@ require (
 	github.com/go-redsync/redsync/v4 v4.13.0
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/golang/protobuf v1.5.4
+	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.1.0
 	github.com/hashicorp/consul/api v1.29.4
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kirinlabs/HttpRequest v1.1.2

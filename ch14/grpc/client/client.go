@@ -6,7 +6,10 @@ import (
 	"go-learn/ch14/grpc/proto"
 	"time"
 
+	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/retry"
+
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -18,7 +21,17 @@ const (
 
 func main() {
 
-	conn, err := grpc.NewClient("127.0.0.1:8000", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	retryOpts := []retry.CallOption{
+		retry.WithMax(3),
+		retry.WithPerRetryTimeout(1 * time.Second),
+		retry.WithCodes(codes.Unknown, codes.DeadlineExceeded, codes.Unavailable),
+	}
+
+	conn, err := grpc.NewClient(
+		"127.0.0.1:8000",
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithUnaryInterceptor(retry.UnaryClientInterceptor(retryOpts...)),
+	)
 
 	if err != nil {
 		panic(err)
@@ -37,7 +50,8 @@ func main() {
 			"key": "value",
 		},
 		AddTime: timestamppb.New(time.Now()),
-	})
+	},
+	)
 
 	if err != nil {
 		panic(err)

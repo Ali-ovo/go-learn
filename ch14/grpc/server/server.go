@@ -4,6 +4,7 @@ import (
 	"context"
 	"go-learn/ch14/grpc/proto"
 	"net"
+	"time"
 
 	"google.golang.org/grpc"
 )
@@ -13,6 +14,7 @@ type Server struct {
 }
 
 func (s *Server) SayHello(ctx context.Context, request *proto.HelloRequest) (*proto.HelloReply, error) {
+	time.Sleep(2 * time.Second)
 
 	return &proto.HelloReply{
 		Message: "Hello " + request.Name,
