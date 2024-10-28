@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"fmt"
 	"go-learn/shop/shop_srvs/inventory_srv/model"
 	"io"
 	"log"
@@ -22,7 +23,7 @@ func genMd5(code string) string {
 }
 
 func main() {
-	dsn := "root:123456@tcp(192.168.189.128:3306)/inventory_srv?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := "root:123456@tcp(172.16.89.132:3306)/inventory_srv?charset=utf8mb4&parseTime=True&loc=Local"
 
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
@@ -51,15 +52,15 @@ func main() {
 		&model.StockSellDetail{},
 	)
 
-	// orderDetail := model.StockSellDetail{
-	// 	OrderSn: "ali-123",
-	// 	Status:  1,
-	// 	Detail:  []model.GoodsDetail{{1, 2}, {2, 4}},
-	// }
+	orderDetail := model.StockSellDetail{
+		OrderSn: "ali-123",
+		Status:  1,
+		Detail:  []model.GoodsDetail{{1, 2}, {2, 4}},
+	}
 
-	// db.Create(&orderDetail)
+	db.Create(&orderDetail)
 
-	// var sellDetail model.StockSellDetail
-	// db.Where(model.StockSellDetail{OrderSn: "ali-123"}).First(&sellDetail)
-	// fmt.Println(sellDetail)
+	var sellDetail model.StockSellDetail
+	db.Where(model.StockSellDetail{OrderSn: "ali-123"}).First(&sellDetail)
+	fmt.Println(sellDetail)
 }

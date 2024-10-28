@@ -9,6 +9,7 @@ require (
 	github.com/mojocn/base64Captcha v1.3.6
 	github.com/nacos-group/nacos-sdk-go/v2 v2.2.7
 	github.com/spf13/viper v1.19.0
+	github.com/uber/jaeger-client-go v2.30.0+incompatible
 	go.uber.org/zap v1.27.0
 	google.golang.org/grpc v1.67.0
 	gorm.io/gorm v1.25.7
@@ -73,6 +74,7 @@ require (
 	github.com/tidwall/gjson v1.13.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
+	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
