@@ -22,6 +22,12 @@ type RocketMqConfig struct {
 	Port int    `mapstructure:"port" json:"port"`
 }
 
+type JaegerConfig struct {
+	Host string `mapstructure:"host" json:"host"`
+	Port int    `mapstructure:"port" json:"port"`
+	Name string `mapstructure:"name" json:"name"`
+}
+
 type ServerConfig struct {
 	Name       string       `mapstructure:"name" json:"name"`
 	Host       string       `mapstructure:"host" json:"host"`
@@ -36,6 +42,8 @@ type ServerConfig struct {
 	InventorySrvInfo SrvInfo `mapstructure:"inventory_srv" json:"inventory_srv"`
 
 	RocketMqInfo RocketMqConfig `mapstructure:"rocketmq" json:"rocketmq"`
+
+	JaegerInfo JaegerConfig `mapstructure:"jaeger" json:"jaeger"`
 }
 
 type NacosConfig struct {

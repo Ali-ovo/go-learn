@@ -2,9 +2,9 @@ package initialize
 
 import (
 	"fmt"
-	"go-learn/shop/shop_api/goods_web/utils/otgrpc"
 	"go-learn/shop/shop_api/order_web/global"
 	"go-learn/shop/shop_api/order_web/proto"
+	"go-learn/shop/shop_api/order_web/utils/otgrpc"
 
 	_ "github.com/mbobakov/grpc-consul-resolver" // It's important
 	"github.com/opentracing/opentracing-go"
