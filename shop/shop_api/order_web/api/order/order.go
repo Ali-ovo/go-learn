@@ -1,6 +1,7 @@
 package order
 
 import (
+	"context"
 	"fmt"
 	"go-learn/shop/shop_api/order_web/api"
 	"go-learn/shop/shop_api/order_web/forms"
@@ -76,7 +77,7 @@ func New(ctx *gin.Context) {
 	}
 
 	userId, _ := ctx.Get("userId")
-	rsp, err := global.OrderSrvClient.CreateOrder(ctx, &proto.OrderRequest{
+	rsp, err := global.OrderSrvClient.CreateOrder(context.WithValue(context.Background(), "ginContext", ctx), &proto.OrderRequest{
 		UserId:  int32(userId.(uint)),
 		Name:    orderForm.Name,
 		Mobile:  orderForm.Mobile,

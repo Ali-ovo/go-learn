@@ -23,7 +23,7 @@ func genMd5(code string) string {
 }
 
 func main() {
-	dsn := "root:123456@tcp(172.16.89.132:3306)/inventory_srv?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := "root:123456@tcp(172.16.89.133:3306)/inventory_srv?charset=utf8mb4&parseTime=True&loc=Local"
 
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer

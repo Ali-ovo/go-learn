@@ -2,6 +2,7 @@ package router
 
 import (
 	"go-learn/shop/shop_api/goods_web/api/brands"
+	"go-learn/shop/shop_api/goods_web/middlewares"
 
 	"github.com/gin-gonic/gin"
 )
@@ -9,7 +10,7 @@ import (
 // 1. 商品的api接口开发完成
 // 2. 图片的坑
 func InitBrandRouter(Router *gin.RouterGroup) {
-	BrandRouter := Router.Group("brands")
+	BrandRouter := Router.Group("brands").Use(middlewares.Trace())
 	{
 		BrandRouter.GET("", brands.BrandList)          // 品牌列表页
 		BrandRouter.DELETE("/:id", brands.DeleteBrand) // 删除品牌
