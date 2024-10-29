@@ -59,7 +59,10 @@ func List(ctx *gin.Context) {
 	brandIdInt, _ := strconv.Atoi(brandId)
 	request.Brand = int32(brandIdInt)
 
-	rsp, err := global.GoodsSrvClient.GoodsList(ctx, request)
+	// parent, _ := ctx.Get("parentSpan")
+	// opentracing.ContextWithSpan(context.Background(), parent.(opentracing.Span))
+
+	rsp, err := global.GoodsSrvClient.GoodsList(context.WithValue(context.Background(), "ginContext", ctx), request)
 	if err != nil {
 		zap.S().Errorw("获取商品列表失败", "msg", err.Error())
 		api.HandleGrpcErrorToHttp(err, ctx)
@@ -145,7 +148,7 @@ func Detail(ctx *gin.Context) {
 		return
 	}
 
-	r, err := global.GoodsSrvClient.GetGoodsDetail(ctx, &proto.GoodInfoRequest{
+	r, err := global.GoodsSrvClient.GetGoodsDetail(context.WithValue(context.Background(), "ginContext", ctx), &proto.GoodInfoRequest{
 		Id: int32(goodsId),
 	})
 
