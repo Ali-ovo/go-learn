@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"strconv"
 
+	sentinel "github.com/alibaba/sentinel-golang/api"
+	"github.com/alibaba/sentinel-golang/core/base"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
@@ -62,12 +64,22 @@ func List(ctx *gin.Context) {
 	// parent, _ := ctx.Get("parentSpan")
 	// opentracing.ContextWithSpan(context.Background(), parent.(opentracing.Span))
 
+	e, b := sentinel.Entry("goods-list", sentinel.WithTrafficType(base.Inbound))
+	if b != nil {
+
+		ctx.JSON(http.StatusTooManyRequests, gin.H{
+			"msg": "请求过多",
+		})
+		return
+	}
+
 	rsp, err := global.GoodsSrvClient.GoodsList(context.WithValue(context.Background(), "ginContext", ctx), request)
 	if err != nil {
 		zap.S().Errorw("获取商品列表失败", "msg", err.Error())
 		api.HandleGrpcErrorToHttp(err, ctx)
 		return
 	}
+	e.Exit()
 
 	reMap := map[string]interface{}{
 		"total": rsp.Total,
