@@ -24,8 +24,8 @@ func InitDB() {
 			SlowThreshold:             time.Second, // Slow SQL threshold
 			LogLevel:                  logger.Info, // Log level
 			IgnoreRecordNotFoundError: true,        // Ignore ErrRecordNotFound error for logger
-			ParameterizedQueries:      false,       // Don't include params in the SQL log
-			Colorful:                  true,        // Disable color
+
+			Colorful: true, // Disable color
 		},
 	)
 

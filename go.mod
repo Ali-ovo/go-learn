@@ -3,6 +3,7 @@ module go-learn
 go 1.23.1
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/envoyproxy/protoc-gen-validate v1.1.0
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/gin-gonic/gin v1.10.0
@@ -13,14 +14,15 @@ require (
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.9.0
 	github.com/uber/jaeger-client-go v2.30.0+incompatible
+	go.uber.org/mock v0.5.0
 	go.uber.org/zap v1.27.0
 	google.golang.org/grpc v1.67.0
-	gorm.io/gorm v1.25.7
+	gorm.io/gorm v1.23.8
 )
 
 require (
-	github.com/DATA-DOG/go-sqlmock v1.5.2 // indirect
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
+	github.com/agiledragon/gomonkey/v2 v2.11.0 // indirect
 	github.com/alibabacloud-go/debug v0.0.0-20190504072949-9472017b5c68 // indirect
 	github.com/alibabacloud-go/tea v1.1.17 // indirect
 	github.com/alibabacloud-go/tea-utils v1.4.4 // indirect
@@ -86,7 +88,6 @@ require (
 	github.com/tklauser/numcpus v0.2.2 // indirect
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
 	go.uber.org/atomic v1.9.0 // indirect
-	go.uber.org/mock v0.5.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
 	golang.org/x/image v0.20.0 // indirect
@@ -142,5 +143,5 @@ require (
 	golang.org/x/text v0.18.0 // indirect
 	google.golang.org/protobuf v1.34.2
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gorm.io/driver/mysql v1.5.7
+	gorm.io/driver/mysql v1.3.5
 )
