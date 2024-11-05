@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package b;
+option go_package = ".;v1";
+
+message UserInfo {
+  string username = 1;
+  int32 age = 2;
+  string emial = 3;
+}

@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+import "a.poroto";
+import "b.proto";
+
+package c;
+
+
+option go_package = ".;v1";
+
+message User {
+  a.UserInfo info = 1;
+}
