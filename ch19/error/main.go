@@ -6,9 +6,19 @@ import (
 	"github.com/pkg/errors"
 )
 
+type DBError struct {
+	msg string
+}
+
+func (d *DBError) Error() string {
+	return d.msg
+}
+
+var ErrNameEmpty = &DBError{"Name is empty"}
+
 func (s *Student) SetName(name string) error {
 	if name == "" || s.Name == "" {
-		return errors.New("name can't be empty")
+		return ErrNameEmpty
 	}
 	s.Name = name
 	return nil
@@ -33,5 +43,8 @@ func NewStudent() (*Student, error) {
 
 func main() {
 	_, e := NewStudent()
-	fmt.Printf("%+v\n", e)
+	var perr *DBError
+	if errors.As(e, *perr) {
+		fmt.Println("Name is empty")
+	}
 }
