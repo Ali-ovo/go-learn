@@ -2,7 +2,7 @@ package user
 
 import (
 	"fmt"
-	"go-learn/project/v2/shop/app/user/config"
+	"go-learn/project/v2/shop/app/user/srv/config"
 	"go-learn/project/v2/shop/pkg/app"
 )
 

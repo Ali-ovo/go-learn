@@ -1,0 +1,94 @@
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+option go_package = "./;user_pb";
+// protoc -I ../../../gmicro/third_party/ -I . --go_out=. --go-grpc_out=. --gin_out=. user.proto
+
+service User {
+  rpc GetUserList(PageInfo) returns (UserListResponse) {  // 用户列表
+    option (google.api.http) = {
+      get: "/v1/users"
+      body: "*"
+    };
+  }
+  rpc GetUserByMobile(MobileRequest) returns (UserInfoResponse) { // 通过 mobile 查询用户
+    option (google.api.http) = {
+      get: "/v1/user/mobile"
+      body: "*"
+    };
+  }
+  rpc GetUserById(IdRequest) returns (UserInfoResponse) { // 通过 id 查询用户
+    option (google.api.http) = {
+      get: "/v1/user/id"
+      body: "*"
+    };
+  }
+  rpc CreateUser(CreateUserInfo) returns (UserInfoResponse) { // 添加用户
+    option (google.api.http) = {
+      post: "/v1/user/create"
+      body: "*"
+    };
+  }
+  rpc UpdateUser(UpdateUserInfo) returns (google.protobuf.Empty) {  // 更新用户
+    option (google.api.http) = {
+      patch: "/v1/user/update"
+      body: "*"
+    };
+  }
+  rpc CheckPassWord(PasswordCheckInfo) returns (CheckResponse) {  //检查密码
+    option (google.api.http) = {
+      post: "/v1/user/password"
+      body: "*"
+    };
+  }
+}
+
+message PasswordCheckInfo {
+  string password = 1;
+  string encryptedPassword = 2;
+}
+
+message CheckResponse {
+  bool success = 1;
+}
+
+message PageInfo {
+  uint32 pn = 1;
+  uint32 pSize = 2;
+}
+
+message MobileRequest {
+  string mobile = 1;
+}
+
+message IdRequest {
+  int32 id = 1;
+}
+
+message CreateUserInfo {
+  string mobile = 1;
+  string password = 2;
+  string nickName = 3;
+}
+
+message UpdateUserInfo {
+  int64 id = 1;
+  string nickName = 2;
+  string gender = 3;
+  uint64 birthDay = 4;
+}
+
+message UserInfoResponse {
+  int64 id = 1;
+  string mobile = 2;
+  string password = 3;
+  string nickName = 4;
+  uint64 birthDay = 5;
+  string gender = 6;
+  uint32 role = 7;
+}
+
+message UserListResponse {
+  int32 total = 1;
+  repeated UserInfoResponse data = 2;
+}

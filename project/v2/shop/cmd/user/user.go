@@ -1,7 +1,7 @@
 package main
 
 import (
-	"go-learn/project/v2/shop/app/user"
+	user "go-learn/project/v2/shop/app/user/srv"
 	"math/rand"
 	"os"
 	"runtime"
