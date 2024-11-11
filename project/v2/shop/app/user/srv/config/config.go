@@ -7,10 +7,9 @@ import (
 )
 
 type Config struct {
-	Log       *log.Options              `json:"log" mapstructure:"log"`             // log 配置参数 相关配置
-	Server    *options.ServerOptions    `json:"server" mapstructure:"server"`       // server 相关配置
-	Registry  *options.RegistryOptions  `json:"registry" mapstructure:"registry"`   // 服务注册发现注销 相关配置
-	Telemetry *options.TelemetryOptions `json:"telemetry" mapstructure:"telemetry"` // 链路追踪 相关配置
+	Log      *log.Options             `json:"log" mapstructure:"log"`           // log 配置参数
+	Server   *options.ServerOptions   `json:"server" mapstructure:"server"`     // server
+	Registry *options.RegistryOptions `json:"registry" mapstructure:"registry"` // 服务注册 发现 注销 配置参数
 }
 
 func (c *Config) Validate() []error {
@@ -18,7 +17,6 @@ func (c *Config) Validate() []error {
 	errors = append(errors, c.Log.Validate()...)
 	errors = append(errors, c.Server.Validate()...)
 	errors = append(errors, c.Registry.Validate()...)
-	errors = append(errors, c.Telemetry.Validate()...)
 	return errors
 }
 
@@ -31,15 +29,13 @@ func (c *Config) Flags() (fss cliflag.NamedFlagSets) {
 	c.Log.AddFlags(fss.FlagSet("log"))
 	c.Server.AddFlags(fss.FlagSet("server"))
 	c.Registry.AddFlags(fss.FlagSet("registry"))
-	c.Telemetry.AddFlags(fss.FlagSet("telemetry"))
 	return fss
 }
 
 func NewConfig() *Config {
 	return &Config{
-		Log:       log.NewOptions(),              // 初始化 log 配置
-		Server:    options.NewServerOptions(),    // 初始化 Server 配置
-		Registry:  options.NewRegistryOptions(),  // 初始化 consul 配置
-		Telemetry: options.NewTelemetryOptions(), // 初始化 telemetry 配置
+		Log:      log.NewOptions(),             // 初始化 log 配置
+		Server:   options.NewServerOptions(),   // 初始化 Server 配置
+		Registry: options.NewRegistryOptions(), // 初始化 consul 配置
 	}
 }

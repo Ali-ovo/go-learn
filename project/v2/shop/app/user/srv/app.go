@@ -17,11 +17,10 @@ func NewApp(basename string) *app.App {
 
 	return app.NewApp(
 		"user",
-		basename,
+		"shop",
 		app.WithOptions(cfg), // 初始 log server 配置
 		app.WithRunFunc(run(cfg)),
-		// go run .\main.go --server.port=8081 --server.host=192.168.16.151 --consul.address=192.168.16.105:8500
-		//app.WithNoConfig(), // 设置不读取配置文件
+		//app.WithNoConfig(),
 	)
 }
 
@@ -69,5 +68,5 @@ func NewRegistrar(registry *options.RegistryOptions) registry.Registrar {
 	if err != nil {
 		panic(err)
 	}
-	return consul.New(cli, consul.WithHealthCheck(true))
+	return consul.New(cli)
 }

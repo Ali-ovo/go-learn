@@ -155,22 +155,21 @@ func (r *Registry) ListServices() (allServices map[string][]*registry.ServiceIns
 	return
 }
 
-// Watch resolve service by name 通过 名称 解析服务
+// Watch resolve service by name
 func (r *Registry) Watch(ctx context.Context, name string) (registry.Watcher, error) {
-	// 锁此函数 防止 多个 协程 导致 数据不一致
 	r.lock.Lock()
 	defer r.lock.Unlock()
-	set, ok := r.registry[name] // 如果 registry 中无数据 创建一个 set 第一次访问 为空
+	set, ok := r.registry[name]
 	if !ok {
 		set = &serviceSet{
-			watcher:     make(map[*watcher]struct{}), //
-			services:    &atomic.Value{},             // 原子性操作
+			watcher:     make(map[*watcher]struct{}),
+			services:    &atomic.Value{},
 			serviceName: name,
 		}
 		r.registry[name] = set
 	}
 
-	// 初始化 watcher
+	// 初始化watcher
 	w := &watcher{
 		event: make(chan struct{}, 1),
 	}
@@ -179,16 +178,14 @@ func (r *Registry) Watch(ctx context.Context, name string) (registry.Watcher, er
 	set.lock.Lock()
 	set.watcher[w] = struct{}{}
 	set.lock.Unlock()
-	ss, _ := set.services.Load().([]*registry.ServiceInstance) // 原子性读	断言失败为 nil
+	ss, _ := set.services.Load().([]*registry.ServiceInstance)
 	if len(ss) > 0 {
 		// If the service has a value, it needs to be pushed to the watcher,
 		// otherwise the initial data may be blocked forever during the watch.
-		// 如果服务具有值，则需要将其推送到观察者，否则在观察期间初始数据可能会被永久阻塞
-		// 说明 set.services 里已经存在值了  并且有个 协程在 不停的运行
-		w.event <- struct{}{} // 从 channel 中写入值 如果 channel 有值 就会 hold 住
+		w.event <- struct{}{}
 	}
 
-	if !ok { // 第一次执行
+	if !ok {
 		err := r.resolve(set)
 		if err != nil {
 			return nil, err
@@ -199,26 +196,26 @@ func (r *Registry) Watch(ctx context.Context, name string) (registry.Watcher, er
 
 func (r *Registry) resolve(ss *serviceSet) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
-	services, idx, err := r.cli.Service(ctx, ss.serviceName, 0, true) // ss.serviceName 服务注册名称
+	services, idx, err := r.cli.Service(ctx, ss.serviceName, 0, true)
 	cancel()
 	if err != nil {
 		return err
-	} else if len(services) > 0 { // 获取到服务了
-		ss.broadcast(services) // 原子性写操作 存入 consul 返回回来的相关信息	[]*registry.ServiceInstance
+	} else if len(services) > 0 {
+		ss.broadcast(services)
 	}
 	go func() {
-		ticker := time.NewTicker(time.Second) // 执行定时任务
+		ticker := time.NewTicker(time.Second)
 		defer ticker.Stop()
 		for {
 			<-ticker.C
-			ctx, cancel := context.WithTimeout(context.Background(), time.Second*120) // 长轮询的思想
+			ctx, cancel := context.WithTimeout(context.Background(), time.Second*120)
 			tmpService, tmpIdx, err := r.cli.Service(ctx, ss.serviceName, idx, true)
 			cancel()
 			if err != nil {
 				time.Sleep(time.Second)
 				continue
 			}
-			if len(tmpService) != 0 && tmpIdx != idx { // 获取到修改之后的服务了
+			if len(tmpService) != 0 && tmpIdx != idx {
 				services = tmpService
 				ss.broadcast(services)
 			}

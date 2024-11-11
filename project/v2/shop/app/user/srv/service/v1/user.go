@@ -11,7 +11,7 @@ type UserSrv interface {
 }
 
 type userService struct {
-	userStrore dv1.UserStore // 数据的来源
+	userStrore dv1.UserStore
 }
 
 func NewUserService(us dv1.UserStore) *userService {

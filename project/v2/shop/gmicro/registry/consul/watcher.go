@@ -19,10 +19,10 @@ func (w *watcher) Next() (services []*registry.ServiceInstance, err error) {
 	select {
 	case <-w.ctx.Done():
 		err = w.ctx.Err()
-	case <-w.event: // w.event 是否存在值  不存在 hold 住
+	case <-w.event:
 	}
 
-	ss, ok := w.set.services.Load().([]*registry.ServiceInstance) // 原子性读 操作 读取 服务端相关信息
+	ss, ok := w.set.services.Load().([]*registry.ServiceInstance)
 
 	if ok {
 		services = append(services, ss...)

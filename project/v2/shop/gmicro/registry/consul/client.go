@@ -45,12 +45,11 @@ func NewClient(cli *api.Client) *Client {
 	return c
 }
 
-// 参考: https://developer.hashicorp.com/consul/api-docs/health#sample-request-2
 func defaultResolver(_ context.Context, entries []*api.ServiceEntry) []*registry.ServiceInstance {
-	services := make([]*registry.ServiceInstance, 0, len(entries)) // 创建 一个列表 存储相关信息
+	services := make([]*registry.ServiceInstance, 0, len(entries))
 	for _, entry := range entries {
 		var version string
-		for _, tag := range entry.Service.Tags { // 例如: "Tags": ["version=2.1.1"],
+		for _, tag := range entry.Service.Tags {
 			ss := strings.SplitN(tag, "=", 2)
 			if len(ss) == 2 && ss[0] == "version" {
 				version = ss[1]
@@ -58,20 +57,20 @@ func defaultResolver(_ context.Context, entries []*api.ServiceEntry) []*registry
 		}
 		endpoints := make([]string, 0)
 		for scheme, addr := range entry.Service.TaggedAddresses {
-			if scheme == "lan_ipv4" || scheme == "wan_ipv4" || scheme == "lan_ipv6" || scheme == "wan_ipv6" { // 如果是这几个标签 跳过
+			if scheme == "lan_ipv4" || scheme == "wan_ipv4" || scheme == "lan_ipv6" || scheme == "wan_ipv6" {
 				continue
 			}
 			endpoints = append(endpoints, addr.Address)
 		}
-		if len(endpoints) == 0 && entry.Service.Address != "" && entry.Service.Port != 0 { // 如果 entry.Service.TaggedAddresses 查询不到相关 ip 和 端口  从这里添加
+		if len(endpoints) == 0 && entry.Service.Address != "" && entry.Service.Port != 0 {
 			endpoints = append(endpoints, fmt.Sprintf("http://%s:%d", entry.Service.Address, entry.Service.Port))
 		}
 		services = append(services, &registry.ServiceInstance{
-			ID:        entry.Service.ID,      // 服务 id
-			Name:      entry.Service.Service, // 服务名称
-			Metadata:  entry.Service.Meta,    // 携带给 consul 的 额外信息 (可用可不用)
-			Version:   version,               // 服务版本
-			Endpoints: endpoints,             // 服务地址
+			ID:        entry.Service.ID,
+			Name:      entry.Service.Service,
+			Metadata:  entry.Service.Meta,
+			Version:   version,
+			Endpoints: endpoints,
 		})
 	}
 
@@ -84,23 +83,20 @@ type ServiceResolver func(ctx context.Context, entries []*api.ServiceEntry) []*r
 // Service get services from consul
 func (c *Client) Service(ctx context.Context, service string, index uint64, passingOnly bool) ([]*registry.ServiceInstance, uint64, error) {
 	opts := &api.QueryOptions{
-		// 在 consul 代表对应 API 调用时 Consul 中的某个资源的修改版本号。它用于实现 Consul 的强一致性，确保多个客户端对同一个资源的修改是有序的，并且避免并发修改引起的数据不一致问题
-		// 例如: 原本 某个资源的修改版本号为 1
-		// 当 此资源产生变化了 版本号修改为 2
 		WaitIndex: index,
 		WaitTime:  time.Second * 55,
 	}
 	opts = opts.WithContext(ctx)
-	entries, meta, err := c.cli.Health().Service(service, "", passingOnly, opts) // 列出服务的服务实例
+	entries, meta, err := c.cli.Health().Service(service, "", passingOnly, opts)
 	if err != nil {
 		return nil, 0, err
 	}
-	// 返回 []*registry.ServiceInstance, meta.LastIndex, nil
 	return c.resolver(ctx, entries), meta.LastIndex, nil
 }
 
 // Register register service instance to consul 注册 consul 服务实例
 func (c *Client) Register(_ context.Context, svc *registry.ServiceInstance, enableHealthCheck bool) error {
+	//
 	addresses := make(map[string]api.ServiceAddress, len(svc.Endpoints))
 	checkAddresses := make([]string, 0, len(svc.Endpoints))
 	for _, endpoint := range svc.Endpoints { // 遍历 终端 server path

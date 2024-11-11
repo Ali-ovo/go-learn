@@ -3,7 +3,6 @@ package app
 import (
 	"github.com/google/uuid"
 	"shop/gmicro/registry"
-	"shop/gmicro/server/restserver"
 	"shop/gmicro/server/rpcserver"
 	"net/url"
 	"os"
@@ -26,10 +25,7 @@ type options struct {
 	registrarTimeout time.Duration
 	// stopTimeout 注销超时退出
 	stopTimeout time.Duration
-	// rpc 服务
-	rpcServer *rpcserver.Server
-	// http 服务
-	restServer *restserver.Server
+	rpcServer   *rpcserver.Server
 }
 
 func DefaultOptions() options {
@@ -73,12 +69,6 @@ func WithSigs(sigs []os.Signal) Option {
 func WithRPCServer(server *rpcserver.Server) Option {
 	return func(o *options) {
 		o.rpcServer = server
-	}
-}
-
-func WithRestServer(server *restserver.Server) Option {
-	return func(o *options) {
-		o.restServer = server
 	}
 }
 

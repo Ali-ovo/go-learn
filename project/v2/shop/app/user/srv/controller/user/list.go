@@ -21,7 +21,6 @@ func DTOToResponse(userdto srvv1.UserDTO) upbv1.UserInfoResponse {
 }
 
 func (us *userServer) GetUserList(ctx context.Context, info *upbv1.PageInfo) (*upbv1.UserListResponse, error) {
-	//log.Info("GetUserList is called")
 	srvOpts := metav1.ListMeta{
 		Page:     int(info.Pn),
 		PageSize: int(info.PSize),

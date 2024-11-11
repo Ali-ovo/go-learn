@@ -1,8 +1,6 @@
 package rpcserver
 
 import (
-	"context"
-	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
@@ -28,11 +26,10 @@ type Server struct {
 	lis         net.Listener
 	timeout     time.Duration
 
-	health        *health.Server
-	customHealth  bool
-	metadata      *metadata.Server
-	endpoint      *url.URL
-	enableTracing bool
+	health       *health.Server
+	customHealth bool
+	metadata     *metadata.Server
+	endpoint     *url.URL
 }
 
 func NewServer(opts ...ServerOption) *Server {
@@ -40,7 +37,6 @@ func NewServer(opts ...ServerOption) *Server {
 		address: ":0", // 在没有设置 address 自己获取 ip 和 端口号
 		health:  health.NewServer(),
 		//timeout: 1 * time.Second,
-		enableTracing: true,
 	}
 
 	for _, opt := range opts {
@@ -49,16 +45,9 @@ func NewServer(opts ...ServerOption) *Server {
 
 	// TODO 希望用户不设置拦截器的情况下, 会自动默认加上一些必须的拦截器, crash, tracingtry
 	unaryInts := []grpc.UnaryServerInterceptor{
-		srvintc.UnaryRecoverInterceptor, // 一元拦截器 异常处理(而不是一层层抛出 然后停止程序)
+		srvintc.UnaryRecoverInterceptor, // 一元拦截器 异常处理(而不是一层层抛出 停止程序)
+		srvintc.UnaryTimeoutInterceptor(srv.timeout),
 	}
-	if srv.enableTracing {
-		unaryInts = append(unaryInts, otelgrpc.UnaryServerInterceptor())
-	}
-
-	if srv.timeout > 0 {
-		unaryInts = append(unaryInts, srvintc.UnaryTimeoutInterceptor(srv.timeout))
-	}
-
 	if len(srv.unaryIntes) > 0 {
 		unaryInts = append(unaryInts, srv.unaryIntes...)
 	}
@@ -85,11 +74,11 @@ func NewServer(opts ...ServerOption) *Server {
 	}
 
 	// register 注册 grpc health
-	if !srv.customHealth { // 使用grpc 健康检查的时候用  无grpc 的健康检查没有用 (本项目没有使用)
+	if !srv.customHealth {
 		grpc_health_v1.RegisterHealthServer(srv.Server, srv.health)
 	}
 	// 可以支持 用户直接通过 grpc 的一个接口查看当前支持的所有的 rpc 服务
-	metadata.RegisterMetadataServer(srv.Server, srv.metadata) // 关键函数 是gRPC服务器端用于注册服务的方法
+	metadata.RegisterMetadataServer(srv.Server, srv.metadata) // 关键函数 是 gRPC 服务器端用于注册服务的方法
 	reflection.Register(srv.Server)                           // TODO 需要配合 grpc.client 也需要写对于代码
 	return srv
 }
@@ -106,7 +95,7 @@ func WithLis(lis net.Listener) ServerOption {
 	}
 }
 
-func WithServerUnaryInterceptor(in ...grpc.UnaryServerInterceptor) ServerOption {
+func WithUnaryInterceptor(in ...grpc.UnaryServerInterceptor) ServerOption {
 	return func(o *Server) {
 		o.unaryIntes = in
 	}
@@ -130,16 +119,9 @@ func WithHealthServer(health *health.Server) ServerOption {
 	}
 }
 
-func WithServerTimeout(timeout time.Duration) ServerOption {
+func Withtimeout(timeout time.Duration) ServerOption {
 	return func(s *Server) {
 		s.timeout = timeout
-	}
-}
-
-// WithServerEnableTracing 设置是否开启链路追踪
-func WithServerEnableTracing(enable bool) ServerOption {
-	return func(s *Server) {
-		s.enableTracing = enable
 	}
 }
 
@@ -165,13 +147,13 @@ func (s *Server) listenAndEndpoint() error {
 }
 
 // Start 启动 grpc 的服务
-func (s *Server) Start(ctx context.Context) error {
+func (s *Server) Start() error {
 	log.Infof("[gRPC] server listening on: %s", s.lis.Addr().String())
 	s.health.Resume() // 这里可以不写  只不过 我这里显示声明一下(健康检查服务知道该服务已经恢复正常工作)
 	return s.Server.Serve(s.lis)
 }
 
-func (s *Server) Stop(ctx context.Context) error {
+func (s *Server) Stop() error {
 	s.health.Shutdown() // 设置 服务的状态为 not_serving, 阻止 接收新的请求 过来
 	s.GracefulStop()    // grpc 优雅退出
 	log.Infof("[gRPC] server stopping")

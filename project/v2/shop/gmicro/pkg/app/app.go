@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"os"
 	"shop/gmicro/pkg/common/cli/flag"
 	"shop/gmicro/pkg/common/cli/globalflag"
 	"shop/gmicro/pkg/common/term"
@@ -9,53 +10,15 @@ import (
 	"shop/gmicro/pkg/common/version/verflag"
 	"shop/gmicro/pkg/errors"
 	"shop/gmicro/pkg/log"
-	"os"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var (
-	progressMessage = color.GreenString("==>")
-	//nolint: deadcode,unused,varcheck
-	usageTemplate = fmt.Sprintf(`%s{{if .Runnable}}
-  %s{{end}}{{if .HasAvailableSubCommands}}
-  %s{{end}}{{if gt (len .Aliases) 0}}
+var progressMessage = color.GreenString("==>")
 
-%s
-  {{.NameAndAliases}}{{end}}{{if .HasExample}}
-
-%s
-{{.Example}}{{end}}{{if .HasAvailableSubCommands}}
-
-%s{{range .Commands}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
-  %s {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableLocalFlags}}
-
-%s
-{{.LocalFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasAvailableInheritedFlags}}
-
-%s
-{{.InheritedFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasHelpSubCommands}}
-
-%s{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}
-  {{rpad .CommandPath .CommandPathPadding}} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableSubCommands}}
-
-Use "%s --help" for more information about a command.{{end}}
-`,
-		color.CyanString("Usage:"),
-		color.GreenString("{{.UseLine}}"),
-		color.GreenString("{{.CommandPath}} [command]"),
-		color.CyanString("Aliases:"),
-		color.CyanString("Examples:"),
-		color.CyanString("Available Commands:"),
-		color.GreenString("{{rpad .Name .NamePadding }}"),
-		color.CyanString("Flags:"),
-		color.CyanString("Global Flags:"),
-		color.CyanString("Additional help topics:"),
-		color.GreenString("{{.CommandPath}} [command]"),
-	)
-)
+//nolint: deadcode,unused,varcheck
 
 // App 是一个命令行应用程序的主要结构。
 // 建议使用 app.NewApp() 函数创建一个 app
@@ -169,7 +132,7 @@ func (a *App) buildCommand() {
 		SilenceErrors: true, // 表示当命令出现错误时，不会输出任何内容
 		Args:          a.args,
 	}
-	// cmd.SetUsageTemplate(usageTemplate)
+	//cmd.SetUsageTemplate(usageTemplate)
 	cmd.SetOut(os.Stdout)        // 输入到标准输出流(cobra 默认 不填也没事 )
 	cmd.SetErr(os.Stderr)        // 输出到 标准错误输出流(cobra 默认 不填也没事)
 	cmd.Flags().SortFlags = true // 参数配置排序 按照字母顺序显示在帮助文档中
@@ -195,6 +158,7 @@ func (a *App) buildCommand() {
 		fs := cmd.Flags()
 		for _, f := range namedFlagSets.FlagSets { // 遍历 map[string]*pflag.FlagSet
 			fs.AddFlagSet(f) // 集成到 cobra 中  AddFlagSet将一个 FlagSet 添加到另一个 FlagSet
+			//fs.StringVar()	// 类似此操作 将 pflag 设置的表示全部添加到 fs 中
 		}
 
 		usageFmt := "Usage:\n  %s\n"
@@ -212,12 +176,15 @@ func (a *App) buildCommand() {
 	}
 
 	if !a.noVersion {
-		// 添加版本号标志
+		// 添加版本号标志 到 global flagSet 下
 		verflag.AddFlags(namedFlagSets.FlagSet("global"))
 	}
 
 	if !a.noConfig {
 		// 读取配置 获取参数
+		// namedFlagSets 是是需要的所有标识 目前还没被赋值 为空
+		// namedFlagSets 为封装后的 pflag 的结构体 FlagSet 是这个结构体的一个自定义方法
+		// 可以想象成为创建一个新的命名空间
 		addConfigFlag(a.basename, namedFlagSets.FlagSet("global"))
 	}
 
@@ -241,7 +208,9 @@ func (a *App) Command() *cobra.Command {
 
 // cobra 最后执行的函数
 func (a *App) runCommand(cmd *cobra.Command, args []string) error {
+	// 打印工作的目录
 	printWorkingDir()
+	// 打印所有的 Flags
 	flag.PrintFlags(cmd.Flags())
 	if !a.noVersion {
 		// display application version information
@@ -250,11 +219,12 @@ func (a *App) runCommand(cmd *cobra.Command, args []string) error {
 
 	// 如果设置了 文件读取
 	if !a.noConfig {
-		if err := viper.BindPFlags(cmd.Flags()); err != nil { // 与 cmd.Flags 参数 绑定
+		// 与 cmd.Flags 参数 绑定
+		if err := viper.BindPFlags(cmd.Flags()); err != nil {
 			return err
 		}
-
-		if err := viper.Unmarshal(a.options); err != nil { // 赋值给 a.options
+		// 将 文件中的值 赋值给 a.options
+		if err := viper.Unmarshal(a.options); err != nil {
 			return err
 		}
 	}
@@ -282,16 +252,19 @@ func (a *App) runCommand(cmd *cobra.Command, args []string) error {
 }
 
 func (a *App) applyOptionRules() error {
+	// 这里可以添加 自定义规则 只需要 添加 Complete 方法
 	if completeableOptions, ok := a.options.(CompleteableOptions); ok {
 		if err := completeableOptions.Complete(); err != nil {
 			return err
 		}
 	}
 
+	// 验证 字段是否合规
 	if errs := a.options.Validate(); len(errs) != 0 {
 		return errors.NewAggregate(errs)
 	}
 
+	// 这里可以添加 String 方法 就会打印输出以下的内容
 	if printableOptions, ok := a.options.(PrintableOptions); ok && !a.silence {
 		log.Infof("%v Config: `%s`", progressMessage, printableOptions.String())
 	}

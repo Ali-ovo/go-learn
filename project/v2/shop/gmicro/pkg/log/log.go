@@ -97,10 +97,6 @@ func New(opts *Options) *Logger {
 			3. 日志信息错乱：如果将 log 模块的日志信息和 zap 日志库的信息分别输出到不同的文件或控制台中，就可能会出现信息错乱或混杂的情况。
 		因此，我们可以使用 zap.RedirectStdLog 方法将 log 模块的日志信息重定向到 zap 日志库中，从而避免上述问题。
 		这个方法的作用是将 log 模块的输出重定向到 zap 日志库中，从而使得两者的日志信息都能够被 zap 日志库捕获和处理，同时也能够保证日志信息的统一、完整和正确输出。
-
-		将标准库的日志输出定向到给定的 zap Logger 实例 l
-		具体来说，它会将 log.Print、log.Panic、log.Fatal 等函数输出的内容重定向到 l.Info、l.Panic、l.Fatal 等方法，从而让标准库的日志输出也能够使用 zap 的格式和级别进行记录\
-		意思是 你使用 go log基础包 输出格式 也会尽量向 zap 中的设置 靠齐 具体内容看相关源码
 	*/
 	zap.RedirectStdLog(l)
 

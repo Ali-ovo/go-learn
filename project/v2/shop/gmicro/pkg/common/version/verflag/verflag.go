@@ -4,8 +4,8 @@ package verflag
 
 import (
 	"fmt"
-	"os"
 	"shop/gmicro/pkg/common/version"
+	"os"
 	"strconv"
 
 	flag "github.com/spf13/pflag"

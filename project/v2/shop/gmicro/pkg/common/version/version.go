@@ -4,8 +4,8 @@ package version
 
 import (
 	"fmt"
-	"runtime"
 	"shop/gmicro/pkg/common/json"
+	"runtime"
 
 	"github.com/gosuri/uitable"
 )
