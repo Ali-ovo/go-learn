@@ -1,8 +1,8 @@
 package code
 
 import (
-	"go-learn/project/v2/shop/pkg/errors"
 	"net/http"
+	"shop/gmicro/pkg/errors"
 
 	"github.com/novalagung/gubrak"
 )

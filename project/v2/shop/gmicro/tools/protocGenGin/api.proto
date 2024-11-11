@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package helloworld.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "./;v1";
+option java_multiple_files = true;
+option java_package = "dev.kratos.api.helloworld.v1";
+option java_outer_classname = "HelloWorldProtoV1";
+// protoc -I . --go_out=. --go-grpc_out=. --gin_out=. api.proto
+
+
+// The greeting service definition.
+service Greeter {
+  // Sends a greeting
+  rpc SayHello (HelloRequest) returns (HelloReply)  {
+    option (google.api.http) = {
+      post: "/v1/sayhello"
+      body: "*"
+    };
+  }
+
+  // Sends another greeting
+  rpc SayHelloAgain (HelloRequest) returns (HelloReply) {
+    option (google.api.http) = {
+      post: "/v1/sayhelloagain"
+      body: "*"
+    };
+  }
+}
+
+// The request message containing the user's name.
+message HelloRequest {
+  string name = 1;
+}
+
+// The response message containing the greetings
+message HelloReply {
+  string message = 1;
+}
+
+// protoc 执行过程 会从标准输入 读取到你的参数 会去查找
+// protoc-gen-{NAME}
+//    go_out 会去找 protoc-gen-go.exe
+//    go-grpc_out 会去找 protoc-gen-go-grpc.exe

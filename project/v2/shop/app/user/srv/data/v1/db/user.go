@@ -2,20 +2,20 @@ package db
 
 import (
 	"context"
-	dv1 "go-learn/project/v2/shop/app/user/srv/data/v1"
-	metav1 "go-learn/project/v2/shop/pkg/common/meta/v1"
-
 	"gorm.io/gorm"
+	dv1 "shop/app/user/srv/data/v1"
+	metav1 "shop/gmicro/pkg/common/meta/v1"
 )
 
 type users struct {
 	db *gorm.DB
 }
 
-func newUsers(db *gorm.DB) *users {
+func NewUsers(db *gorm.DB) *users {
 	return &users{db: db}
 }
 
 func (u *users) List(ctx context.Context, opts metav1.ListMeta) (*dv1.UserDOList, error) {
-	return nil, nil
+	// 实现 gorm 查询
+	return &dv1.UserDOList{}, nil
 }

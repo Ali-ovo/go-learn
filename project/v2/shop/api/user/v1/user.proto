@@ -1,7 +1,7 @@
 syntax = "proto3";
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
-option go_package = "./;user_pb";
+option go_package = "./;v1";
 // protoc -I ../../../gmicro/third_party/ -I . --go_out=. --go-grpc_out=. --gin_out=. user.proto
 
 service User {
@@ -72,14 +72,14 @@ message CreateUserInfo {
 }
 
 message UpdateUserInfo {
-  int64 id = 1;
+  int32 id = 1;
   string nickName = 2;
   string gender = 3;
   uint64 birthDay = 4;
 }
 
 message UserInfoResponse {
-  int64 id = 1;
+  int32 id = 1;
   string mobile = 2;
   string password = 3;
   string nickName = 4;

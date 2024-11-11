@@ -2,8 +2,8 @@ package v1
 
 import (
 	"context"
-	"go-learn/project/v2/shop/app/user/srv/data/v1/mock"
-	metav1 "go-learn/project/v2/shop/pkg/common/meta/v1"
+	"shop/app/user/srv/data/v1/mock"
+	metav1 "shop/gmicro/pkg/common/meta/v1"
 	"testing"
 )
 
