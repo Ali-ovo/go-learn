@@ -4,6 +4,7 @@ import (
 	"context"
 	"shop/gmicro/registry"
 	"shop/gmicro/server/rpcserver/clientinterceptors"
+	"shop/gmicro/server/rpcserver/resolver/discovery"
 	"time"
 
 	"google.golang.org/grpc"
@@ -16,7 +17,7 @@ type clientOptions struct {
 	endpoint string
 	timeout  time.Duration
 	// discovery 接口
-	discovery    registry.Discovery
+	discovery    registry.Discovery             // 服务发现
 	unaryIntes   []grpc.UnaryClientInterceptor  // 一元拦截器
 	streamIntes  []grpc.StreamClientInterceptor // 流式拦截器
 	rpcOpts      []grpc.DialOption
@@ -111,6 +112,14 @@ func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.Clien
 	}
 
 	// TODO 服务发现的选项
+	if options.discovery != nil {
+		grpcOpts = append(grpcOpts, grpc.WithResolvers( // 添加解析器	参数需要 resolver.Builder
+			discovery.NewBuilder(
+				options.discovery,
+				discovery.WithInsecure(insecure),
+			),
+		))
+	}
 
 	if insecure {
 		grpcOpts = append(grpcOpts, grpc.WithTransportCredentials(grpcinsecure.NewCredentials()))
