@@ -5,3 +5,4 @@
 2024-11-12 15:47:13.221	[34mINFO[0m	rpcserver/server.go:154	[gRPC] server listening on: 172.16.100.208:8081
 2024-11-12 15:54:39.047	[34mINFO[0m	rpcserver/server.go:154	[gRPC] server listening on: 172.16.100.208:8081
 2024-11-12 15:59:06.781	[34mINFO[0m	rpcserver/server.go:154	[gRPC] server listening on: 172.16.100.208:8081
+2024-11-12 19:45:42.844	[34mINFO[0m	rpcserver/server.go:154	[gRPC] server listening on: 192.168.6.122:8081

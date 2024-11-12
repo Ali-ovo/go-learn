@@ -67,8 +67,8 @@ func WithDialOption(opts ...grpc.DialOption) ClientOption {
 	}
 }
 
-// WithBanlancer 设置负载均衡器
-func WithBanlancer(name string) ClientOption {
+// WithBanlancerName 设置负载均衡器
+func WithBanlancerName(name string) ClientOption {
 	return func(o *clientOptions) {
 		o.balancerName = name
 	}

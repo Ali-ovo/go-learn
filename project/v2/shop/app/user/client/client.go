@@ -6,6 +6,10 @@ import (
 	v1 "shop/api/user/v1"
 	rpc "shop/gmicro/server/rpcserver"
 	_ "shop/gmicro/server/rpcserver/resolver/direct" // 必填
+	"time"
+
+	"shop/gmicro/server/rpcserver/selector"
+	"shop/gmicro/server/rpcserver/selector/random"
 
 	"github.com/hashicorp/consul/api"
 
@@ -14,8 +18,11 @@ import (
 
 func main() {
 
+	selector.SetGlobalSelector(random.NewBuilder())
+	rpc.InitBuilder()
+
 	conf := api.DefaultConfig()
-	conf.Address = "172.16.89.133:8500"
+	conf.Address = "192.168.189.128:8500"
 	conf.Scheme = "http"
 	cli, err := api.NewClient(conf)
 	if err != nil {
@@ -27,7 +34,8 @@ func main() {
 		// rpc.WithEndpoint("discovery:///172.16.100.208:8081"),
 		// rpc.WithClientTimeout(1*time.Second),
 
-		rpc.WithDiscovery(consul.New(cli)),
+		rpc.WithBanlancerName("selector"),
+		rpc.WithDiscovery(consul.New(cli, consul.WithHealthCheck(true))),
 		rpc.WithEndpoint("discovery:///grpcServer"),
 	)
 	if err != nil {
@@ -36,9 +44,13 @@ func main() {
 	defer conn.Close()
 
 	uc := v1.NewUserClient(conn)
-	re, err := uc.GetUserList(context.Background(), &v1.PageInfo{})
-	if err != nil {
-		panic(err)
+
+	for {
+		r, err := uc.GetUserList(context.Background(), &v1.PageInfo{})
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(r)
+		time.Sleep(time.Second * 5)
 	}
-	fmt.Println(re)
 }

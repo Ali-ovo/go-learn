@@ -21,7 +21,8 @@ func NewApp(basename string) *app.App {
 		"shop",
 		app.WithOptions(cfg), // 初始 log server 配置
 		app.WithRunFunc(run(cfg)),
-		//app.WithNoConfig(),
+		// go run .\main.go --server.port=8081 --server.host=xxx --consul.address=xxx
+		//app.WithNoConfig(), // 设置不读取配置文件
 	)
 }
 
