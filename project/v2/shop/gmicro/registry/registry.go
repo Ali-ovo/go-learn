@@ -10,7 +10,7 @@ type Registrar interface {
 	Deregister(ctx context.Context, service *ServiceInstance) error
 }
 
-// Discovery Service Discovery Interface
+// Discovery Service Discovery Interface 服务发现接口
 type Discovery interface {
 	// GetService 获取服务实例
 	GetService(ctx context.Context, serviceName string) ([]*ServiceInstance, error)

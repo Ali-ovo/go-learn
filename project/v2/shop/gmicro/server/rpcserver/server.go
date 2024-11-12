@@ -1,17 +1,18 @@
 package rpcserver
 
 import (
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/health"
-	"google.golang.org/grpc/health/grpc_health_v1"
-	"google.golang.org/grpc/reflection"
+	"net"
+	"net/url"
 	"shop/gmicro/api/metadata"
 	"shop/gmicro/pkg/host"
 	"shop/gmicro/pkg/log"
 	srvintc "shop/gmicro/server/rpcserver/serverinterceptors"
-	"net"
-	"net/url"
 	"time"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	"google.golang.org/grpc/health/grpc_health_v1"
+	"google.golang.org/grpc/reflection"
 )
 
 type ServerOption func(o *Server)
@@ -46,7 +47,9 @@ func NewServer(opts ...ServerOption) *Server {
 	// TODO 希望用户不设置拦截器的情况下, 会自动默认加上一些必须的拦截器, crash, tracingtry
 	unaryInts := []grpc.UnaryServerInterceptor{
 		srvintc.UnaryRecoverInterceptor, // 一元拦截器 异常处理(而不是一层层抛出 停止程序)
-		srvintc.UnaryTimeoutInterceptor(srv.timeout),
+	}
+	if srv.timeout > 0 {
+		unaryInts = append(unaryInts, srvintc.UnaryTimeoutInterceptor(srv.timeout))
 	}
 	if len(srv.unaryIntes) > 0 {
 		unaryInts = append(unaryInts, srv.unaryIntes...)
@@ -95,7 +98,7 @@ func WithLis(lis net.Listener) ServerOption {
 	}
 }
 
-func WithUnaryInterceptor(in ...grpc.UnaryServerInterceptor) ServerOption {
+func WithServerUnaryInterceptor(in ...grpc.UnaryServerInterceptor) ServerOption {
 	return func(o *Server) {
 		o.unaryIntes = in
 	}
@@ -119,7 +122,7 @@ func WithHealthServer(health *health.Server) ServerOption {
 	}
 }
 
-func Withtimeout(timeout time.Duration) ServerOption {
+func WithServerTimeout(timeout time.Duration) ServerOption {
 	return func(s *Server) {
 		s.timeout = timeout
 	}

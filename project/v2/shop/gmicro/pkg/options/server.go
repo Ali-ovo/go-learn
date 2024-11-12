@@ -26,7 +26,7 @@ func NewServerOptions() *ServerOptions {
 		EnableProfiling:   true,
 		EnableMetrics:     true,
 		EnableHealthCheck: true,
-		Host:              "192.168.189.128",
+		Host:              "127.0.0.1",
 		Port:              8081,
 		HttpPort:          8082,
 		Name:              "grpcServer",

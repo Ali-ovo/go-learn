@@ -16,7 +16,7 @@ func NewUsers() *users {
 
 func (u *users) List(ctx context.Context, opts metav1.ListMeta) (*dv1.UserDOList, error) {
 	users := []*dv1.UserDO{
-		{Name: "CZC"},
+		{Name: "Ali"},
 	}
 
 	return &dv1.UserDOList{

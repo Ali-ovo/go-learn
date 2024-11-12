@@ -164,3 +164,9 @@
 2023-03-15 17:17:44.735	[34mINFO[0m	rpcserver/server.go:151	[gRPC] server listening on: 192.168.16.154:8021
 2023-03-15 17:28:24.340	[34mINFO[0m	rpcserver/server.go:151	[gRPC] server listening on: 127.0.0.1:8081
 2023-03-15 17:30:00.999	[34mINFO[0m	rpcserver/server.go:151	[gRPC] server listening on: 127.0.0.1:8081
+2024-11-12 11:07:05.481	[34mINFO[0m	rpcserver/server.go:152	[gRPC] server listening on: 172.16.100.208:8081
+2024-11-12 11:24:11.556	[34mINFO[0m	rpcserver/server.go:154	[gRPC] server listening on: 127.0.0.1:8081
+2024-11-12 11:27:46.957	[34mINFO[0m	rpcserver/server.go:154	[gRPC] server listening on: 127.0.0.1:8081
+2024-11-12 11:28:07.809	[34mINFO[0m	rpcserver/server.go:154	[gRPC] server listening on: 172.16.100.208:8081
+2024-11-12 11:29:41.552	[34mINFO[0m	rpcserver/server.go:154	[gRPC] server listening on: 172.16.100.208:8081
+2024-11-12 11:31:13.059	[34mINFO[0m	rpcserver/server.go:154	[gRPC] server listening on: 172.16.100.208:8081

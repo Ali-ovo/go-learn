@@ -1,7 +1,6 @@
 package srv
 
 import (
-	"github.com/hashicorp/consul/api"
 	"shop/app/user/srv/config"
 	gapp "shop/gmicro/app"
 	"shop/gmicro/pkg/app"
@@ -9,6 +8,8 @@ import (
 	"shop/gmicro/pkg/options"
 	"shop/gmicro/registry"
 	"shop/gmicro/registry/consul"
+
+	"github.com/hashicorp/consul/api"
 )
 
 // NewApp 会读取相关配置 (用来集成 pkg/app 用来完成 外部参数校验和映射)
