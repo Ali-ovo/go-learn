@@ -2,10 +2,11 @@ package app
 
 import (
 	"context"
-	"shop/gmicro/pkg/log"
-	"shop/gmicro/registry"
+	"net/url"
 	"os"
 	"os/signal"
+	"shop/gmicro/pkg/log"
+	"shop/gmicro/registry"
 	"sync"
 )
 
@@ -102,11 +103,11 @@ func (a *App) buildInstance() (*registry.ServiceInstance, error) {
 
 	// 从rpcserver, restserver 去主动获取这些信息
 	if a.opts.rpcServer != nil {
-		u := a.opts.rpcServer.Endpoint()
-		//u := &url.URL{
-		//	Scheme: "grpc",
-		//	Host:   a.opts.rpcServer.Address(),
-		//}
+		// u := a.opts.rpcServer.Endpoint()
+		u := &url.URL{
+			Scheme: "grpc",
+			Host:   a.opts.rpcServer.Address(),
+		}
 		endpoints = append(endpoints, u.String())
 	}
 

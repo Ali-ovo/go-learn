@@ -6,14 +6,29 @@ import (
 	v1 "shop/api/user/v1"
 	rpc "shop/gmicro/server/rpcserver"
 	_ "shop/gmicro/server/rpcserver/resolver/direct" // 必填
+
+	"github.com/hashicorp/consul/api"
+
+	"shop/gmicro/registry/consul"
 )
 
 func main() {
+
+	conf := api.DefaultConfig()
+	conf.Address = "172.16.89.133:8500"
+	conf.Scheme = "http"
+	cli, err := api.NewClient(conf)
+	if err != nil {
+		panic(err)
+	}
+
 	conn, err := rpc.DialInsecure(context.Background(),
-		// 多添加一个 /  因为 方便做切割 direct:///192.168.16.154:8081 转换成 URL.Path: /192.168.16.154:8081  URL.Scheme: direct
 		// rpc.WithEndpoint("127.0.0.1:8081"),
-		rpc.WithEndpoint("direct:///172.16.100.208:8081"),
+		// rpc.WithEndpoint("discovery:///172.16.100.208:8081"),
 		// rpc.WithClientTimeout(1*time.Second),
+
+		rpc.WithDiscovery(consul.New(cli)),
+		rpc.WithEndpoint("discovery:///grpcServer"),
 	)
 	if err != nil {
 		panic(err)
@@ -21,9 +36,9 @@ func main() {
 	defer conn.Close()
 
 	uc := v1.NewUserClient(conn)
-	r, err := uc.GetUserList(context.Background(), &v1.PageInfo{})
+	re, err := uc.GetUserList(context.Background(), &v1.PageInfo{})
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(r)
+	fmt.Println(re)
 }

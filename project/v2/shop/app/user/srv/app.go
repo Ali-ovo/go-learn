@@ -69,5 +69,5 @@ func NewRegistrar(registry *options.RegistryOptions) registry.Registrar {
 	if err != nil {
 		panic(err)
 	}
-	return consul.New(cli)
+	return consul.New(cli, consul.WithHealthCheck(true))
 }

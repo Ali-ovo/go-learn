@@ -3,15 +3,16 @@ package consul
 import (
 	"context"
 	"fmt"
-	"shop/gmicro/pkg/log"
 	"net"
 	"net/url"
+	"shop/gmicro/pkg/log"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/hashicorp/consul/api"
 	"shop/gmicro/registry"
+
+	"github.com/hashicorp/consul/api"
 )
 
 // Client is consul client config
@@ -46,10 +47,10 @@ func NewClient(cli *api.Client) *Client {
 }
 
 func defaultResolver(_ context.Context, entries []*api.ServiceEntry) []*registry.ServiceInstance {
-	services := make([]*registry.ServiceInstance, 0, len(entries))
+	services := make([]*registry.ServiceInstance, 0, len(entries)) // 创建 一个列表 存储相关信息
 	for _, entry := range entries {
 		var version string
-		for _, tag := range entry.Service.Tags {
+		for _, tag := range entry.Service.Tags { // 例如: "Tags": ["version=2.1.1"],
 			ss := strings.SplitN(tag, "=", 2)
 			if len(ss) == 2 && ss[0] == "version" {
 				version = ss[1]
