@@ -6,7 +6,10 @@ import (
 )
 
 func NewUserHTTPServer(cfg *config.Config) (*restserver.Server, error) {
-	urestServer := restserver.NewServer(restserver.WithPort(cfg.Server.HttpPort))
+	urestServer := restserver.NewServer(
+		restserver.WithPort(cfg.Server.HttpPort),
+		restserver.WithMiddlewares(cfg.Server.Middlewares),
+	)
 
 	// 配置好路由
 	initRouter(urestServer)

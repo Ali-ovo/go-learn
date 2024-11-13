@@ -13,3 +13,5 @@
 2024-11-13 14:29:24.827	[34mINFO[0m	restserver/server.go:95	GET    /debug/pprof/threadcreate --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func12(3 handlers)
 2024-11-13 14:29:24.827	[34mINFO[0m	restserver/server.go:109	start rest server on port: 8091
 2024-11-13 14:30:49.106	[34mINFO[0m	controller/list.go:10	GetUserList is called
+2024-11-13 15:18:30.892	[34mINFO[0m	restserver/server.go:127	stop rest server
+2024-11-13 15:18:30.892	[34mINFO[0m	restserver/server.go:132	rest server stopped

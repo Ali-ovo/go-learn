@@ -44,8 +44,9 @@ func (b *balancerBuilder) Build(info base.PickerBuildInfo) balancer.Picker {
 	for conn, info := range info.ReadySCs {
 		ins, _ := info.Address.Attributes.Value("rawServiceInstance").(*registry.ServiceInstance)
 		nodes = append(nodes, &grpcNode{
+			// 将 地址 和 我们传递的信息包装到一起(最重要的是 可以在携带的元数据中 传递初始权重)
 			Node:    selector.NewNode("grpc", info.Address.Addr, ins),
-			subConn: conn,
+			subConn: conn, // 空闲的子连接
 		})
 	}
 	p := &balancerPicker{

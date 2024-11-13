@@ -29,11 +29,9 @@ func main() {
 		panic(err)
 	}
 
-	conn, err := rpc.DialInsecure(context.Background(),
-		// rpc.WithEndpoint("127.0.0.1:8081"),
-		// rpc.WithEndpoint("discovery:///172.16.100.208:8081"),
-		// rpc.WithClientTimeout(1*time.Second),
-
+	conn, err := rpc.DialInsecure(
+		context.Background(),
+		// 设置负载均衡
 		rpc.WithBanlancerName("selector"),
 		rpc.WithDiscovery(consul.New(cli, consul.WithHealthCheck(true))),
 		rpc.WithEndpoint("discovery:///grpcServer"),

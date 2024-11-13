@@ -41,7 +41,7 @@ type Server struct {
 	enableProfiling bool
 	// 中间件
 	//customMiddlewares []gin.HandlerFunc
-	middleware []string // 这里不选择注入的方式  选择做好的方法 选择用即可
+	middlewares []string // 这里不选择注入的方式  选择做好的方法 选择用即可
 	//jwt配置信息
 	jwt *JwtInfo
 
@@ -72,7 +72,7 @@ func NewServer(opts ...ServerOption) *Server {
 		o(srv)
 	}
 
-	for _, m := range srv.middleware {
+	for _, m := range srv.middlewares {
 		mw, ok := mws.Middlewares[m]
 		if !ok {
 			log.Warnf("can not find middleware: %s", m)

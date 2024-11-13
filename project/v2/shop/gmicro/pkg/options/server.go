@@ -7,17 +7,15 @@ import (
 )
 
 type ServerOptions struct {
-	EnableProfiling   bool   `json:"profiling" mapstructure:"profiling"`
-	EnableLimit       bool   `json:"limit" mapstructure:"limit"`                             // 是否开启pprof
-	EnableMetrics     bool   `json:"enable-metrics" mapstructure:"enable-metrics"`           // 是否开启metrics
-	EnableHealthCheck bool   `json:"enable-health-check" mapstructure:"enable-health-check"` // 是否开启health check
-	Host              string `json:"host,omitempty" mapstructure:"host"`                     // host
-	Port              int    `json:"port,omitempty" mapstructure:"port"`                     // port
-	HttpPort          int    `json:"http-port,omitempty" mapstructure:"http-port"`           // http port
-	Name              string `json:"name,omitempty" mapstructure:"name"`                     // 名称
-	// TODO 需要处理
-	HttpMiddlewares []string `json:"http-middlewares,omitempty" mapstructure:"http-middlewares"` // Http中间件
-	GrpcMiddlewares []string `json:"grpc-middlewares,omitempty" mapstructure:"grpc-middlewares"` // grpc中间件
+	EnableProfiling   bool     `json:"profiling" mapstructure:"profiling"`
+	EnableLimit       bool     `json:"limit" mapstructure:"limit"`                             // 是否开启pprof
+	EnableMetrics     bool     `json:"enable-metrics" mapstructure:"enable-metrics"`           // 是否开启metrics
+	EnableHealthCheck bool     `json:"enable-health-check" mapstructure:"enable-health-check"` // 是否开启health check
+	Host              string   `json:"host,omitempty" mapstructure:"host"`                     // host
+	Port              int      `json:"port,omitempty" mapstructure:"port"`                     // port
+	HttpPort          int      `json:"http-port,omitempty" mapstructure:"http-port"`           // http port
+	Name              string   `json:"name,omitempty" mapstructure:"name"`                     // 名称
+	Middlewares       []string `json:"middlewares,omitempty" mapstructure:"middlewares"`       // Http中间件
 }
 
 // NewServerOptions creates a new ServerOptions

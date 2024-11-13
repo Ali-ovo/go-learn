@@ -132,7 +132,13 @@ func (a *App) Run() error {
 	return nil
 }
 
-// Stop 停止服务
+/*
+	http basic 认证
+	cache
+	cache 1. redis 2.memcache 3. local cache
+	jwt
+*/
+
 func (a *App) Stop() error {
 	a.lk.Lock()
 	instance := a.instance

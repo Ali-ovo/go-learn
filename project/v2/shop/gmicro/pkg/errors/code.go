@@ -89,7 +89,7 @@ func Register(coder Coder) {
 func MustRegister(coder Coder) {
 	// 如果 code 未赋值 直接 panic
 	if coder.Code() == 0 {
-		panic("code '0' is reserved by 'czc/pkg/errors' as ErrUnknown error code")
+		panic("code '0' is reserved by 'shop/gmicro/pkg/errors' as ErrUnknown error code")
 	}
 	// 上锁
 	codeMux.Lock()

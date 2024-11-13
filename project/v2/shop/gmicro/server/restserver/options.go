@@ -20,6 +20,12 @@ func WithPort(port int) ServerOption {
 	}
 }
 
+func WithMiddlewares(middlewares []string) ServerOption {
+	return func(s *Server) {
+		s.middlewares = middlewares
+	}
+}
+
 func WithHealthz(healthz bool) ServerOption {
 	return func(s *Server) {
 		s.healthz = healthz
