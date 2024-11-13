@@ -1,4 +1,4 @@
-package srv
+package admin
 
 import (
 	"shop/app/user/srv/config"
@@ -17,11 +17,11 @@ func NewApp(basename string) *app.App {
 	cfg := config.NewConfig()
 
 	return app.NewApp(
-		"user",
+		"admin",
 		basename,
 		app.WithOptions(cfg), // 初始 log server 配置
 		app.WithRunFunc(run(cfg)),
-		// go run .\main.go --server.port=8081 --server.host=xxx --consul.address=xxx
+		// go run .\main.go --server.port=8081 --server.host=192.168.16.151 --consul.address=192.168.16.105:8500
 		//app.WithNoConfig(), // 设置不读取配置文件
 	)
 }
@@ -33,7 +33,7 @@ func run(cfg *config.Config) app.RunFunc {
 			return err
 		}
 
-		// 启动 RPC 服务
+		// 启动 HTTP 服务
 		if err := userApp.Run(); err != nil {
 			log.Errorf("run user app error: %s", err)
 			return err
@@ -49,15 +49,15 @@ func NewUserApp(cfg *config.Config) (*gapp.App, error) {
 
 	// 服务注册
 	register := NewRegistrar(cfg.Registry)
-	// 生成 rpc 服务
-	rpcServer, err := NewUserRPCServer(cfg)
+	// 生成 http 服务
+	httpServer, err := NewUserHTTPServer(cfg)
 	if err != nil {
 		return nil, err
 	}
-	// 运行 RPC 服务
+	// 运行 http 服务
 	return gapp.New(
 		gapp.WithName(cfg.Server.Name),
-		gapp.WithRPCServer(rpcServer),
+		gapp.WithRestServer(httpServer),
 		gapp.WithRegistrar(register),
 	), nil
 }

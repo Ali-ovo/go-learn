@@ -1,0 +1,15 @@
+2024-11-13 14:29:24.826	[34mINFO[0m	app/app.go:99	start rest server
+2024-11-13 14:29:24.826	[34mINFO[0m	restserver/server.go:95	GET    /debug/pprof/ --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func1(3 handlers)
+2024-11-13 14:29:24.827	[34mINFO[0m	restserver/server.go:95	GET    /debug/pprof/cmdline --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func2(3 handlers)
+2024-11-13 14:29:24.827	[34mINFO[0m	restserver/server.go:95	GET    /debug/pprof/profile --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func3(3 handlers)
+2024-11-13 14:29:24.827	[34mINFO[0m	restserver/server.go:95	POST   /debug/pprof/symbol --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func4(3 handlers)
+2024-11-13 14:29:24.827	[34mINFO[0m	restserver/server.go:95	GET    /debug/pprof/symbol --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func5(3 handlers)
+2024-11-13 14:29:24.827	[34mINFO[0m	restserver/server.go:95	GET    /debug/pprof/trace --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func6(3 handlers)
+2024-11-13 14:29:24.827	[34mINFO[0m	restserver/server.go:95	GET    /debug/pprof/allocs --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func7(3 handlers)
+2024-11-13 14:29:24.827	[34mINFO[0m	restserver/server.go:95	GET    /debug/pprof/block --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func8(3 handlers)
+2024-11-13 14:29:24.827	[34mINFO[0m	restserver/server.go:95	GET    /debug/pprof/goroutine --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func9(3 handlers)
+2024-11-13 14:29:24.827	[34mINFO[0m	restserver/server.go:95	GET    /debug/pprof/heap --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func10(3 handlers)
+2024-11-13 14:29:24.827	[34mINFO[0m	restserver/server.go:95	GET    /debug/pprof/mutex --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func11(3 handlers)
+2024-11-13 14:29:24.827	[34mINFO[0m	restserver/server.go:95	GET    /debug/pprof/threadcreate --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func12(3 handlers)
+2024-11-13 14:29:24.827	[34mINFO[0m	restserver/server.go:109	start rest server on port: 8091
+2024-11-13 14:30:49.106	[34mINFO[0m	controller/list.go:10	GetUserList is called

@@ -1,6 +1,7 @@
 package rpcserver
 
 import (
+	"context"
 	"net"
 	"net/url"
 	"shop/gmicro/api/metadata"
@@ -150,13 +151,13 @@ func (s *Server) listenAndEndpoint() error {
 }
 
 // Start 启动 grpc 的服务
-func (s *Server) Start() error {
+func (s *Server) Start(ctx context.Context) error {
 	log.Infof("[gRPC] server listening on: %s", s.lis.Addr().String())
 	s.health.Resume() // 这里可以不写  只不过 我这里显示声明一下(健康检查服务知道该服务已经恢复正常工作)
 	return s.Server.Serve(s.lis)
 }
 
-func (s *Server) Stop() error {
+func (s *Server) Stop(ctx context.Context) error {
 	s.health.Shutdown() // 设置 服务的状态为 not_serving, 阻止 接收新的请求 过来
 	s.GracefulStop()    // grpc 优雅退出
 	log.Infof("[gRPC] server stopping")

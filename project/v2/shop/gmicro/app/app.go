@@ -7,7 +7,10 @@ import (
 	"os/signal"
 	"shop/gmicro/pkg/log"
 	"shop/gmicro/registry"
+	gs "shop/gmicro/server"
 	"sync"
+
+	"golang.org/x/sync/errgroup"
 )
 
 type App struct {
@@ -15,6 +18,7 @@ type App struct {
 	lk       sync.Mutex // struct 类型 说明是实例化后的  可以直接用 不需要再次声明
 	opts     options
 	instance *registry.ServiceInstance // registry 参数
+	cancel   context.CancelFunc
 }
 
 func New(opts ...Option) *App {
@@ -50,14 +54,54 @@ func (a *App) Run() error {
 	a.instance = instance
 	a.lk.Unlock()
 
-	if a.opts.rpcServer != nil {
-		go func() {
-			err := a.opts.rpcServer.Start()
-			if err != nil {
-				panic(err)
-			}
-		}()
+	//现在启动了两个server，一个是restserver，一个是rpcserver
+	/*
+		这两个server是否必须同时启动成功？
+		如果有一个启动失败，那么我们就要停止另外一个server
+		如果启动了多个， 如果其中一个启动失败，其他的应该被取消
+			如果剩余的server的状态：
+				1. 还没有开始调用start
+					stop
+				2. start进行中
+					调用进行中的cancel
+				3. start已经完成
+					调用stop
+		如果我们的服务启动了然后这个时候用户立马进行了访问
+	*/
+
+	var servers []gs.Server
+	if a.opts.restServer != nil {
+		servers = append(servers, a.opts.restServer)
 	}
+
+	if a.opts.rpcServer != nil {
+		servers = append(servers, a.opts.rpcServer)
+	}
+
+	// 启动 resetserver
+	parentCtx, cancel := context.WithCancel(context.Background())
+	a.cancel = cancel
+	eg, ctx := errgroup.WithContext(parentCtx)
+	wg := sync.WaitGroup{}
+	for _, srv := range servers {
+		// 再启动一个 groutine 去监听是否有 err 产生
+		eg.Go(func() error {
+			<-ctx.Done() // wait for stop signal
+			// 不可能无休止的等待 stop 信号
+			sctx, cancel := context.WithTimeout(context.Background(), a.opts.stopTimeout)
+			defer cancel()
+			return srv.Stop(sctx)
+		})
+
+		wg.Add(1)
+		eg.Go(func() error {
+			wg.Done()
+			log.Info("start rest server")
+			return srv.Start(ctx)
+		})
+	}
+
+	wg.Wait() // 上面 api 和 grpc 服务都正常开启后 才能继续运行 否则会 hold 住
 
 	// 注册 服务 到 consul 等...
 	if a.opts.registrar != nil {
@@ -73,7 +117,18 @@ func (a *App) Run() error {
 	// 监听退出信号
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, a.opts.sigs...)
-	<-c
+	eg.Go(func() error {
+		select {
+		case <-ctx.Done(): // 主动关闭
+			return ctx.Err()
+		case <-c: // 获取退出信号
+			return a.Stop() // 执行退出
+		}
+	})
+
+	if err := eg.Wait(); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -90,6 +145,9 @@ func (a *App) Stop() error {
 			log.Errorf("deregister service error: %s", err)
 			return err
 		}
+	}
+	if a.cancel != nil {
+		a.cancel()
 	}
 	return nil
 }
