@@ -15,3 +15,23 @@
 2024-11-13 14:30:49.106	[34mINFO[0m	controller/list.go:10	GetUserList is called
 2024-11-13 15:18:30.892	[34mINFO[0m	restserver/server.go:127	stop rest server
 2024-11-13 15:18:30.892	[34mINFO[0m	restserver/server.go:132	rest server stopped
+2024-11-14 10:42:15.238	[34mINFO[0m	restserver/server.go:82	intall middleware: recovery
+2024-11-14 10:42:15.238	[34mINFO[0m	restserver/server.go:82	intall middleware: cors
+2024-11-14 10:42:15.238	[34mINFO[0m	restserver/server.go:82	intall middleware: context
+2024-11-14 10:42:15.242	[34mINFO[0m	app/app.go:99	start rest server
+2024-11-14 10:42:15.242	[34mINFO[0m	restserver/server.go:95	GET    /debug/pprof/ --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func1(6 handlers)
+2024-11-14 10:42:15.242	[34mINFO[0m	restserver/server.go:95	GET    /debug/pprof/cmdline --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func2(6 handlers)
+2024-11-14 10:42:15.242	[34mINFO[0m	restserver/server.go:95	GET    /debug/pprof/profile --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func3(6 handlers)
+2024-11-14 10:42:15.242	[34mINFO[0m	restserver/server.go:95	POST   /debug/pprof/symbol --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func4(6 handlers)
+2024-11-14 10:42:15.242	[34mINFO[0m	restserver/server.go:95	GET    /debug/pprof/symbol --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func5(6 handlers)
+2024-11-14 10:42:15.242	[34mINFO[0m	restserver/server.go:95	GET    /debug/pprof/trace --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func6(6 handlers)
+2024-11-14 10:42:15.242	[34mINFO[0m	restserver/server.go:95	GET    /debug/pprof/allocs --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func7(6 handlers)
+2024-11-14 10:42:15.242	[34mINFO[0m	restserver/server.go:95	GET    /debug/pprof/block --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func8(6 handlers)
+2024-11-14 10:42:15.242	[34mINFO[0m	restserver/server.go:95	GET    /debug/pprof/goroutine --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func9(6 handlers)
+2024-11-14 10:42:15.242	[34mINFO[0m	restserver/server.go:95	GET    /debug/pprof/heap --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func10(6 handlers)
+2024-11-14 10:42:15.242	[34mINFO[0m	restserver/server.go:95	GET    /debug/pprof/mutex --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func11(6 handlers)
+2024-11-14 10:42:15.242	[34mINFO[0m	restserver/server.go:95	GET    /debug/pprof/threadcreate --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func12(6 handlers)
+2024-11-14 10:42:15.242	[34mINFO[0m	restserver/server.go:109	start rest server on port: 8091
+2024-11-14 10:42:46.059	[34mINFO[0m	controller/list.go:10	GetUserList is called
+2024-11-14 10:42:52.146	[34mINFO[0m	restserver/server.go:127	stop rest server
+2024-11-14 10:42:52.146	[34mINFO[0m	restserver/server.go:132	rest server stopped
