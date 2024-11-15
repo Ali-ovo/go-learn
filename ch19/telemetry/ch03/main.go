@@ -76,7 +76,7 @@ func funcA(ctx context.Context, wg *sync.WaitGroup) {
 func funcB(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
 	tr := otel.Tracer(traceName)
-	spanCtx, span := tr.Start(ctx, "func-B")
+	_, span := tr.Start(ctx, "func-B")
 	fmt.Println("trace:", span.SpanContext().TraceID(), span.SpanContext().SpanID())
 	time.Sleep(time.Second)
 
@@ -84,13 +84,16 @@ func funcB(ctx context.Context, wg *sync.WaitGroup) {
 	req.SetRequestURI("http://localhost:8090/server")
 	req.Header.SetMethod("GET")
 
-	p := otel.GetTextMapPropagator()
-	headers := make(map[string]string)
+	// p := otel.GetTextMapPropagator()
+	// headers := make(map[string]string)
 
-	p.Inject(spanCtx, propagation.MapCarrier(headers))
-	for key, value := range headers {
-		req.Header.Set(key, value)
-	}
+	// p.Inject(spanCtx, propagation.MapCarrier(headers))
+	// for key, value := range headers {
+	// 	req.Header.Set(key, value)
+	// }
+
+	req.Header.Set("trace-id", span.SpanContext().TraceID().String())
+	req.Header.Set("span-id", span.SpanContext().SpanID().String())
 
 	fclient := fasthttp.Client{}
 	fres := fasthttp.Response{}

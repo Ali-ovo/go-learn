@@ -10,7 +10,7 @@ require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-chassis/cari v0.9.0
 	github.com/go-chassis/sc-client v0.7.0
-	github.com/go-kratos/kratos/v2 v2.6.1
+	github.com/go-kratos/kratos/v2 v2.8.2
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.1
 	github.com/go-playground/validator/v10 v10.22.0
@@ -18,7 +18,7 @@ require (
 	github.com/go-zookeeper/zk v1.0.3
 	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/golang/protobuf v1.5.4
-	github.com/google/uuid v1.3.0
+	github.com/google/uuid v1.6.0
 	github.com/gosuri/uitable v0.0.4
 	github.com/h2non/filetype v1.1.3
 	github.com/hashicorp/consul/api v1.30.0
@@ -36,17 +36,17 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/uptrace/opentelemetry-go-extra/otelutil v0.1.21
 	go.etcd.io/etcd/client/v3 v3.5.6
-	go.opentelemetry.io/otel v1.14.0
-	go.opentelemetry.io/otel/sdk v1.14.0
-	go.opentelemetry.io/otel/trace v1.14.0
+	go.opentelemetry.io/otel v1.32.0
+	go.opentelemetry.io/otel/sdk v1.32.0
+	go.opentelemetry.io/otel/trace v1.32.0
 	go.uber.org/zap v1.24.0
 	golang.org/x/crypto v0.29.0
 	golang.org/x/net v0.31.0
 	golang.org/x/sync v0.9.0
 	golang.org/x/tools v0.27.0
-	google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f
-	google.golang.org/grpc v1.53.0
-	google.golang.org/protobuf v1.34.2
+	google.golang.org/genproto/googleapis/api v0.0.0-20241113202542-65e8d215514f
+	google.golang.org/grpc v1.68.0
+	google.golang.org/protobuf v1.35.1
 	gorm.io/gorm v1.24.6
 	k8s.io/api v0.26.2
 	k8s.io/apimachinery v0.26.2
@@ -60,7 +60,11 @@ require (
 	github.com/cloudwego/iasm v0.2.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.5 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
+	github.com/openzipkin/zipkin-go v0.4.3 // indirect
+	go.opentelemetry.io/otel/metric v1.32.0 // indirect
 	golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63 // indirect
+	google.golang.org/genproto v0.0.0-20240227224415-6ceb2ff114de // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20241104194629-dd2ea8efbc28 // indirect
 )
 
 require (
@@ -73,7 +77,7 @@ require (
 	github.com/buger/jsonparser v1.1.1 // indirect
 	github.com/bytedance/sonic v1.12.2 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
-	github.com/cespare/xxhash/v2 v2.2.0 // indirect
+	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/coreos/go-systemd/v22 v22.3.2 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
@@ -86,8 +90,8 @@ require (
 	github.com/go-chassis/foundation v0.4.0 // indirect
 	github.com/go-chassis/openlog v1.1.3 // indirect
 	github.com/go-errors/errors v1.0.1 // indirect
-	github.com/go-kratos/aegis v0.1.4 // indirect
-	github.com/go-logr/logr v1.2.3 // indirect
+	github.com/go-kratos/aegis v0.2.0 // indirect
+	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/jsonreference v0.20.0 // indirect
@@ -98,7 +102,7 @@ require (
 	github.com/google/gnostic v0.5.7-v3refs // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/gofuzz v1.1.0 // indirect
-	github.com/gorilla/mux v1.8.0 // indirect
+	github.com/gorilla/mux v1.8.1 // indirect
 	github.com/gorilla/websocket v1.4.3-0.20210424162022-e8629af678b7 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
@@ -147,16 +151,19 @@ require (
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	go.etcd.io/etcd/api/v3 v3.5.6 // indirect
 	go.etcd.io/etcd/client/pkg/v3 v3.5.6 // indirect
+	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.57.0
+	go.opentelemetry.io/otel/exporters/jaeger v1.17.0
+	go.opentelemetry.io/otel/exporters/zipkin v1.32.0
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	golang.org/x/arch v0.9.0 // indirect
 	golang.org/x/mod v0.22.0 // indirect
-	golang.org/x/oauth2 v0.4.0 // indirect
+	golang.org/x/oauth2 v0.23.0 // indirect
 	golang.org/x/sys v0.27.0 // indirect
 	golang.org/x/term v0.26.0 // indirect
 	golang.org/x/text v0.20.0 // indirect
 	golang.org/x/time v0.1.0 // indirect
-	google.golang.org/appengine v1.6.7 // indirect
+	google.golang.org/appengine v1.6.8 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect

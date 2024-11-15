@@ -10,6 +10,8 @@ import (
 	srvintc "shop/gmicro/server/rpcserver/serverinterceptors"
 	"time"
 
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
@@ -28,10 +30,11 @@ type Server struct {
 	lis         net.Listener
 	timeout     time.Duration
 
-	health       *health.Server
-	customHealth bool
-	metadata     *metadata.Server
-	endpoint     *url.URL
+	health        *health.Server
+	customHealth  bool
+	metadata      *metadata.Server
+	endpoint      *url.URL
+	enableTracing bool
 }
 
 func NewServer(opts ...ServerOption) *Server {
@@ -39,6 +42,7 @@ func NewServer(opts ...ServerOption) *Server {
 		address: ":0", // 在没有设置 address 自己获取 ip 和 端口号
 		health:  health.NewServer(),
 		//timeout: 1 * time.Second,
+		enableTracing: true,
 	}
 
 	for _, opt := range opts {
@@ -49,6 +53,11 @@ func NewServer(opts ...ServerOption) *Server {
 	unaryInts := []grpc.UnaryServerInterceptor{
 		srvintc.UnaryRecoverInterceptor, // 一元拦截器 异常处理(而不是一层层抛出 停止程序)
 	}
+
+	if srv.enableTracing {
+		unaryInts = append(unaryInts, otelgrpc.UnaryServerInterceptor())
+	}
+
 	if srv.timeout > 0 {
 		unaryInts = append(unaryInts, srvintc.UnaryTimeoutInterceptor(srv.timeout))
 	}
@@ -126,6 +135,13 @@ func WithHealthServer(health *health.Server) ServerOption {
 func WithServerTimeout(timeout time.Duration) ServerOption {
 	return func(s *Server) {
 		s.timeout = timeout
+	}
+}
+
+// WithServerEnableTracing 设置是否开启链路追踪
+func WithServerEnableTracing(enable bool) ServerOption {
+	return func(s *Server) {
+		s.enableTracing = enable
 	}
 }
 

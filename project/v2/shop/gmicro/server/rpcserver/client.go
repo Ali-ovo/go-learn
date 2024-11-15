@@ -7,6 +7,8 @@ import (
 	"shop/gmicro/server/rpcserver/resolver/discovery"
 	"time"
 
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+
 	"google.golang.org/grpc"
 	grpcinsecure "google.golang.org/grpc/credentials/insecure"
 )
@@ -23,6 +25,8 @@ type clientOptions struct {
 	rpcOpts      []grpc.DialOption
 	balancerName string
 	//logger        log.LogHelper
+	//log          log.LogHelper
+	enableTracing bool
 }
 
 // WithEndpoint 设置地址
@@ -74,6 +78,13 @@ func WithBanlancerName(name string) ClientOption {
 	}
 }
 
+// WithClientEnableTracing 设置是否开启链路追踪
+func WithClientEnableTracing(enable bool) ClientOption {
+	return func(o *clientOptions) {
+		o.enableTracing = enable
+	}
+}
+
 func DialInsecure(ctx context.Context, opts ...ClientOption) (*grpc.ClientConn, error) {
 	return dial(ctx, true, opts...)
 }
@@ -84,8 +95,9 @@ func Dial(ctx context.Context, opts ...ClientOption) (*grpc.ClientConn, error) {
 
 func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.ClientConn, error) {
 	options := clientOptions{
-		timeout:      2000 * time.Millisecond,
-		balancerName: "round_robin",
+		timeout:       2000 * time.Millisecond,
+		balancerName:  "round_robin", // 默认 grpc 的轮询
+		enableTracing: true,
 	}
 
 	for _, o := range opts {
@@ -96,6 +108,10 @@ func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.Clien
 	ints := []grpc.UnaryClientInterceptor{
 		clientinterceptors.TimeoutInterceptor(options.timeout),
 	}
+	if options.enableTracing {
+		ints = append(ints, otelgrpc.UnaryClientInterceptor())
+	}
+
 	sints := []grpc.StreamClientInterceptor{}
 
 	if len(options.unaryIntes) > 0 {
