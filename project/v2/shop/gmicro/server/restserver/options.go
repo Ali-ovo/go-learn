@@ -43,3 +43,15 @@ func WithTransNames(transName string) ServerOption {
 		s.transName = transName
 	}
 }
+
+func WithEnableTracing(enableTracing bool) ServerOption {
+	return func(s *Server) {
+		s.enableTracing = enableTracing
+	}
+}
+
+func WithTransName(transName string) ServerOption {
+	return func(s *Server) {
+		s.transName = transName
+	}
+}

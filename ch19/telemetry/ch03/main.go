@@ -103,7 +103,7 @@ func funcB(ctx context.Context, wg *sync.WaitGroup) {
 }
 
 func main() {
-	url := "http://172.16.89.133:14268/api/traces"
+	url := "http://192.168.189.128:14268/api/traces"
 
 	tracerProvider(url)
 	ctx, cancel := context.WithCancel(context.Background())

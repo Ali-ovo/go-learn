@@ -39,6 +39,9 @@ type Server struct {
 	healthz bool
 	// 是否开启 pprof接口, 默认开启, 如果开启会自动添加 /debug/pprof 接口
 	enableProfiling bool
+	// 是否开启 链路追踪 默认开启
+	enableTracing bool
+
 	// 中间件
 	//customMiddlewares []gin.HandlerFunc
 	middlewares []string // 这里不选择注入的方式  选择做好的方法 选择用即可
@@ -46,10 +49,10 @@ type Server struct {
 	jwt *JwtInfo
 
 	// 翻译器
-	transName string
-	trans     ut.Translator
-
-	server *http.Server
+	transName   string
+	trans       ut.Translator
+	server      *http.Server
+	serviceName string
 }
 
 func NewServer(opts ...ServerOption) *Server {
@@ -58,18 +61,24 @@ func NewServer(opts ...ServerOption) *Server {
 		mode:            "debug",
 		healthz:         true,
 		enableProfiling: true,
+		enableTracing:   true,
 		jwt: &JwtInfo{
 			Realm:      "JWT",
 			Key:        "3KcjkZbUDdEeGeFX@h^!qKXh2WC@A6Qe",
 			Timeout:    time.Hour * 24 * 7,
 			MaxRefresh: time.Hour * 24 * 7,
 		},
-		Engine:    gin.Default(),
-		transName: "zh",
+		Engine:      gin.Default(),
+		transName:   "zh",
+		serviceName: "gmicro",
 	}
 
 	for _, o := range opts {
 		o(srv)
+	}
+
+	if srv.enableTracing {
+		srv.Use(mws.TracingHandler(srv.serviceName))
 	}
 
 	for _, m := range srv.middlewares {
