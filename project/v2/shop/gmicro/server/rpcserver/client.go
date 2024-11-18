@@ -27,6 +27,7 @@ type clientOptions struct {
 	//logger        log.LogHelper
 	//log          log.LogHelper
 	enableTracing bool
+	enableMetrics bool
 }
 
 // WithEndpoint 设置地址
@@ -85,6 +86,13 @@ func WithClientEnableTracing(enable bool) ClientOption {
 	}
 }
 
+// WithClientEnableMetrics 设置是否开启 普罗米修斯 监控
+func WithClientEnableMetrics(enable bool) ClientOption {
+	return func(o *clientOptions) {
+		o.enableMetrics = enable
+	}
+}
+
 func DialInsecure(ctx context.Context, opts ...ClientOption) (*grpc.ClientConn, error) {
 	return dial(ctx, true, opts...)
 }
@@ -108,8 +116,15 @@ func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.Clien
 	ints := []grpc.UnaryClientInterceptor{
 		clientinterceptors.TimeoutInterceptor(options.timeout),
 	}
+
+	// 开启 链路追踪
 	if options.enableTracing {
 		ints = append(ints, otelgrpc.UnaryClientInterceptor())
+	}
+
+	// 开启 普罗米修斯
+	if options.enableMetrics {
+		ints = append(ints, clientinterceptors.UnaryPrometheusInterceptor)
 	}
 
 	sints := []grpc.StreamClientInterceptor{}

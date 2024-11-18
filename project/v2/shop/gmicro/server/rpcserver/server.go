@@ -35,6 +35,7 @@ type Server struct {
 	metadata      *metadata.Server
 	endpoint      *url.URL
 	enableTracing bool
+	enableMetrics bool
 }
 
 func NewServer(opts ...ServerOption) *Server {
@@ -56,6 +57,10 @@ func NewServer(opts ...ServerOption) *Server {
 
 	if srv.enableTracing {
 		unaryInts = append(unaryInts, otelgrpc.UnaryServerInterceptor())
+	}
+
+	if srv.enableMetrics {
+		unaryInts = append(unaryInts, srvintc.UnaryPrometheusInterceptor)
 	}
 
 	if srv.timeout > 0 {
@@ -142,6 +147,13 @@ func WithServerTimeout(timeout time.Duration) ServerOption {
 func WithServerEnableTracing(enable bool) ServerOption {
 	return func(s *Server) {
 		s.enableTracing = enable
+	}
+}
+
+// WithServerMetrics 设置是否开启 普罗米修斯 监控
+func WithServerMetrics(metric bool) ServerOption {
+	return func(s *Server) {
+		s.enableMetrics = metric
 	}
 }
 
