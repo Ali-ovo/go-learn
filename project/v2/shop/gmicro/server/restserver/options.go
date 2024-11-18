@@ -55,3 +55,9 @@ func WithTransName(transName string) ServerOption {
 		s.transName = transName
 	}
 }
+
+func WithEnableMetrics(enable bool) ServerOption {
+	return func(s *Server) {
+		s.enableMetrics = enable
+	}
+}

@@ -54,3 +54,131 @@
 2024-11-15 20:18:39.532	[34mINFO[0m	restserver/server.go:109	start rest server on port: 8091
 2024-11-15 20:19:46.867	[34mINFO[0m	restserver/server.go:127	stop rest server
 2024-11-15 20:19:46.868	[34mINFO[0m	restserver/server.go:132	rest server stopped
+2024-11-18 19:58:53.523	[34mINFO[0m	restserver/server.go:94	intall middleware: recovery
+2024-11-18 19:58:53.523	[34mINFO[0m	restserver/server.go:94	intall middleware: cors
+2024-11-18 19:58:53.523	[34mINFO[0m	restserver/server.go:94	intall middleware: context
+2024-11-18 19:58:53.527	[34mINFO[0m	app/app.go:99	start rest server
+2024-11-18 19:58:53.527	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/ --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func1(7 handlers)
+2024-11-18 19:58:53.527	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/cmdline --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func2(7 handlers)
+2024-11-18 19:58:53.527	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/profile --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func3(7 handlers)
+2024-11-18 19:58:53.527	[34mINFO[0m	restserver/server.go:107	POST   /debug/pprof/symbol --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func4(7 handlers)
+2024-11-18 19:58:53.527	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/symbol --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func5(7 handlers)
+2024-11-18 19:58:53.528	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/trace --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func6(7 handlers)
+2024-11-18 19:58:53.528	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/allocs --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func7(7 handlers)
+2024-11-18 19:58:53.528	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/block --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func8(7 handlers)
+2024-11-18 19:58:53.528	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/goroutine --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func9(7 handlers)
+2024-11-18 19:58:53.528	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/heap --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func10(7 handlers)
+2024-11-18 19:58:53.528	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/mutex --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func11(7 handlers)
+2024-11-18 19:58:53.528	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/threadcreate --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func12(7 handlers)
+2024-11-18 19:58:53.528	[34mINFO[0m	restserver/server.go:107	GET    /metrics --> github.com/penglongli/gin-metrics/ginmetrics.(*Monitor).Use.func1(8 handlers)
+2024-11-18 19:58:53.528	[34mINFO[0m	restserver/server.go:135	start rest server on port: 8050
+2024-11-18 19:59:37.970	[34mINFO[0m	controller/list.go:10	GetUserList is called
+2024-11-18 20:01:13.625	[34mINFO[0m	controller/list.go:10	GetUserList is called
+2024-11-18 20:02:02.173	[34mINFO[0m	controller/list.go:10	GetUserList is called
+2024-11-18 20:02:21.896	[34mINFO[0m	controller/list.go:10	GetUserList is called
+2024-11-18 20:02:36.767	[34mINFO[0m	controller/list.go:10	GetUserList is called
+2024-11-18 20:03:49.383	[34mINFO[0m	controller/list.go:10	GetUserList is called
+2024-11-18 20:04:47.497	[34mINFO[0m	restserver/server.go:153	stop rest server
+2024-11-18 20:04:47.497	[34mINFO[0m	restserver/server.go:158	rest server stopped
+2024-11-18 20:04:57.343	[34mINFO[0m	restserver/server.go:94	intall middleware: recovery
+2024-11-18 20:04:57.343	[34mINFO[0m	restserver/server.go:94	intall middleware: cors
+2024-11-18 20:04:57.344	[34mINFO[0m	restserver/server.go:94	intall middleware: context
+2024-11-18 20:04:57.346	[34mINFO[0m	app/app.go:99	start rest server
+2024-11-18 20:04:57.346	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/ --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func1(7 handlers)
+2024-11-18 20:04:57.346	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/cmdline --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func2(7 handlers)
+2024-11-18 20:04:57.346	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/profile --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func3(7 handlers)
+2024-11-18 20:04:57.346	[34mINFO[0m	restserver/server.go:107	POST   /debug/pprof/symbol --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func4(7 handlers)
+2024-11-18 20:04:57.346	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/symbol --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func5(7 handlers)
+2024-11-18 20:04:57.346	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/trace --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func6(7 handlers)
+2024-11-18 20:04:57.346	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/allocs --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func7(7 handlers)
+2024-11-18 20:04:57.346	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/block --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func8(7 handlers)
+2024-11-18 20:04:57.346	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/goroutine --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func9(7 handlers)
+2024-11-18 20:04:57.346	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/heap --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func10(7 handlers)
+2024-11-18 20:04:57.346	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/mutex --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func11(7 handlers)
+2024-11-18 20:04:57.347	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/threadcreate --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func12(7 handlers)
+2024-11-18 20:04:57.347	[34mINFO[0m	restserver/server.go:107	GET    /metrics --> github.com/penglongli/gin-metrics/ginmetrics.(*Monitor).Use.func1(8 handlers)
+2024-11-18 20:04:57.347	[34mINFO[0m	restserver/server.go:135	start rest server on port: 8050
+2024-11-18 20:05:08.832	[34mINFO[0m	controller/list.go:10	GetUserList is called
+2024-11-18 20:05:33.596	[34mINFO[0m	controller/list.go:10	GetUserList is called
+2024-11-18 20:05:34.044	[34mINFO[0m	controller/list.go:10	GetUserList is called
+2024-11-18 20:05:34.278	[34mINFO[0m	controller/list.go:10	GetUserList is called
+2024-11-18 20:07:12.266	[34mINFO[0m	controller/list.go:10	GetUserList is called
+2024-11-18 20:08:52.872	[34mINFO[0m	restserver/server.go:153	stop rest server
+2024-11-18 20:08:52.873	[34mINFO[0m	restserver/server.go:158	rest server stopped
+2024-11-18 20:08:54.267	[34mINFO[0m	restserver/server.go:94	intall middleware: recovery
+2024-11-18 20:08:54.267	[34mINFO[0m	restserver/server.go:94	intall middleware: cors
+2024-11-18 20:08:54.267	[34mINFO[0m	restserver/server.go:94	intall middleware: context
+2024-11-18 20:08:54.270	[34mINFO[0m	app/app.go:99	start rest server
+2024-11-18 20:08:54.270	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/ --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func1(7 handlers)
+2024-11-18 20:08:54.270	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/cmdline --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func2(7 handlers)
+2024-11-18 20:08:54.270	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/profile --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func3(7 handlers)
+2024-11-18 20:08:54.270	[34mINFO[0m	restserver/server.go:107	POST   /debug/pprof/symbol --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func4(7 handlers)
+2024-11-18 20:08:54.270	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/symbol --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func5(7 handlers)
+2024-11-18 20:08:54.270	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/trace --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func6(7 handlers)
+2024-11-18 20:08:54.270	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/allocs --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func7(7 handlers)
+2024-11-18 20:08:54.270	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/block --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func8(7 handlers)
+2024-11-18 20:08:54.270	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/goroutine --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func9(7 handlers)
+2024-11-18 20:08:54.270	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/heap --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func10(7 handlers)
+2024-11-18 20:08:54.270	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/mutex --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func11(7 handlers)
+2024-11-18 20:08:54.270	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/threadcreate --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func12(7 handlers)
+2024-11-18 20:08:54.271	[34mINFO[0m	restserver/server.go:107	GET    /metrics --> github.com/penglongli/gin-metrics/ginmetrics.(*Monitor).Use.func1(8 handlers)
+2024-11-18 20:08:54.271	[34mINFO[0m	restserver/server.go:135	start rest server on port: 8050
+2024-11-18 20:08:56.663	[34mINFO[0m	controller/list.go:10	GetUserList is called
+2024-11-18 20:11:30.926	[34mINFO[0m	restserver/server.go:153	stop rest server
+2024-11-18 20:11:30.926	[34mINFO[0m	restserver/server.go:158	rest server stopped
+2024-11-18 20:14:24.754	[34mINFO[0m	restserver/server.go:94	intall middleware: recovery
+2024-11-18 20:14:24.754	[34mINFO[0m	restserver/server.go:94	intall middleware: cors
+2024-11-18 20:14:24.755	[34mINFO[0m	restserver/server.go:94	intall middleware: context
+2024-11-18 20:14:24.759	[34mINFO[0m	app/app.go:99	start rest server
+2024-11-18 20:14:24.759	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/ --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func1(7 handlers)
+2024-11-18 20:14:24.759	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/cmdline --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func2(7 handlers)
+2024-11-18 20:14:24.759	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/profile --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func3(7 handlers)
+2024-11-18 20:14:24.759	[34mINFO[0m	restserver/server.go:107	POST   /debug/pprof/symbol --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func4(7 handlers)
+2024-11-18 20:14:24.759	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/symbol --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func5(7 handlers)
+2024-11-18 20:14:24.759	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/trace --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func6(7 handlers)
+2024-11-18 20:14:24.759	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/allocs --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func7(7 handlers)
+2024-11-18 20:14:24.759	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/block --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func8(7 handlers)
+2024-11-18 20:14:24.759	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/goroutine --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func9(7 handlers)
+2024-11-18 20:14:24.759	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/heap --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func10(7 handlers)
+2024-11-18 20:14:24.759	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/mutex --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func11(7 handlers)
+2024-11-18 20:14:24.759	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/threadcreate --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func12(7 handlers)
+2024-11-18 20:14:24.760	[34mINFO[0m	restserver/server.go:107	GET    /metrics --> github.com/penglongli/gin-metrics/ginmetrics.(*Monitor).Use.func1(8 handlers)
+2024-11-18 20:14:24.760	[34mINFO[0m	restserver/server.go:135	start rest server on port: 8050
+2024-11-18 20:14:47.375	[34mINFO[0m	restserver/server.go:153	stop rest server
+2024-11-18 20:14:47.375	[34mINFO[0m	restserver/server.go:158	rest server stopped
+2024-11-18 20:18:18.886	[34mINFO[0m	restserver/server.go:94	intall middleware: recovery
+2024-11-18 20:18:18.886	[34mINFO[0m	restserver/server.go:94	intall middleware: cors
+2024-11-18 20:18:18.886	[34mINFO[0m	restserver/server.go:94	intall middleware: context
+2024-11-18 20:21:27.069	[34mINFO[0m	app/app.go:99	start rest server
+2024-11-18 20:21:28.692	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/ --> github.com/gin-gonic/gin.WrapF.func1(7 handlers)
+2024-11-18 20:21:29.958	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/cmdline --> github.com/gin-gonic/gin.WrapF.func1(7 handlers)
+2024-11-18 20:21:30.642	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/profile --> github.com/gin-gonic/gin.WrapF.func1(7 handlers)
+2024-11-18 20:21:30.642	[34mINFO[0m	restserver/server.go:107	POST   /debug/pprof/symbol --> github.com/gin-gonic/gin.WrapF.func1(7 handlers)
+2024-11-18 20:21:31.965	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/symbol --> github.com/gin-gonic/gin.WrapF.func1(7 handlers)
+2024-11-18 20:21:31.965	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/trace --> github.com/gin-gonic/gin.WrapF.func1(7 handlers)
+2024-11-18 20:21:31.965	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/allocs --> github.com/gin-gonic/gin.WrapH.func1(7 handlers)
+2024-11-18 20:21:31.965	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/block --> github.com/gin-gonic/gin.WrapH.func1(7 handlers)
+2024-11-18 20:21:31.965	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/goroutine --> github.com/gin-gonic/gin.WrapH.func1(7 handlers)
+2024-11-18 20:21:31.965	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/heap --> github.com/gin-gonic/gin.WrapH.func1(7 handlers)
+2024-11-18 20:21:31.965	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/mutex --> github.com/gin-gonic/gin.WrapH.func1(7 handlers)
+2024-11-18 20:21:31.965	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/threadcreate --> github.com/gin-gonic/gin.WrapH.func1(7 handlers)
+2024-11-18 20:21:35.175	[34mINFO[0m	restserver/server.go:107	GET    /metrics --> github.com/penglongli/gin-metrics/ginmetrics.(*Monitor).Use.func1(8 handlers)
+2024-11-18 20:21:35.175	[34mINFO[0m	restserver/server.go:135	start rest server on port: 8050
+2024-11-18 20:22:57.757	[34mINFO[0m	restserver/server.go:94	intall middleware: recovery
+2024-11-18 20:22:57.757	[34mINFO[0m	restserver/server.go:94	intall middleware: cors
+2024-11-18 20:22:57.757	[34mINFO[0m	restserver/server.go:94	intall middleware: context
+2024-11-18 20:22:57.761	[34mINFO[0m	app/app.go:99	start rest server
+2024-11-18 20:22:57.761	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/ --> github.com/gin-gonic/gin.WrapF.func1(7 handlers)
+2024-11-18 20:22:57.761	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/cmdline --> github.com/gin-gonic/gin.WrapF.func1(7 handlers)
+2024-11-18 20:22:57.761	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/profile --> github.com/gin-gonic/gin.WrapF.func1(7 handlers)
+2024-11-18 20:22:57.761	[34mINFO[0m	restserver/server.go:107	POST   /debug/pprof/symbol --> github.com/gin-gonic/gin.WrapF.func1(7 handlers)
+2024-11-18 20:22:57.761	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/symbol --> github.com/gin-gonic/gin.WrapF.func1(7 handlers)
+2024-11-18 20:22:57.761	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/trace --> github.com/gin-gonic/gin.WrapF.func1(7 handlers)
+2024-11-18 20:22:57.761	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/allocs --> github.com/gin-gonic/gin.WrapH.func1(7 handlers)
+2024-11-18 20:22:57.761	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/block --> github.com/gin-gonic/gin.WrapH.func1(7 handlers)
+2024-11-18 20:22:57.761	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/goroutine --> github.com/gin-gonic/gin.WrapH.func1(7 handlers)
+2024-11-18 20:22:57.761	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/heap --> github.com/gin-gonic/gin.WrapH.func1(7 handlers)
+2024-11-18 20:22:57.761	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/mutex --> github.com/gin-gonic/gin.WrapH.func1(7 handlers)
+2024-11-18 20:22:57.761	[34mINFO[0m	restserver/server.go:107	GET    /debug/pprof/threadcreate --> github.com/gin-gonic/gin.WrapH.func1(7 handlers)
+2024-11-18 20:23:24.874	[34mINFO[0m	restserver/server.go:107	GET    /metrics --> github.com/penglongli/gin-metrics/ginmetrics.(*Monitor).Use.func1(8 handlers)
+2024-11-18 20:23:29.806	[34mINFO[0m	restserver/server.go:135	start rest server on port: 8050

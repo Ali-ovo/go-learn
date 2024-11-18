@@ -15,6 +15,7 @@ import (
 	"shop/gmicro/server/restserver/validation"
 
 	ut "github.com/go-playground/universal-translator"
+	"github.com/penglongli/gin-metrics/ginmetrics"
 )
 
 type JwtInfo struct {
@@ -41,6 +42,8 @@ type Server struct {
 	enableProfiling bool
 	// 是否开启 链路追踪 默认开启
 	enableTracing bool
+	// 是否开启 metrics 接口, 默认开启, 如果开启会自动添加 /metrics 接口
+	enableMetrics bool
 
 	// 中间件
 	//customMiddlewares []gin.HandlerFunc
@@ -114,6 +117,20 @@ func (s *Server) Start(ctx context.Context) error {
 
 	if s.enableProfiling {
 		pprof.Register(s.Engine)
+	}
+
+	if s.enableMetrics {
+		m := ginmetrics.GetMonitor()
+
+		// +optional set metric path, default /debug/metrics
+		m.SetMetricPath("/metrics")
+		// 慢请求的时间, default 5s
+		m.SetSlowTime(5)
+		// +optional set request duration, default {0.1, 0.3, 1.2, 5, 10}
+		// used to p95, p99
+		m.SetDuration([]float64{0.1, 0.3, 1.2, 5, 10})
+		// set middleware for gin
+		m.Use(s.Engine)
 	}
 	log.Infof("start rest server on port: %d", s.port)
 

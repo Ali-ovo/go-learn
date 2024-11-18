@@ -27,5 +27,5 @@ func main() {
 	go recordMetrics()
 	r := gin.Default()
 	r.GET("/metrics", gin.WrapH(promhttp.Handler())) // promhttp.Handler() 这里已经自动做好了 获取基本信息的逻辑处理
-	r.Run(":8050")
+	r.Run("0.0.0.0:8050")
 }
