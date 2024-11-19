@@ -5,7 +5,7 @@ import (
 	upb "shop/api/user/v1"
 	"shop/app/user/srv/config"
 	"shop/app/user/srv/controller/user"
-	"shop/app/user/srv/data/v1/mock"
+	"shop/app/user/srv/data/v1/db"
 	"shop/gmicro/core/trace"
 	"shop/gmicro/server/rpcserver"
 
@@ -22,7 +22,7 @@ func NewUserRPCServer(cfg *config.Config) (*rpcserver.Server, error) {
 	})
 
 	// 有点繁琐, wire, ioc-golang
-	data := mock.NewUsers() // 只操作数据库
+	data := db.NewUsers() // 只操作数据库
 	srv := srvv1.NewUserService(data)
 	userver := user.NewUserServer(srv)
 

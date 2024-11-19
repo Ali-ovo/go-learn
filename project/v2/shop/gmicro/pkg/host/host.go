@@ -20,7 +20,7 @@ func ExtractHostPort(addr string) (host string, port uint64, err error) {
 	return
 }
 
-func isValidIP(addr string) bool {
+func IsValidIP(addr string) bool {
 	ip := net.ParseIP(addr)
 	return ip.IsGlobalUnicast() && !ip.IsInterfaceLocalMulticast()
 }
@@ -78,7 +78,7 @@ func Extract(hostPort string, lis net.Listener) (string, error) {
 			default:
 				continue
 			}
-			if isValidIP(ip.String()) {
+			if IsValidIP(ip.String()) {
 				result = ip
 			}
 		}

@@ -5,11 +5,12 @@ import (
 	gapp "shop/gmicro/app"
 	"shop/gmicro/pkg/app"
 	"shop/gmicro/pkg/log"
-	"shop/gmicro/pkg/options"
 	"shop/gmicro/registry"
 	"shop/gmicro/registry/consul"
+	"shop/pkg/options"
 
 	"github.com/hashicorp/consul/api"
+	// "shop/pkg/options"
 )
 
 // NewApp 会读取相关配置 (用来集成 pkg/app 用来完成 外部参数校验和映射)

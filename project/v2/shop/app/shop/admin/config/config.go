@@ -3,7 +3,7 @@ package config
 import (
 	cliflag "shop/gmicro/pkg/common/cli/flag"
 	"shop/gmicro/pkg/log"
-	"shop/gmicro/pkg/options"
+	"shop/pkg/options"
 )
 
 type Config struct {

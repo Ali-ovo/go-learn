@@ -3,7 +3,6 @@ package user
 import (
 	"context"
 	upbv1 "shop/api/user/v1"
-	srvv1 "shop/app/user/srv/service/v1"
 	metav1 "shop/gmicro/pkg/common/meta/v1"
 )
 
@@ -16,16 +15,13 @@ controller 依赖了 service 并不是直接依赖了具体的 struct 而是依�
 // 代码分层, 第三方服务, rpc, redis, 等等, 带来一定的复杂度
 */
 
-func DTOToResponse(userdto srvv1.UserDTO) upbv1.UserInfoResponse {
-	return upbv1.UserInfoResponse{NickName: userdto.Name}
-}
-
-func (us *userServer) GetUserList(ctx context.Context, info *upbv1.PageInfo) (*upbv1.UserListResponse, error) {
+func (uc *userServer) GetUserList(ctx context.Context, request *upbv1.PageInfo) (*upbv1.UserListResponse, error) {
+	//log.Info("GetUserList is called")
 	srvOpts := metav1.ListMeta{
-		Page:     int(info.Pn),
-		PageSize: int(info.PSize),
+		Page:     int(request.Pn),
+		PageSize: int(request.PSize),
 	}
-	dtoList, err := us.srv.List(ctx, srvOpts)
+	dtoList, err := uc.srv.List(ctx, []string{}, srvOpts)
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +29,7 @@ func (us *userServer) GetUserList(ctx context.Context, info *upbv1.PageInfo) (*u
 	var rsp upbv1.UserListResponse
 	for _, value := range dtoList.Items {
 		userRsp := DTOToResponse(*value)
-		rsp.Data = append(rsp.Data, &userRsp)
+		rsp.Data = append(rsp.Data, userRsp)
 	}
 
 	return &rsp, nil

@@ -5,9 +5,9 @@ import (
 	gapp "shop/gmicro/app"
 	"shop/gmicro/pkg/app"
 	"shop/gmicro/pkg/log"
-	"shop/gmicro/pkg/options"
 	"shop/gmicro/registry"
 	"shop/gmicro/registry/consul"
+	"shop/pkg/options"
 
 	"github.com/hashicorp/consul/api"
 )

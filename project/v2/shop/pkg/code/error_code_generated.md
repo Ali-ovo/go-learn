@@ -22,4 +22,5 @@
 | Identifier | Code | HTTP Code | Description |
 | ---------- | ---- | --------- | ----------- |
 | ErrUserNotFound | 100501 | 404 | User not found |
+| ErrUserAlreadyExists | 100502 | 400 | User already exists |
 
