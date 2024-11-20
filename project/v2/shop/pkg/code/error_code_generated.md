@@ -21,6 +21,7 @@
 
 | Identifier | Code | HTTP Code | Description |
 | ---------- | ---- | --------- | ----------- |
+| ErrConnectDB | 100601 | 500 | Internal server error |
 | ErrUserNotFound | 100501 | 404 | User not found |
 | ErrUserAlreadyExists | 100502 | 400 | User already exists |
 

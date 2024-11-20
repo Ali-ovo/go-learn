@@ -219,12 +219,13 @@ func (a *App) runCommand(cmd *cobra.Command, args []string) error {
 
 	// 如果设置了 文件读取
 	if !a.noConfig {
-		// 与 cmd.Flags 参数 绑定
 		if err := viper.BindPFlags(cmd.Flags()); err != nil {
+			// 与 cmd.Flags 参数 绑定
 			return err
 		}
-		// 将 文件中的值 赋值给 a.options
+
 		if err := viper.Unmarshal(a.options); err != nil {
+			// 将 文件中的值 赋值给 a.options
 			return err
 		}
 	}

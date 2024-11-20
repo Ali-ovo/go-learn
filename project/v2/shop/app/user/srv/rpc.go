@@ -2,6 +2,7 @@ package srv
 
 import (
 	"fmt"
+	"log"
 	upb "shop/api/user/v1"
 	"shop/app/user/srv/config"
 	"shop/app/user/srv/controller/user"
@@ -22,7 +23,11 @@ func NewUserRPCServer(cfg *config.Config) (*rpcserver.Server, error) {
 	})
 
 	// 有点繁琐, wire, ioc-golang
-	data := db.NewUsers() // 只操作数据库
+	gormDB, err := db.GetDBfactoryOr(cfg.Mysql)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	data := db.NewUsers(gormDB)
 	srv := srvv1.NewUserService(data)
 	userver := user.NewUserServer(srv)
 

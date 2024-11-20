@@ -6,6 +6,7 @@ package code
 
 // init register error codes defines in this source code to `czc/pkg/errors`
 func init() {
+	register(ErrConnectDB, 500, "Internal server error")
 	register(ErrUserNotFound, 404, "User not found")
 	register(ErrUserAlreadyExists, 400, "User already exists")
 }

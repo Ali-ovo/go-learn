@@ -13,6 +13,16 @@
       "args": ["-c", "${workspaceFolder}/configs/admin/admin.yaml"],
       "env": {},
       "cwd": "${workspaceFolder}",
+    },
+    {
+      "name": "Debug User",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/cmd/user/main.go",
+      "args": ["-c", "${workspaceFolder}/configs/user/srv.yaml"],
+      "env": {},
+      "cwd": "${workspaceFolder}",
     }
   ]
 }

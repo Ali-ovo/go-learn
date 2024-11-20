@@ -10,15 +10,15 @@ import (
 )
 
 type MySQLOptions struct {
-	Host                  string        `json:"host,omitempty"`
-	Port                  int           `json:"port,omitempty"`
-	Username              string        `json:"username,omitempty"`
-	Password              string        `json:"password,omitempty"`
-	Database              string        `json:"database"`
-	MaxIdleConnections    int           `json:"max_idle_connections,omitempty"`
-	MaxOpenConnections    int           `json:"max_open_connections,omitempty"`
-	MaxConnectionLifetime time.Duration `json:"max_conection_lifetime,omitempty"`
-	LogLevel              int           `json:"log_level,omitempty"`
+	Host                  string        `mapstructure:"host" json:"host,omitempty"`
+	Port                  int           `mapstructure:"port" json:"port,omitempty"`
+	Username              string        `mapstructure:"username" json:"username,omitempty"`
+	Password              string        `mapstructure:"password" json:"password,omitempty"`
+	Database              string        `mapstructure:"database" json:"database"`
+	MaxIdleConnections    int           `mapstructure:"max_idle_connections" json:"max_idle_connections,omitempty"`
+	MaxOpenConnections    int           `mapstructure:"max_open_connections" json:"max_open_connections,omitempty"`
+	MaxConnectionLifetime time.Duration `mapstructure:"max_conection_lifetime" json:"max_conection_lifetime,omitempty"`
+	LogLevel              int           `mapstructure:"log_level" json:"log_level,omitempty"`
 }
 
 // NewMySQLOptions
@@ -46,10 +46,10 @@ func NewMySQLOptions() *MySQLOptions {
 //	@return []error
 func (mo *MySQLOptions) Validate() []error {
 	errs := []error{}
-	if net.IsValidPort(mo.Port) {
+	if !net.IsValidPort(mo.Port) {
 		errs = append(errs, fmt.Errorf("not a valid http port: %d", mo.Port))
 	}
-	if host.IsValidIP(mo.Host) {
+	if !host.IsValidIP(mo.Host) {
 		errs = append(errs, fmt.Errorf("not a valid ip: %s", mo.Host))
 	}
 	return errs

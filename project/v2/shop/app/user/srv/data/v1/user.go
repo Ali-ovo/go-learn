@@ -34,7 +34,7 @@ type UserDO struct {
 	Role     int        `gorm:"column:role;default:1; type:int comment '1 表示普通用户, 2 表示管理员'" json:"role"`
 }
 
-func (u *UserDO) Tablename() string {
+func (u *UserDO) TableName() string {
 	return "user"
 }
 
