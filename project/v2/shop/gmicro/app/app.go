@@ -88,7 +88,6 @@ func (a *App) Run() error {
 		// 不做此操作 有可能发生 下面协程 srv.Start 中 srv 启动的是 其他的 微服务 而没启动 本身的微服务
 		srv := srv
 
-		// 再启动一个 groutine 去监听是否有 err 产生
 		eg.Go(func() error {
 			<-ctx.Done() // wait for stop signal
 			// 不可能无休止的等待 stop 信号

@@ -39,7 +39,6 @@ func GetDBfactoryOr(myqslOpts *options.MySQLOptions) (*gorm.DB, error) {
 				SingularTable: true, // 禁止表名复数形式, 例如User的表名默认是users
 			},
 		})
-		fmt.Println("dsn:", dsn)
 		if err != nil {
 			return
 		}

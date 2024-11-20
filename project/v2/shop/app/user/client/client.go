@@ -34,7 +34,7 @@ func main() {
 		// 设置负载均衡
 		rpc.WithBanlancerName("selector"),
 		rpc.WithDiscovery(consul.New(cli, consul.WithHealthCheck(true))),
-		rpc.WithEndpoint("discovery:///grpcServer"),
+		rpc.WithEndpoint("discovery:///user_srv"),
 	)
 	if err != nil {
 		panic(err)

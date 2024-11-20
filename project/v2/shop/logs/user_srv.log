@@ -1,3 +1,32 @@
 2024-11-20 17:57:12.390	[34mINFO[0m	app/app.go:103	start rest server
 2024-11-20 17:57:12.391	[34mINFO[0m	rpcserver/server.go:183	[gRPC] server listening on: 172.16.100.208:8081
 2024-11-20 17:57:14.396	[34mINFO[0m	rpcserver/server.go:191	[gRPC] server stopping
+2024-11-20 19:44:15.424	[34mINFO[0m	app/app.go:102	start rest server
+2024-11-20 19:44:15.424	[34mINFO[0m	rpcserver/server.go:183	[gRPC] server listening on: 127.0.0.1:8078
+2024-11-20 19:45:11.797	[34mINFO[0m	rpcserver/server.go:191	[gRPC] server stopping
+2024-11-20 19:45:13.143	[34mINFO[0m	app/app.go:102	start rest server
+2024-11-20 19:45:13.143	[34mINFO[0m	rpcserver/server.go:183	[gRPC] server listening on: 127.0.0.1:8081
+2024-11-20 19:45:22.616	[34mINFO[0m	rpcserver/server.go:191	[gRPC] server stopping
+2024-11-20 19:47:18.073	[34mINFO[0m	app/app.go:102	start rest server
+2024-11-20 19:47:18.073	[34mINFO[0m	rpcserver/server.go:183	[gRPC] server listening on: 172.20.209.226:8081
+2024-11-20 19:48:25.135	[34mINFO[0m	rpcserver/server.go:191	[gRPC] server stopping
+2024-11-20 19:49:44.962	[34mINFO[0m	app/app.go:102	start rest server
+2024-11-20 19:49:44.962	[34mINFO[0m	rpcserver/server.go:183	[gRPC] server listening on: 127.0.0.1:8081
+2024-11-20 19:50:18.283	[34mINFO[0m	rpcserver/server.go:191	[gRPC] server stopping
+2024-11-20 19:50:48.451	[34mINFO[0m	app/app.go:102	start rest server
+2024-11-20 19:50:48.451	[34mINFO[0m	rpcserver/server.go:183	[gRPC] server listening on: 172.20.209.226:8081
+2024-11-20 19:51:13.781	[34mINFO[0m	rpcserver/server.go:191	[gRPC] server stopping
+2024-11-20 19:51:15.202	[34mINFO[0m	app/app.go:102	start rest server
+2024-11-20 19:51:15.202	[34mINFO[0m	rpcserver/server.go:183	[gRPC] server listening on: 172.20.209.226:8081
+2024-11-20 19:51:16.592	[34mINFO[0m	rpcserver/server.go:191	[gRPC] server stopping
+2024-11-20 19:53:46.704	[34mINFO[0m	app/app.go:102	start rest server
+2024-11-20 19:53:46.705	[34mINFO[0m	rpcserver/server.go:183	[gRPC] server listening on: 172.20.209.226:8081
+2024-11-20 19:59:15.897	[34mINFO[0m	rpcserver/server.go:191	[gRPC] server stopping
+2024-11-20 19:59:20.996	[34mINFO[0m	app/app.go:102	start rest server
+2024-11-20 19:59:20.996	[34mINFO[0m	rpcserver/server.go:183	[gRPC] server listening on: 172.20.209.226:8081
+2024-11-20 20:00:26.155	[34mINFO[0m	rpcserver/server.go:191	[gRPC] server stopping
+2024-11-20 20:06:49.703	[34mINFO[0m	app/app.go:102	start rest server
+2024-11-20 20:06:49.703	[34mINFO[0m	rpcserver/server.go:183	[gRPC] server listening on: 172.17.0.1:8081
+2024-11-20 20:07:04.109	[34mINFO[0m	rpcserver/server.go:191	[gRPC] server stopping
+2024-11-20 20:07:45.907	[34mINFO[0m	app/app.go:102	start rest server
+2024-11-20 20:07:45.907	[34mINFO[0m	rpcserver/server.go:183	[gRPC] server listening on: 172.20.209.226:8081
