@@ -4,6 +4,7 @@ import (
 	"context"
 	upbv1 "shop/api/user/v1"
 	metav1 "shop/gmicro/pkg/common/meta/v1"
+	"shop/gmicro/pkg/errors"
 )
 
 /*
@@ -23,7 +24,7 @@ func (uc *userServer) GetUserList(ctx context.Context, request *upbv1.PageInfo) 
 	}
 	dtoList, err := uc.srv.List(ctx, []string{}, srvOpts)
 	if err != nil {
-		return nil, err
+		return nil, errors.ToGrpcError(err)
 	}
 
 	var rsp upbv1.UserListResponse

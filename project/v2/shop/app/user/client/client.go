@@ -5,6 +5,7 @@ import (
 	"fmt"
 	v1 "shop/api/user/v1"
 	rpc "shop/gmicro/server/rpcserver"
+	"shop/gmicro/server/rpcserver/clientinterceptors"
 	_ "shop/gmicro/server/rpcserver/resolver/direct" // 必填
 	"time"
 
@@ -22,7 +23,7 @@ func main() {
 	rpc.InitBuilder()
 
 	conf := api.DefaultConfig()
-	conf.Address = "192.168.189.128:8500"
+	conf.Address = "172.16.89.133:8500"
 	conf.Scheme = "http"
 	cli, err := api.NewClient(conf)
 	if err != nil {
@@ -35,6 +36,9 @@ func main() {
 		rpc.WithBanlancerName("selector"),
 		rpc.WithDiscovery(consul.New(cli, consul.WithHealthCheck(true))),
 		rpc.WithEndpoint("discovery:///user_srv"),
+		rpc.WithClientEnableTracing(false),
+		rpc.WithClientUnaryInterceptor(clientinterceptors.UnaryTracingInterceptor),
+		rpc.WithClientTimeout(time.Duration(1000)*time.Second),
 	)
 	if err != nil {
 		panic(err)

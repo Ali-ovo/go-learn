@@ -9,4 +9,5 @@ func init() {
 	register(ErrConnectDB, 500, "Internal server error")
 	register(ErrUserNotFound, 404, "User not found")
 	register(ErrUserAlreadyExists, 400, "User already exists")
+	register(ErrUserPasswordIncorrect, 400, "User password is incorrect")
 }

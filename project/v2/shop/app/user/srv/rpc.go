@@ -10,7 +10,7 @@ import (
 	"shop/gmicro/core/trace"
 	"shop/gmicro/server/rpcserver"
 
-	srvv1 "shop/app/user/srv/service/v1"
+	"shop/app/user/srv/service/v1"
 )
 
 func NewUserRPCServer(cfg *config.Config) (*rpcserver.Server, error) {
@@ -28,11 +28,11 @@ func NewUserRPCServer(cfg *config.Config) (*rpcserver.Server, error) {
 		log.Fatal(err.Error())
 	}
 	data := db.NewUsers(gormDB)
-	srv := srvv1.NewUserService(data)
+	srv := service.NewUserService(data)
 	userver := user.NewUserServer(srv)
 
 	rpcAddr := fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
-	urpcServer := rpcserver.NewServer(rpcserver.WithAddress(rpcAddr))
+	urpcServer := rpcserver.NewServer(rpcserver.WithAddress(rpcAddr), rpcserver.WithServerEnableTracing())
 	upb.RegisterUserServer(urpcServer.Server, userver)
 
 	//r := gin.Default()

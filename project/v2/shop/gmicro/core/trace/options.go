@@ -1,5 +1,7 @@
 package trace
 
+const TraceName = "CZC"
+
 type Options struct {
 	Name     string  `json:"name"`
 	Endpoint string  `json:"endpoint"`

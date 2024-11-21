@@ -1,4 +1,4 @@
-package v1
+package service
 
 import (
 	"context"
@@ -27,7 +27,7 @@ type UserSrv interface {
 }
 
 type userService struct {
-	userStrore dv1.UserStore // 数据的来源
+	userData dv1.UserData // 数据的来源
 }
 
 var _ UserSrv = &userService{}
@@ -48,7 +48,7 @@ func (u *userService) List(ctx context.Context, orderby []string, opts metav1.Li
 			2. 去删除一些数据
 		3. 如果 data 层的方法有bug 代码想要具备好的可测试性
 	*/
-	doList, err := u.userStrore.List(ctx, orderby, opts)
+	doList, err := u.userData.List(ctx, orderby, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func (u *userService) List(ctx context.Context, orderby []string, opts metav1.Li
 }
 
 func (u *userService) GetByMobile(ctx context.Context, mobile string) (*UserDTO, error) {
-	userDo, err := u.userStrore.GetByMobile(ctx, mobile)
+	userDo, err := u.userData.GetByMobile(ctx, mobile)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func (u *userService) GetByMobile(ctx context.Context, mobile string) (*UserDTO,
 }
 
 func (u *userService) GetByID(ctx context.Context, id uint64) (*UserDTO, error) {
-	userDo, err := u.userStrore.GetByID(ctx, id)
+	userDo, err := u.userData.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -86,9 +86,9 @@ func (u *userService) GetByID(ctx context.Context, id uint64) (*UserDTO, error) 
 
 func (u *userService) Create(ctx context.Context, user *UserDTO) error {
 	// 先判断用户号码是否存在
-	_, err := u.userStrore.GetByMobile(ctx, user.Mobile)
+	_, err := u.userData.GetByMobile(ctx, user.Mobile)
 	if errors.IsCode(err, code.ErrUserNotFound) {
-		return u.userStrore.Create(ctx, &user.UserDO)
+		return u.userData.Create(ctx, &user.UserDO)
 	}
 
 	// 说明 数据库存在问题
@@ -101,7 +101,7 @@ func (u *userService) Create(ctx context.Context, user *UserDTO) error {
 
 func (u *userService) Update(ctx context.Context, user *UserDTO) error {
 	// 先判断用户id 是否存在
-	_, err := u.userStrore.GetByID(ctx, uint64(user.ID))
+	_, err := u.userData.GetByID(ctx, uint64(user.ID))
 	if errors.IsCode(err, code.ErrUserNotFound) {
 		return errors.WithCode(code.ErrUserAlreadyExists, "用户不存在")
 	}
@@ -110,11 +110,11 @@ func (u *userService) Update(ctx context.Context, user *UserDTO) error {
 		return err
 	}
 
-	return u.userStrore.Update(ctx, &user.UserDO)
+	return u.userData.Update(ctx, &user.UserDO)
 }
 
-func NewUserService(us dv1.UserStore) *userService {
+func NewUserService(us dv1.UserData) *userService {
 	return &userService{
-		userStrore: us,
+		userData: us,
 	}
 }

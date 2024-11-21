@@ -4,7 +4,7 @@ import (
 	"context"
 	upbv1 "shop/api/user/v1"
 	dv1 "shop/app/user/srv/data/v1"
-	srvv1 "shop/app/user/srv/service/v1"
+	"shop/app/user/srv/service/v1"
 	"shop/gmicro/pkg/log"
 	"time"
 
@@ -24,7 +24,7 @@ func (uc *userServer) UpdateUser(ctx context.Context, info *upbv1.UpdateUserInfo
 		Gender:   info.Gender,
 		Birthday: &birthDay,
 	}
-	userDTO := srvv1.UserDTO{UserDO: userDO}
+	userDTO := service.UserDTO{UserDO: userDO}
 
 	err := uc.srv.Update(ctx, &userDTO)
 	if err != nil {

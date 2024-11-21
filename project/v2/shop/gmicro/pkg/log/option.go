@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"encoding/json"
+
 	"github.com/spf13/pflag"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -27,24 +28,17 @@ const (
 
 // Options contains configuration items related to log.
 type Options struct {
-	// OutputPaths 输出路径
-	OutputPaths []string `json:"output-paths"       mapstructure:"output-paths"`
-	// ErrorOutputPaths 错误输出路径
-	ErrorOutputPaths []string `json:"error-output-paths" mapstructure:"error-output-paths"`
-	// Level 运行 log 的 最低等级
-	Level string `json:"level"              mapstructure:"level"`
-	// Format 目前只有两种选择 console json
-	Format            string `json:"format"             mapstructure:"format"`
-	DisableCaller     bool   `json:"disable-caller"     mapstructure:"disable-caller"`
-	DisableStacktrace bool   `json:"disable-stacktrace" mapstructure:"disable-stacktrace"`
-	EnableColor       bool   `json:"enable-color"       mapstructure:"enable-color"`
-	// Development 是否是开发模式
-	Development bool   `json:"development"        mapstructure:"development"`
-	Name        string `json:"name"               mapstructure:"name"`
-	// EnableTraceID 是否开启traceID
-	EnableTraceID bool `json:"enable-trace-id"     mapstructure:"enable-trace-id"`
-	// EnableTraceStack 是否开启traceStack
-	EnableTraceStack bool `json:"enable-trace-stack" mapstructure:"enable-trace-stack"`
+	OutputPaths       []string `json:"output-paths"       mapstructure:"output-paths"`       // OutputPaths 输出路径
+	ErrorOutputPaths  []string `json:"error-output-paths" mapstructure:"error-output-paths"` // ErrorOutputPaths 错误输出路径
+	Level             string   `json:"level"              mapstructure:"level"`              // Level 运行 log 的 最低等级
+	Format            string   `json:"format"             mapstructure:"format"`             // Format 目前只有两种选择 console json
+	DisableCaller     bool     `json:"disable-caller"     mapstructure:"disable-caller"`
+	DisableStacktrace bool     `json:"disable-stacktrace" mapstructure:"disable-stacktrace"`
+	EnableColor       bool     `json:"enable-color"       mapstructure:"enable-color"`
+	Development       bool     `json:"development"        mapstructure:"development"` // Development 是否是开发模式
+	Name              string   `json:"name"               mapstructure:"name"`
+	EnableTraceID     bool     `json:"enable-trace-id"    mapstructure:"enable-trace-id"`    // EnableTraceID 是否开启traceID
+	EnableTraceStack  bool     `json:"enable-trace-stack" mapstructure:"enable-trace-stack"` // EnableTraceStack 是否开启traceStack
 }
 
 // NewOptions creates a Options object with default parameters.

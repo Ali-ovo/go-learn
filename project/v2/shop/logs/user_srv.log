@@ -30,3 +30,6 @@
 2024-11-20 20:07:04.109	[34mINFO[0m	rpcserver/server.go:191	[gRPC] server stopping
 2024-11-20 20:07:45.907	[34mINFO[0m	app/app.go:102	start rest server
 2024-11-20 20:07:45.907	[34mINFO[0m	rpcserver/server.go:183	[gRPC] server listening on: 172.20.209.226:8081
+2024-11-21 10:23:45.396	[34mINFO[0m	app/app.go:102	start rest server
+2024-11-21 10:23:45.396	[34mINFO[0m	rpcserver/server.go:183	[gRPC] server listening on: 172.16.100.208:8081
+2024-11-21 10:24:25.409	[34mINFO[0m	rpcserver/server.go:191	[gRPC] server stopping

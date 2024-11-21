@@ -105,7 +105,7 @@ func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.Clien
 	options := clientOptions{
 		timeout:       2000 * time.Millisecond,
 		balancerName:  "round_robin", // 默认 grpc 的轮询
-		enableTracing: true,
+		enableTracing: false,
 	}
 
 	for _, o := range opts {
@@ -142,7 +142,7 @@ func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.Clien
 		grpc.WithChainStreamInterceptor(sints...),
 	}
 
-	// TODO 服务发现的选项
+	//  服务发现的选项
 	if options.discovery != nil {
 		grpcOpts = append(grpcOpts, grpc.WithResolvers( // 添加解析器	参数需要 resolver.Builder
 			discovery.NewBuilder(

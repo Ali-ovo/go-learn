@@ -43,7 +43,7 @@ func NewServer(opts ...ServerOption) *Server {
 		address: ":0", // 在没有设置 address 自己获取 ip 和 端口号
 		health:  health.NewServer(),
 		//timeout: 1 * time.Second,
-		enableTracing: true,
+		enableTracing: false,
 	}
 
 	for _, opt := range opts {
@@ -144,9 +144,9 @@ func WithServerTimeout(timeout time.Duration) ServerOption {
 }
 
 // WithServerEnableTracing 设置是否开启链路追踪
-func WithServerEnableTracing(enable bool) ServerOption {
+func WithServerEnableTracing() ServerOption {
 	return func(s *Server) {
-		s.enableTracing = enable
+		s.enableTracing = true
 	}
 }
 

@@ -6,4 +6,7 @@ const (
 
 	// ErrUserAlreadyExists - 400: User already exists.
 	ErrUserAlreadyExists
+
+	// ErrUserPasswordIncorrect - 400: User password is incorrect.
+	ErrUserPasswordIncorrect
 )

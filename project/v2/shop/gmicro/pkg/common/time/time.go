@@ -41,6 +41,10 @@ func (t *Time) Scan(v interface{}) error {
 	return fmt.Errorf("can not convert %v to timestamp", v)
 }
 
+func (t Time) Unix() int64 {
+	return t.Time.Unix()
+}
+
 // ToTime convert string to Time.
 func ToTime(str string) (Time, error) {
 	var jt Time
@@ -58,5 +62,11 @@ func ToTime(str string) (Time, error) {
 func Now() Time {
 	return Time{
 		Time: time.Now(),
+	}
+}
+
+func Unix(sec int64, nsec int64) Time {
+	return Time{
+		time.Unix(sec, nsec),
 	}
 }

@@ -14,6 +14,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// AuthzAudience defines the value of jwt audience field.
+const AuthzAudience = "shop.com"
+
 // Defined errors.
 var (
 	ErrMissingKID    = errors.New("Invalid token format: missing kid field in claims")

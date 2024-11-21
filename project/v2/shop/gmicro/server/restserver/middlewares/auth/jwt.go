@@ -7,9 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// AuthzAudience defines the value of jwt audience field.
-const AuthzAudience = "shop.com"
-
 // JWTStrategy defines jwt bearer authentication strategy.
 type JWTStrategy struct {
 	ginjwt.GinJWTMiddleware

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	upbv1 "shop/api/user/v1"
 	dv1 "shop/app/user/srv/data/v1"
-	srvv1 "shop/app/user/srv/service/v1"
+	"shop/app/user/srv/service/v1"
 	"shop/gmicro/pkg/log"
 
 	"github.com/anaskhan96/go-password-encoder"
@@ -32,7 +32,7 @@ func (uc *userServer) CreateUser(ctx context.Context, info *upbv1.CreateUserInfo
 		Password: fmt.Sprintf("$pbkdf2-sha512$%s$%s", salt, encodedPwd),
 		NickName: info.NickName,
 	}
-	userDTO := srvv1.UserDTO{UserDO: userDO}
+	userDTO := service.UserDTO{UserDO: userDO}
 
 	err := uc.srv.Create(ctx, &userDTO)
 	if err != nil {

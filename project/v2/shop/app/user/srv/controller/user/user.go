@@ -2,19 +2,19 @@ package user
 
 import (
 	upbv1 "shop/api/user/v1"
-	srvv1 "shop/app/user/srv/service/v1"
+	"shop/app/user/srv/service/v1"
 )
 
 type userServer struct {
 	upbv1.UnimplementedUserServer
-	srv srvv1.UserSrv
+	srv service.UserSrv
 }
 
-func NewUserServer(srv srvv1.UserSrv) *userServer {
+func NewUserServer(srv service.UserSrv) *userServer {
 	return &userServer{srv: srv}
 }
 
-func DTOToResponse(userDTO srvv1.UserDTO) *upbv1.UserInfoResponse {
+func DTOToResponse(userDTO service.UserDTO) *upbv1.UserInfoResponse {
 	// 在 grpc 的 message 中字段有默认值, 你不能随便赋值 nil 进去, 容易出错
 	// 这里要搞清, 那些字段是有默认值
 	userInfoRsp := upbv1.UserInfoResponse{
