@@ -11,6 +11,7 @@ import (
 func initRouter(g *restserver.Server, cfg *config.Config) {
 	v1 := g.Group("/v1")
 	userGroup := v1.Group("/user")
+	baseGroup := v1.Group("/base")
 
 	userData, err := rpc.GetDatafactoryOr(cfg.Registry)
 	if err != nil {
@@ -21,6 +22,10 @@ func initRouter(g *restserver.Server, cfg *config.Config) {
 	uController := user.NewUserController(g.Translator(), userService)
 	{
 		userGroup.POST("pwd_login", uController.Login)
+	}
+
+	{
+		baseGroup.GET("captcha", user.GetCaptcha)
 	}
 
 }
