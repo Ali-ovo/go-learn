@@ -60,11 +60,14 @@ require (
 	github.com/bytedance/sonic/loader v0.2.1 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
 	github.com/cloudwego/iasm v0.2.0 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/gabriel-vasile/mimetype v1.4.6 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/openzipkin/zipkin-go v0.4.3 // indirect
+	github.com/redis/go-redis/extra/rediscmd/v9 v9.7.0 // indirect
+	github.com/redis/go-redis/v9 v9.7.0 // indirect
 	go.opentelemetry.io/otel/metric v1.32.0 // indirect
 	golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63 // indirect
 	golang.org/x/image v0.13.0 // indirect
@@ -147,7 +150,9 @@ require (
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.32.1 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
+	github.com/redis/go-redis/extra/redisotel/v9 v9.7.0
 	github.com/rivo/uniseg v0.2.0 // indirect
+	github.com/satori/go.uuid v1.2.0
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/spf13/afero v1.9.3 // indirect
 	github.com/spf13/cast v1.5.0 // indirect

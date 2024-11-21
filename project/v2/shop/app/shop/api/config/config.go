@@ -11,6 +11,7 @@ type Config struct {
 	Server   *options.ServerOptions   `json:"server" mapstructure:"server"`     // server
 	Registry *options.RegistryOptions `json:"registry" mapstructure:"registry"` // 服务注册 发现 注销 配置参数
 	Jwt      *options.JwtOptions      `json:"jwt" mapstructure:"jwt"`           // jwt 配置参数
+	Sms      *options.SmsOptions      `json:"sms" mapstructure:"sms"`
 }
 
 func (c *Config) Validate() []error {
@@ -19,6 +20,7 @@ func (c *Config) Validate() []error {
 	errors = append(errors, c.Server.Validate()...)
 	errors = append(errors, c.Registry.Validate()...)
 	errors = append(errors, c.Jwt.Validate()...)
+	errors = append(errors, c.Sms.Validate()...)
 	return errors
 }
 
@@ -32,6 +34,7 @@ func (c *Config) Flags() (fss cliflag.NamedFlagSets) {
 	c.Server.AddFlags(fss.FlagSet("server"))
 	c.Registry.AddFlags(fss.FlagSet("registry"))
 	c.Jwt.AddFlags(fss.FlagSet("jwt"))
+	c.Sms.AddFlags(fss.FlagSet("sms"))
 	return fss
 }
 
@@ -41,5 +44,6 @@ func NewConfig() *Config {
 		Server:   options.NewServerOptions(),   // 初始化 Server 配置
 		Registry: options.NewRegistryOptions(), // 初始化 consul 配置
 		Jwt:      options.NewJwtOptions(),      // 初始化 jwt 配置
+		Sms:      options.NewSmsOptions(),      // 初始化 sms 配置
 	}
 }

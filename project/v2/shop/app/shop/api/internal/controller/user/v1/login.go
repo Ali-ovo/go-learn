@@ -18,7 +18,7 @@ type PassWordLoginForm struct {
 	CaptchaId string `form:"captcha_id" json:"captcha_id" binding:"required"`
 }
 
-func (us *userServer) Login(ctx *gin.Context) {
+func (us *userController) Login(ctx *gin.Context) {
 	log.Info("Login is called")
 
 	// 表单验证

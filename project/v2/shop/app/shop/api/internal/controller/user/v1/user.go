@@ -6,11 +6,11 @@ import (
 	ut "github.com/go-playground/universal-translator"
 )
 
-type userServer struct {
+type userController struct {
 	trans ut.Translator
 	srv   user.UserSrv
 }
 
-func NewUserController(trans ut.Translator, srv user.UserSrv) *userServer {
-	return &userServer{trans: trans, srv: srv}
+func NewUserController(trans ut.Translator, srv user.UserSrv) *userController {
+	return &userController{trans: trans, srv: srv}
 }

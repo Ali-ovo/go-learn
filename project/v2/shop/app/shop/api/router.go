@@ -2,10 +2,13 @@ package admin
 
 import (
 	"shop/app/shop/api/config"
+	"shop/app/shop/api/internal/controller/sms/v1"
 	"shop/app/shop/api/internal/controller/user/v1"
 	"shop/app/shop/api/internal/data/v1/rpc"
 	user2 "shop/app/shop/api/internal/service/user/v1"
 	"shop/gmicro/server/restserver"
+
+	sms2 "shop/app/shop/api/internal/service/sms/v1"
 )
 
 func initRouter(g *restserver.Server, cfg *config.Config) {
@@ -24,8 +27,11 @@ func initRouter(g *restserver.Server, cfg *config.Config) {
 		userGroup.POST("pwd_login", uController.Login)
 	}
 
+	smsService := sms2.NewSmsService(cfg.Sms)
+	sController := sms.NewSmsController(g.Translator(), smsService)
 	{
 		baseGroup.GET("captcha", user.GetCaptcha)
+		baseGroup.POST("send_sms", sController.SendSms)
 	}
 
 }

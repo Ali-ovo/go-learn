@@ -9,4 +9,7 @@ const (
 
 	// ErrUserPasswordIncorrect - 400: User password is incorrect.
 	ErrUserPasswordIncorrect
+
+	// ErrSmsSend - 400: Send sms error.
+	ErrSmsSend
 )
