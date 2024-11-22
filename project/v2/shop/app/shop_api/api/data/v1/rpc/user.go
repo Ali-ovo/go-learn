@@ -11,7 +11,7 @@ import (
 	code2 "shop/pkg/code"
 )
 
-const serviceName = "discovery:///shop_api-user-srv"
+const serviceName = "discovery:///shop_user_srv"
 
 type users struct {
 	uc upbv1.UserClient

@@ -13,7 +13,7 @@ func init() {
 	register(ErrTokenInvalid, 401, "Token invalid")
 	register(ErrPageNotFound, 404, "Page not found")
 	register(ErrDatabase, 500, "Database error")
-	register(ErrEncrypt, 401, "Error occurred while encrypting the user password")
+	register(ErrEncrypt, 401, "Error occurred while encrypting the v1 password")
 	register(ErrSignatureInvalid, 401, "Signature is invalid")
 	register(ErrExpired, 401, "Token expired")
 	register(ErrInvalidAuthHeader, 401, "Invalid authorization header")

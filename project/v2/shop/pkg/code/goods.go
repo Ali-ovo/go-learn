@@ -3,6 +3,5 @@
 package code
 
 const (
-	// ErrConnectDB - 500: init db error.
-	ErrConnectDB int = iota + 100501
+	ErrGoodsNotFound int = iota + 100701
 )

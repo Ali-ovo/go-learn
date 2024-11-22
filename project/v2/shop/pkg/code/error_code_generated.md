@@ -21,15 +21,16 @@
 
 | Identifier | Code | HTTP Code | Description |
 | ---------- | ---- | --------- | ----------- |
-| ErrConnectDB | 100601 | 500 | Internal server error |
-| ErrUserNotFound | 100501 | 404 | User not found |
-| ErrUserAlreadyExists | 100502 | 400 | User already exists |
-| ErrUserPasswordIncorrect | 100503 | 400 | User password is incorrect |
-| ErrSmsSend | 100504 | 400 | Send sms error |
-| ErrJWTDeploy | 100505 | 500 | JWT deploy error |
-| ErrJWTReadFiled | 100506 | 500 | JWT read field error |
-| ErrInvalidPrivKey | 100507 | 500 | Internal server error |
-| ErrFailedTokenCreation | 100508 | 500 | Internal server error |
-| ErrCodeNotExist | 100509 | 400 | Sms code incorrect or expired |
-| ErrCodeExpired | 100510 | 400 | Sms code expired |
+| ErrConnectDB | 100501 | 500 | Internal server error |
+| ErrGoodsNotFound | 100701 | 500 | Internal server error |
+| ErrUserNotFound | 100601 | 404 | User not found |
+| ErrUserAlreadyExists | 100602 | 400 | User already exists |
+| ErrUserPasswordIncorrect | 100603 | 400 | User password is incorrect |
+| ErrSmsSend | 100604 | 400 | Send sms error |
+| ErrJWTDeploy | 100605 | 500 | JWT deploy error |
+| ErrJWTReadFiled | 100606 | 500 | JWT read field error |
+| ErrInvalidPrivKey | 100607 | 500 | Internal server error |
+| ErrFailedTokenCreation | 100608 | 500 | Internal server error |
+| ErrCodeNotExist | 100609 | 400 | Sms code incorrect or expired |
+| ErrCodeExpired | 100610 | 400 | Sms code expired |
 

@@ -1,7 +1,7 @@
 package sms
 
 import (
-	"shop/app/shop_api/api/internal/service/sms/v1"
+	"shop/app/shop_api/api/service/sms/v1"
 	"shop/gmicro/pkg/common/core"
 	"shop/gmicro/pkg/errors"
 	"shop/gmicro/pkg/storage"

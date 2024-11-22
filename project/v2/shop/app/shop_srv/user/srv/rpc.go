@@ -9,9 +9,9 @@ import (
 	"shop/gmicro/server/rpcserver"
 
 	"shop/app/shop_srv/user/srv/config"
-	"shop/app/shop_srv/user/srv/controller/user"
-	"shop/app/shop_srv/user/srv/data/v1/db"
-	"shop/app/shop_srv/user/srv/service/v1"
+	"shop/app/shop_srv/user/srv/internal/controller/v1"
+	"shop/app/shop_srv/user/srv/internal/data/v1/db"
+	"shop/app/shop_srv/user/srv/internal/service/v1"
 )
 
 func NewUserRPCServer(cfg *config.Config) (*rpcserver.Server, error) {
@@ -30,7 +30,7 @@ func NewUserRPCServer(cfg *config.Config) (*rpcserver.Server, error) {
 	}
 	data := db.NewUsers(gormDB)
 	srv := service.NewUserService(data)
-	userver := user.NewUserServer(srv)
+	userver := controller.NewUserServer(srv)
 
 	rpcAddr := fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
 

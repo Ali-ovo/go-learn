@@ -35,7 +35,7 @@ func main() {
 		// 设置负载均衡
 		rpc.WithBanlancerName("selector"),
 		rpc.WithDiscovery(consul.New(cli, consul.WithHealthCheck(true))),
-		rpc.WithEndpoint("discovery:///api_user_srv"),
+		rpc.WithEndpoint("discovery:///user_srv"),
 		rpc.WithClientEnableTracing(false),
 		rpc.WithClientUnaryInterceptor(clientinterceptors.UnaryTracingInterceptor),
 		rpc.WithClientTimeout(time.Duration(1000)*time.Second),
