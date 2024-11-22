@@ -13,8 +13,7 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/health"
-	"google.golang.org/grpc/health/grpc_health_v1"
+
 	"google.golang.org/grpc/reflection"
 )
 
@@ -30,8 +29,7 @@ type Server struct {
 	lis         net.Listener
 	timeout     time.Duration
 
-	health        *health.Server
-	customHealth  bool
+	// health        *health.Server
 	metadata      *metadata.Server
 	endpoint      *url.URL
 	enableTracing bool
@@ -41,9 +39,9 @@ type Server struct {
 func NewServer(opts ...ServerOption) *Server {
 	srv := &Server{
 		address: ":0", // 在没有设置 address 自己获取 ip 和 端口号
-		health:  health.NewServer(),
+		// health:  health.NewServer(),
 		//timeout: 1 * time.Second,
-		enableTracing: false,
+		enableTracing: true,
 	}
 
 	for _, opt := range opts {
@@ -92,9 +90,9 @@ func NewServer(opts ...ServerOption) *Server {
 	}
 
 	// register 注册 grpc health
-	if !srv.customHealth {
-		grpc_health_v1.RegisterHealthServer(srv.Server, srv.health)
-	}
+	// if !srv.customHealth {
+	// 	grpc_health_v1.RegisterHealthServer(srv.Server, srv.health)
+	// }
 	// 可以支持 用户直接通过 grpc 的一个接口查看当前支持的所有的 rpc 服务
 	metadata.RegisterMetadataServer(srv.Server, srv.metadata) // 关键函数 是 gRPC 服务器端用于注册服务的方法
 	reflection.Register(srv.Server)                           // TODO 需要配合 grpc.client 也需要写对于代码
@@ -131,11 +129,11 @@ func WithServerOption(opts ...grpc.ServerOption) ServerOption {
 	}
 }
 
-func WithHealthServer(health *health.Server) ServerOption {
-	return func(s *Server) {
-		s.health = health
-	}
-}
+// func WithHealthServer(health *health.Server) ServerOption {
+// 	return func(s *Server) {
+// 		s.health = health
+// 	}
+// }
 
 func WithServerTimeout(timeout time.Duration) ServerOption {
 	return func(s *Server) {
@@ -144,9 +142,9 @@ func WithServerTimeout(timeout time.Duration) ServerOption {
 }
 
 // WithServerEnableTracing 设置是否开启链路追踪
-func WithServerEnableTracing() ServerOption {
+func WithServerEnableTracing(enableTracing bool) ServerOption {
 	return func(s *Server) {
-		s.enableTracing = true
+		s.enableTracing = enableTracing
 	}
 }
 
@@ -181,13 +179,13 @@ func (s *Server) listenAndEndpoint() error {
 // Start 启动 grpc 的服务
 func (s *Server) Start(ctx context.Context) error {
 	log.Infof("[gRPC] server listening on: %s", s.lis.Addr().String())
-	s.health.Resume() // 这里可以不写  只不过 我这里显示声明一下(健康检查服务知道该服务已经恢复正常工作)
+	// s.health.Resume() // 这里可以不写  只不过 我这里显示声明一下(健康检查服务知道该服务已经恢复正常工作)
 	return s.Server.Serve(s.lis)
 }
 
 func (s *Server) Stop(ctx context.Context) error {
-	s.health.Shutdown() // 设置 服务的状态为 not_serving, 阻止 接收新的请求 过来
-	s.GracefulStop()    // grpc 优雅退出
+	// s.health.Shutdown() // 设置 服务的状态为 not_serving, 阻止 接收新的请求 过来
+	s.GracefulStop() // grpc 优雅退出
 	log.Infof("[gRPC] server stopping")
 	return nil
 }

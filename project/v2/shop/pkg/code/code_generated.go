@@ -10,4 +10,7 @@ func init() {
 	register(ErrUserNotFound, 404, "User not found")
 	register(ErrUserAlreadyExists, 400, "User already exists")
 	register(ErrUserPasswordIncorrect, 400, "User password is incorrect")
+	register(ErrSmsSend, 400, "Send sms error")
+	register(ErrJWTDeploy, 500, "JWT deploy error")
+	register(ErrCodeNotExist, 400, "Sms code incorrect or expired")
 }

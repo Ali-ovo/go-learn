@@ -1,4 +1,4 @@
-package admin
+package api
 
 import (
 	"shop/app/shop/api/config"
@@ -25,6 +25,7 @@ func initRouter(g *restserver.Server, cfg *config.Config) {
 	uController := user.NewUserController(g.Translator(), userService)
 	{
 		userGroup.POST("pwd_login", uController.Login)
+		userGroup.POST("register", uController.Register)
 	}
 
 	smsService := sms2.NewSmsService(cfg.Sms)

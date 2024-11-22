@@ -12,4 +12,13 @@ const (
 
 	// ErrSmsSend - 400: Send sms error.
 	ErrSmsSend
+
+	// ErrJWTDeploy - 500: JWT deploy error.
+	ErrJWTDeploy
+
+	// ErrCodeNotExist - 400: Sms code incorrect or expired.
+	ErrCodeNotExist
+
+	// ErrCodeExpired - 400: Sms code expired.
+	ErrCodeExpired
 )

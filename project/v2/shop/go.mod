@@ -5,7 +5,6 @@ go 1.23.1
 require (
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
 	github.com/bitly/go-simplejson v0.5.0
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fatih/color v1.16.0
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-chassis/cari v0.9.0
@@ -17,6 +16,7 @@ require (
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/go-zookeeper/zk v1.0.3
 	github.com/gofrs/uuid v4.4.0+incompatible
+	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/golang/protobuf v1.5.4
 	github.com/google/uuid v1.6.0
 	github.com/gosuri/uitable v0.0.4
@@ -29,6 +29,7 @@ require (
 	github.com/penglongli/gin-metrics v0.1.12
 	github.com/pkg/errors v0.9.1
 	github.com/polarismesh/polaris-go v1.3.0
+	github.com/redis/go-redis/v9 v9.7.0
 	github.com/sony/sonyflake v1.1.0
 	github.com/speps/go-hashids v2.0.0+incompatible
 	github.com/spf13/cobra v1.6.1
@@ -63,11 +64,9 @@ require (
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/gabriel-vasile/mimetype v1.4.6 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
-	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/openzipkin/zipkin-go v0.4.3 // indirect
 	github.com/redis/go-redis/extra/rediscmd/v9 v9.7.0 // indirect
-	github.com/redis/go-redis/v9 v9.7.0 // indirect
 	go.opentelemetry.io/otel/metric v1.32.0 // indirect
 	golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63 // indirect
 	golang.org/x/image v0.13.0 // indirect
@@ -76,13 +75,13 @@ require (
 
 require (
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
-	github.com/aliyun/alibaba-cloud-sdk-go v1.61.18 // indirect
+	github.com/aliyun/alibaba-cloud-sdk-go v1.61.18
 	github.com/anaskhan96/go-password-encoder v0.0.0-20201010210601-c765b799fd72
 	github.com/appleboy/gin-jwt/v2 v2.10.0
 	github.com/armon/go-metrics v0.4.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
-	github.com/buger/jsonparser v1.1.1 // indirect
+	github.com/buger/jsonparser v1.1.1
 	github.com/bytedance/sonic v1.12.4 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect

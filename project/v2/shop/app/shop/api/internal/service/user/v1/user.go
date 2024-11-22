@@ -4,13 +4,14 @@ import (
 	"context"
 	"shop/app/shop/api/internal/data/v1"
 
-	"errors"
-	"shop/app/shop/api/internal/service"
-	"shop/gmicro/server/restserver/middlewares"
 	"shop/pkg/options"
 	"time"
 
-	"github.com/golang-jwt/jwt/v4"
+	"shop/app/shop/api/pkg"
+	"shop/gmicro/pkg/errors"
+	"shop/gmicro/pkg/log"
+	"shop/gmicro/pkg/storage"
+	"shop/pkg/code"
 )
 
 type UserDTO struct {
@@ -23,7 +24,7 @@ type UserSrv interface {
 	// MobileLogin 密码登入
 	MobileLogin(ctx context.Context, mobile, password string) (*UserDTO, error)
 	// Register 注册用户账号
-	Register(ctx context.Context, mobile, password string) (*UserDTO, error)
+	Register(ctx context.Context, mobile, password, code string) (*UserDTO, error)
 	// Update 更新 用户信息
 	Update(ctx context.Context, userDTO *UserDTO) error
 	// Get 通过 ID 获取 用户信息
@@ -59,42 +60,11 @@ func (us *userService) MobileLogin(ctx context.Context, mobile, password string)
 	}
 
 	// 生成 token
-	j := middlewares.NewJWT(us.jwtOpts.Key)
-
-	claims := service.CustomClaims{
-		ID:          uint(byMobile.ID),
-		NickName:    byMobile.NickName,
-		AuthorityId: uint(byMobile.Role),
-		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    us.jwtOpts.Realm,
-			ExpiresAt: jwt.NewNumericDate(time.Now().Local().Add(us.jwtOpts.Timeout)), // 过期时间
-			NotBefore: jwt.NewNumericDate(time.Now().Local()),                         // 生效时间
-			IssuedAt:  jwt.NewNumericDate(time.Now().Local()),                         // 签发时间
-		},
-	}
-
-	var method jwt.SigningMethod
-	switch us.jwtOpts.Method {
-	case "HS256":
-		method = jwt.SigningMethodHS256
-	case "HS384":
-		method = jwt.SigningMethodHS384
-	case "HS512":
-		method = jwt.SigningMethodHS512
-	case "ES256":
-		method = jwt.SigningMethodES256
-	case "ES384":
-		method = jwt.SigningMethodES384
-	case "ES512":
-		method = jwt.SigningMethodES512
-	default:
-		return nil, errors.New("invalid jwt method")
-	}
-
-	token, err := j.CreateToken(claims, method)
+	token, err := pkg.CreateJWT(byMobile, us.jwtOpts)
 	if err != nil {
 		return nil, err
 	}
+
 	return &UserDTO{
 		UserDO:    *byMobile,
 		Token:     token,
@@ -102,9 +72,39 @@ func (us *userService) MobileLogin(ctx context.Context, mobile, password string)
 	}, nil
 }
 
-func (us *userService) Register(ctx context.Context, mobile, password string) (*UserDTO, error) {
-	//TODO implement me
-	panic("implement me")
+func (us *userService) Register(ctx context.Context, mobile, password, codes string) (*UserDTO, error) {
+	rstore := storage.RedisCluster{}
+
+	value, err := rstore.GetKey(ctx, mobile)
+	if err != nil {
+		return nil, errors.WithCode(code.ErrCodeNotExist, "验证码不存在")
+	}
+	if value != codes {
+		return nil, errors.WithCode(code.ErrCodeNotExist, "验证码不正确")
+	}
+
+	// 注册账号
+	var userDO = &data.UserDO{
+		NickName: mobile,
+		Mobile:   mobile,
+		PassWord: password,
+	}
+	us.UserData.Create(ctx, userDO)
+	if err != nil {
+		log.ErrorfC(ctx, "user register error: %v", err)
+		return nil, err
+	}
+
+	// 生成 token
+	token, err := pkg.CreateJWT(userDO, us.jwtOpts)
+	if err != nil {
+		return nil, err
+	}
+	return &UserDTO{
+		UserDO:    *userDO,
+		Token:     token,
+		ExpiredAt: time.Now().Local().Add(us.jwtOpts.Timeout).Unix(),
+	}, nil
 }
 
 func (us *userService) Update(ctx context.Context, userDTO *UserDTO) error {

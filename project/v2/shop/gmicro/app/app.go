@@ -22,14 +22,6 @@ type App struct {
 }
 
 func New(opts ...Option) *App {
-	//o := options{
-	//	sigs:             []os.Signal{syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT},
-	//	registrarTimeout: 10 * time.Second, // 注册服务 超时时间
-	//	stopTimeout:      10 * time.Second, // 注销服务 超时时间
-	//}
-	//if id, err := uuid.NewUUID(); err == nil {
-	//	o.id = id.String()
-	//}
 	o := DefaultOptions()
 
 	for _, opt := range opts { // 执行附加参数

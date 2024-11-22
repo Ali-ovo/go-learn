@@ -17,7 +17,7 @@ func NewApp(basename string) *app.App {
 	cfg := config.NewConfig()
 
 	return app.NewApp(
-		"user",
+		"user_srv",
 		basename,
 		app.WithOptions(cfg), // 初始 log server 配置
 		app.WithRunFunc(run(cfg)),

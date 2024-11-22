@@ -9,7 +9,7 @@ import (
 type SmsOptions struct {
 	APIKey      string `mapstructure:"key"       json:"key"`
 	APISecret   string `mapstructure:"secret"    json:"secret"`
-	APISignName string `mapstructure:"sign_name" json:"sign_name"`
+	APISignName string `mapstructure:"sign-name" json:"sign-name"`
 	APICode     string `mapstructure:"code"      json:"code"`
 }
 
@@ -38,5 +38,5 @@ func (so *SmsOptions) AddFlags(fs *pflag.FlagSet) {
 	fs.StringVar(&so.APIKey, "sms.apikey", so.APIKey, "sms API Key")
 	fs.StringVar(&so.APISecret, "sms.secret", so.APISecret, "sms API Secret")
 	fs.StringVar(&so.APICode, "sms.code", so.APICode, "sms API Code")
-	fs.StringVar(&so.APISignName, "sms.sign_name", so.APISignName, "sms API Sign Name")
+	fs.StringVar(&so.APISignName, "sms.sign-name", so.APISignName, "sms API Sign Name")
 }

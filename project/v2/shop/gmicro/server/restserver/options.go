@@ -26,25 +26,14 @@ func WithMiddlewares(middlewares []string) ServerOption {
 	}
 }
 
-func WithHealthz(healthz bool) ServerOption {
-	return func(s *Server) {
-		s.healthz = healthz
-	}
-}
-
-func WithJwt(jwt *JwtInfo) ServerOption {
-	return func(s *Server) {
-		s.jwt = jwt
-	}
-}
-
 func WithTransNames(transName string) ServerOption {
 	return func(s *Server) {
 		s.transName = transName
 	}
 }
 
-func WithEnableTracing(enableTracing bool) ServerOption {
+// WithClientEnableTracing 设置是否开启链路追踪
+func WithClientEnableTracing(enableTracing bool) ServerOption {
 	return func(s *Server) {
 		s.enableTracing = enableTracing
 	}

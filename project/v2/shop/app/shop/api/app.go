@@ -1,10 +1,12 @@
-package admin
+package api
 
 import (
+	"context"
 	"shop/app/shop/api/config"
 	gapp "shop/gmicro/app"
 	"shop/gmicro/pkg/app"
 	"shop/gmicro/pkg/log"
+	"shop/gmicro/pkg/storage"
 	"shop/gmicro/registry"
 	"shop/gmicro/registry/consul"
 	"shop/pkg/options"
@@ -17,7 +19,7 @@ func NewApp(basename string) *app.App {
 	cfg := config.NewConfig()
 
 	return app.NewApp(
-		"admin",
+		"user_api",
 		basename,
 		app.WithOptions(cfg), // 初始 log server 配置
 		app.WithRunFunc(run(cfg)),
@@ -49,6 +51,26 @@ func NewUserApp(cfg *config.Config) (*gapp.App, error) {
 
 	// 服务注册
 	register := NewRegistrar(cfg.Registry)
+
+	// 连接redis
+	redisConfig := &storage.Config{
+		Host:                  cfg.Redis.Host,
+		Port:                  cfg.Redis.Port,
+		Addrs:                 cfg.Redis.Addrs,
+		MasterName:            cfg.Redis.MasterName,
+		Username:              cfg.Redis.Username,
+		Password:              cfg.Redis.Password,
+		Database:              cfg.Redis.Database,
+		MaxIdle:               cfg.Redis.MaxIdle,
+		MaxActive:             cfg.Redis.MaxActive,
+		Timeout:               cfg.Redis.TimeOut,
+		EnableCluster:         cfg.Redis.EnableCluster,
+		UseSSL:                cfg.Redis.UseSSL,
+		SSLInsecureSkipVerify: cfg.Redis.SSLInsecureSkipVerify,
+		EnableTracing:         cfg.Redis.EnableTracing,
+	}
+	go storage.ConnectToRedis(context.Background(), redisConfig)
+
 	// 生成 http 服务
 	httpServer, err := NewAPIHTTPServer(cfg)
 	if err != nil {

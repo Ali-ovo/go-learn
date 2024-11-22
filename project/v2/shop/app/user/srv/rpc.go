@@ -32,11 +32,14 @@ func NewUserRPCServer(cfg *config.Config) (*rpcserver.Server, error) {
 	userver := user.NewUserServer(srv)
 
 	rpcAddr := fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
-	urpcServer := rpcserver.NewServer(rpcserver.WithAddress(rpcAddr), rpcserver.WithServerEnableTracing())
+
+	urpcServer := rpcserver.NewServer(
+		rpcserver.WithAddress(rpcAddr),
+		rpcserver.WithServerMetrics(cfg.Server.EnableMetrics),
+		rpcserver.WithServerEnableTracing(cfg.Server.EnableTelemetry),
+	)
+
 	upb.RegisterUserServer(urpcServer.Server, userver)
 
-	//r := gin.Default()
-	//upb.RegisterUserServerHTTPServer(userver, r)
-	//r.Run(":8082")
 	return urpcServer, nil
 }

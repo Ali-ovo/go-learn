@@ -25,4 +25,7 @@
 | ErrUserNotFound | 100501 | 404 | User not found |
 | ErrUserAlreadyExists | 100502 | 400 | User already exists |
 | ErrUserPasswordIncorrect | 100503 | 400 | User password is incorrect |
+| ErrSmsSend | 100504 | 400 | Send sms error |
+| ErrJWTDeploy | 100505 | 500 | JWT deploy error |
+| ErrCodeNotExist | 100506 | 400 | Sms code incorrect or expired |
 
