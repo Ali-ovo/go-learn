@@ -50,3 +50,105 @@
 2024-11-22 11:02:53.985	[34mINFO[0m	restserver/server.go:131	start rest server on port: 8051
 2024-11-22 11:02:59.884	[34mINFO[0m	restserver/server.go:149	stop rest server
 2024-11-22 11:02:59.885	[34mINFO[0m	restserver/server.go:154	rest server stopped
+2024-11-22 13:32:01.622	[35mDEBUG[0m	storage/redis_cluster.go:109	Connecting to redis cluster
+2024-11-22 13:32:01.622	[34mINFO[0m	restserver/server.go:91	intall middleware: recovery
+2024-11-22 13:32:01.622	[34mINFO[0m	restserver/server.go:91	intall middleware: cors
+2024-11-22 13:32:01.622	[34mINFO[0m	restserver/server.go:91	intall middleware: context
+2024-11-22 13:32:01.622	[35mDEBUG[0m	storage/redis_cluster.go:214	Creating new Redis connection pool
+2024-11-22 13:32:01.622	[34mINFO[0m	storage/redis_cluster.go:259	--> [REDIS] Creating single-node client
+2024-11-22 13:32:01.622	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/ --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func1(7 handlers)
+2024-11-22 13:32:01.622	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/cmdline --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func2(7 handlers)
+2024-11-22 13:32:01.622	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/profile --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func3(7 handlers)
+2024-11-22 13:32:01.622	[34mINFO[0m	restserver/server.go:102	POST   /debug/pprof/symbol --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func4(7 handlers)
+2024-11-22 13:32:01.622	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/symbol --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func5(7 handlers)
+2024-11-22 13:32:01.622	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/trace --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func6(7 handlers)
+2024-11-22 13:32:01.622	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/allocs --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func7(7 handlers)
+2024-11-22 13:32:01.622	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/block --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func8(7 handlers)
+2024-11-22 13:32:01.622	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/goroutine --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func9(7 handlers)
+2024-11-22 13:32:01.622	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/heap --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func10(7 handlers)
+2024-11-22 13:32:01.623	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/mutex --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func11(7 handlers)
+2024-11-22 13:32:01.623	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/threadcreate --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func12(7 handlers)
+2024-11-22 13:32:01.623	[34mINFO[0m	restserver/server.go:102	GET    /metrics --> github.com/penglongli/gin-metrics/ginmetrics.(*Monitor).Use.func1(8 handlers)
+2024-11-22 13:32:01.625	[34mINFO[0m	restserver/server.go:102	POST   /v1/user/pwd_login --> shop/app/shop/api/internal/controller/user/v1.(*userController).Login-fm(8 handlers)
+2024-11-22 13:32:01.625	[34mINFO[0m	restserver/server.go:102	POST   /v1/user/register --> shop/app/shop/api/internal/controller/user/v1.(*userController).Register-fm(8 handlers)
+2024-11-22 13:32:01.625	[34mINFO[0m	restserver/server.go:102	GET    /v1/base/captcha --> shop/app/shop/api/internal/controller/user/v1.GetCaptcha(8 handlers)
+2024-11-22 13:32:01.625	[34mINFO[0m	restserver/server.go:102	POST   /v1/base/send_sms --> shop/app/shop/api/internal/controller/sms/v1.(*smsController).SendSms-fm(8 handlers)
+2024-11-22 13:32:01.626	[35mDEBUG[0m	storage/redis_cluster.go:109	Connecting to redis cluster
+2024-11-22 13:32:01.631	[34mINFO[0m	app/app.go:94	start rest server
+2024-11-22 13:32:01.631	[34mINFO[0m	restserver/server.go:138	[gin] start rest server on port: 8051
+2024-11-22 13:32:01.631	[35mDEBUG[0m	storage/redis_cluster.go:214	Creating new Redis connection pool
+2024-11-22 13:32:01.631	[34mINFO[0m	storage/redis_cluster.go:259	--> [REDIS] Creating single-node client
+2024-11-22 13:32:24.360	[34mINFO[0m	discovery/resolver.go:82	[resolver] update instances: [{"id":"24f83e18-a893-11ef-9e56-7e269cd71f1b","name":"user_srv","version":"","metadata":null,"endpoints":["grpc://172.16.100.208:8150"]}]
+2024-11-22 13:33:55.209	[34mINFO[0m	v1/login.go:22	Login is called
+2024-11-22 13:34:03.818	[34mINFO[0m	v1/login.go:22	Login is called
+2024-11-22 13:36:31.199	[34mINFO[0m	v1/login.go:22	Login is called
+2024-11-22 13:45:26.897	[34mINFO[0m	restserver/server.go:156	stop rest server
+2024-11-22 13:45:26.898	[34mINFO[0m	restserver/server.go:161	rest server stopped
+2024-11-22 13:45:29.340	[35mDEBUG[0m	storage/redis_cluster.go:109	Connecting to redis cluster
+2024-11-22 13:45:29.340	[35mDEBUG[0m	storage/redis_cluster.go:214	Creating new Redis connection pool
+2024-11-22 13:45:29.340	[34mINFO[0m	storage/redis_cluster.go:259	--> [REDIS] Creating single-node client
+2024-11-22 13:45:29.340	[34mINFO[0m	restserver/server.go:91	intall middleware: recovery
+2024-11-22 13:45:29.340	[34mINFO[0m	restserver/server.go:91	intall middleware: cors
+2024-11-22 13:45:29.340	[34mINFO[0m	restserver/server.go:91	intall middleware: context
+2024-11-22 13:45:29.341	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/ --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func1(7 handlers)
+2024-11-22 13:45:29.341	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/cmdline --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func2(7 handlers)
+2024-11-22 13:45:29.341	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/profile --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func3(7 handlers)
+2024-11-22 13:45:29.341	[34mINFO[0m	restserver/server.go:102	POST   /debug/pprof/symbol --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func4(7 handlers)
+2024-11-22 13:45:29.341	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/symbol --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func5(7 handlers)
+2024-11-22 13:45:29.341	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/trace --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func6(7 handlers)
+2024-11-22 13:45:29.341	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/allocs --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func7(7 handlers)
+2024-11-22 13:45:29.341	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/block --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func8(7 handlers)
+2024-11-22 13:45:29.341	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/goroutine --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func9(7 handlers)
+2024-11-22 13:45:29.341	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/heap --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func10(7 handlers)
+2024-11-22 13:45:29.341	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/mutex --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func11(7 handlers)
+2024-11-22 13:45:29.341	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/threadcreate --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func12(7 handlers)
+2024-11-22 13:45:29.341	[34mINFO[0m	restserver/server.go:102	GET    /metrics --> github.com/penglongli/gin-metrics/ginmetrics.(*Monitor).Use.func1(8 handlers)
+2024-11-22 13:45:29.343	[35mDEBUG[0m	storage/redis_cluster.go:109	Connecting to redis cluster
+2024-11-22 13:45:29.343	[35mDEBUG[0m	storage/redis_cluster.go:214	Creating new Redis connection pool
+2024-11-22 13:45:29.343	[34mINFO[0m	storage/redis_cluster.go:259	--> [REDIS] Creating single-node client
+2024-11-22 13:45:29.344	[34mINFO[0m	restserver/server.go:102	POST   /v1/user/pwd_login --> shop/app/shop/api/internal/controller/user/v1.(*userController).Login-fm(8 handlers)
+2024-11-22 13:45:29.344	[34mINFO[0m	restserver/server.go:102	POST   /v1/user/register --> shop/app/shop/api/internal/controller/user/v1.(*userController).Register-fm(8 handlers)
+2024-11-22 13:45:29.344	[34mINFO[0m	restserver/server.go:102	GET    /v1/user/detail --> shop/app/shop/api/internal/controller/user/v1.(*userController).GetUserDetail-fm(9 handlers)
+2024-11-22 13:45:29.344	[34mINFO[0m	restserver/server.go:102	GET    /v1/base/captcha --> shop/app/shop/api/internal/controller/user/v1.GetCaptcha(8 handlers)
+2024-11-22 13:45:29.344	[34mINFO[0m	restserver/server.go:102	POST   /v1/base/send_sms --> shop/app/shop/api/internal/controller/sms/v1.(*smsController).SendSms-fm(8 handlers)
+2024-11-22 13:45:29.348	[34mINFO[0m	app/app.go:94	start rest server
+2024-11-22 13:45:29.348	[34mINFO[0m	restserver/server.go:138	[gin] start rest server on port: 8051
+2024-11-22 13:45:35.903	[34mINFO[0m	discovery/resolver.go:82	[resolver] update instances: [{"id":"fa1ced54-a894-11ef-b0ca-7e269cd71f1b","name":"user_srv","version":"","metadata":null,"endpoints":["grpc://172.16.100.208:8150"]}]
+2024-11-22 13:45:38.453	[34mINFO[0m	v1/login.go:22	Login is called
+2024-11-22 14:08:51.188	[34mINFO[0m	v1/login.go:22	Login is called
+2024-11-22 14:08:55.545	[34mINFO[0m	restserver/server.go:156	stop rest server
+2024-11-22 14:08:55.545	[34mINFO[0m	restserver/server.go:161	rest server stopped
+2024-11-22 14:08:59.013	[35mDEBUG[0m	storage/redis_cluster.go:109	Connecting to redis cluster
+2024-11-22 14:08:59.013	[35mDEBUG[0m	storage/redis_cluster.go:214	Creating new Redis connection pool
+2024-11-22 14:08:59.013	[34mINFO[0m	storage/redis_cluster.go:259	--> [REDIS] Creating single-node client
+2024-11-22 14:08:59.014	[34mINFO[0m	restserver/server.go:91	intall middleware: recovery
+2024-11-22 14:08:59.014	[34mINFO[0m	restserver/server.go:91	intall middleware: cors
+2024-11-22 14:08:59.014	[34mINFO[0m	restserver/server.go:91	intall middleware: context
+2024-11-22 14:08:59.014	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/ --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func1(7 handlers)
+2024-11-22 14:08:59.014	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/cmdline --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func2(7 handlers)
+2024-11-22 14:08:59.014	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/profile --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func3(7 handlers)
+2024-11-22 14:08:59.014	[34mINFO[0m	restserver/server.go:102	POST   /debug/pprof/symbol --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func4(7 handlers)
+2024-11-22 14:08:59.014	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/symbol --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func5(7 handlers)
+2024-11-22 14:08:59.014	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/trace --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapF.func6(7 handlers)
+2024-11-22 14:08:59.014	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/allocs --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func7(7 handlers)
+2024-11-22 14:08:59.014	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/block --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func8(7 handlers)
+2024-11-22 14:08:59.014	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/goroutine --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func9(7 handlers)
+2024-11-22 14:08:59.014	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/heap --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func10(7 handlers)
+2024-11-22 14:08:59.014	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/mutex --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func11(7 handlers)
+2024-11-22 14:08:59.014	[34mINFO[0m	restserver/server.go:102	GET    /debug/pprof/threadcreate --> shop/gmicro/server/restserver/pprof.RouteRegister.WrapH.func12(7 handlers)
+2024-11-22 14:08:59.014	[34mINFO[0m	restserver/server.go:102	GET    /metrics --> github.com/penglongli/gin-metrics/ginmetrics.(*Monitor).Use.func1(8 handlers)
+2024-11-22 14:08:59.016	[35mDEBUG[0m	storage/redis_cluster.go:109	Connecting to redis cluster
+2024-11-22 14:08:59.016	[35mDEBUG[0m	storage/redis_cluster.go:214	Creating new Redis connection pool
+2024-11-22 14:08:59.016	[34mINFO[0m	storage/redis_cluster.go:259	--> [REDIS] Creating single-node client
+2024-11-22 14:08:59.017	[34mINFO[0m	restserver/server.go:102	POST   /v1/user/pwd_login --> shop/app/shop/api/internal/controller/user/v1.(*userController).Login-fm(8 handlers)
+2024-11-22 14:08:59.017	[34mINFO[0m	restserver/server.go:102	POST   /v1/user/register --> shop/app/shop/api/internal/controller/user/v1.(*userController).Register-fm(8 handlers)
+2024-11-22 14:08:59.017	[34mINFO[0m	restserver/server.go:102	GET    /v1/user/detail --> shop/app/shop/api/internal/controller/user/v1.(*userController).GetUserDetail-fm(9 handlers)
+2024-11-22 14:08:59.017	[34mINFO[0m	restserver/server.go:102	GET    /v1/base/captcha --> shop/app/shop/api/internal/controller/user/v1.GetCaptcha(8 handlers)
+2024-11-22 14:08:59.017	[34mINFO[0m	restserver/server.go:102	POST   /v1/base/send_sms --> shop/app/shop/api/internal/controller/sms/v1.(*smsController).SendSms-fm(8 handlers)
+2024-11-22 14:08:59.018	[34mINFO[0m	app/app.go:94	start rest server
+2024-11-22 14:08:59.018	[34mINFO[0m	restserver/server.go:138	[gin] start rest server on port: 8051
+2024-11-22 14:09:03.316	[34mINFO[0m	discovery/resolver.go:82	[resolver] update instances: [{"id":"43b40c74-a898-11ef-be08-7e269cd71f1b","name":"user_srv","version":"","metadata":null,"endpoints":["grpc://172.16.100.208:8150"]}]
+2024-11-22 14:09:08.091	[34mINFO[0m	v1/login.go:22	Login is called
+2024-11-22 14:09:09.535	[34mINFO[0m	v1/login.go:22	Login is called
+2024-11-22 14:13:15.179	[34mINFO[0m	restserver/server.go:156	stop rest server
+2024-11-22 14:13:15.179	[34mINFO[0m	restserver/server.go:161	rest server stopped

@@ -72,7 +72,7 @@ func main() {
 	flag.Parse()               // 解析命令行参数
 
 	// 调试用
-	*typeNames = "int"
+	// *typeNames = "int"
 	//*doc = true
 	//*output = "C:/Users/CZC/Desktop/CZC_pro/go-shop/project/v2/shop/pkg/code/error_code_generated.md"
 
@@ -92,7 +92,7 @@ func main() {
 		// Default: 在当前目录下执行
 		args = []string{"."}
 		// 调试用
-		args = []string{"C:/Users/CZC/Desktop/CZC_pro/go-shop/project/v2/shop/pkg/code"}
+		// args = []string{"C:/Users/CZC/Desktop/CZC_pro/go-shop/project/v2/shop/pkg/code"}
 	}
 
 	// 只需解析一次包
@@ -127,13 +127,16 @@ func main() {
 	for _, typeName := range types {
 		if *doc {
 			g.generateDocs(typeName)
-			src = g.buf.Bytes()
+			// src = g.buf.Bytes()
 		} else {
 			g.generate(typeName)
 			// Format the output.
-			src = g.format()
+			// src = g.format()
 		}
 	}
+
+	// Format the output.
+	src = g.format()
 
 	// Write to file.
 	outputName := *output // 写入的文件路径

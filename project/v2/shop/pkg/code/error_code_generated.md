@@ -27,5 +27,9 @@
 | ErrUserPasswordIncorrect | 100503 | 400 | User password is incorrect |
 | ErrSmsSend | 100504 | 400 | Send sms error |
 | ErrJWTDeploy | 100505 | 500 | JWT deploy error |
-| ErrCodeNotExist | 100506 | 400 | Sms code incorrect or expired |
+| ErrJWTReadFiled | 100506 | 500 | JWT read field error |
+| ErrInvalidPrivKey | 100507 | 500 | Internal server error |
+| ErrFailedTokenCreation | 100508 | 500 | Internal server error |
+| ErrCodeNotExist | 100509 | 400 | Sms code incorrect or expired |
+| ErrCodeExpired | 100510 | 400 | Sms code expired |
 

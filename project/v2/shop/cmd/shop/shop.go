@@ -4,7 +4,7 @@ import (
 	"math/rand"
 	"os"
 	"runtime"
-	"shop/app/shop/api"
+	"shop/app/shop_api/api"
 	"time"
 )
 

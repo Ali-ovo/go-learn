@@ -15,13 +15,13 @@ import (
 
 // BasicStrategy defines Basic authentication strategy.
 type BasicStrategy struct {
-	compare func(username string, password string) bool
+	compare func(c *gin.Context, string, password string) bool
 }
 
 var _ middlewares.AuthStrategy = &BasicStrategy{}
 
 // NewBasicStrategy create basic strategy with compare function.
-func NewBasicStrategy(compare func(username string, password string) bool) BasicStrategy {
+func NewBasicStrategy(compare func(c *gin.Context, username string, password string) bool) BasicStrategy {
 	return BasicStrategy{
 		compare: compare,
 	}
@@ -46,7 +46,7 @@ func (b BasicStrategy) AuthFunc() gin.HandlerFunc {
 		payload, _ := base64.StdEncoding.DecodeString(auth[1])
 		pair := strings.SplitN(string(payload), ":", 2)
 
-		if len(pair) != 2 || !b.compare(pair[0], pair[1]) {
+		if len(pair) != 2 || !b.compare(c, pair[0], pair[1]) {
 			core.WriteResponse(
 				c,
 				errors.WithCode(code.ErrSignatureInvalid, "Authorization header format is wrong."),
@@ -56,8 +56,6 @@ func (b BasicStrategy) AuthFunc() gin.HandlerFunc {
 
 			return
 		}
-
-		c.Set(middlewares.UsernameKey, pair[0])
 
 		c.Next()
 	}

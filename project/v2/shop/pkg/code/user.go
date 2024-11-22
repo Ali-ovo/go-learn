@@ -21,4 +21,13 @@ const (
 
 	// ErrCodeExpired - 400: Sms code expired.
 	ErrCodeExpired
+
+	// ErrJWTReadFiled - 500: JWT read field error.
+	ErrJWTReadFiled
+
+	// ErrInvalidPrivKey - 500: that the given private key is invalid.
+	ErrInvalidPrivKey
+
+	// ErrFailedTokenCreation - 500: indicates JWT Token failed to create, reason unknown.
+	ErrFailedTokenCreation
 )

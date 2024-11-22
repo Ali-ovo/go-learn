@@ -12,5 +12,9 @@ func init() {
 	register(ErrUserPasswordIncorrect, 400, "User password is incorrect")
 	register(ErrSmsSend, 400, "Send sms error")
 	register(ErrJWTDeploy, 500, "JWT deploy error")
+	register(ErrJWTReadFiled, 500, "JWT read field error")
+	register(ErrInvalidPrivKey, 500, "Internal server error")
+	register(ErrFailedTokenCreation, 500, "Internal server error")
 	register(ErrCodeNotExist, 400, "Sms code incorrect or expired")
+	register(ErrCodeExpired, 400, "Sms code expired")
 }
