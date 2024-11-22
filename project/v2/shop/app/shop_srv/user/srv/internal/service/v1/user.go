@@ -101,7 +101,7 @@ func (u *userService) Create(ctx context.Context, user *UserDTO) error {
 
 func (u *userService) Update(ctx context.Context, user *UserDTO) error {
 	// 先判断用户id 是否存在
-	_, err := u.userData.GetByID(ctx, uint64(user.ID))
+	userDO, err := u.userData.GetByID(ctx, uint64(user.ID))
 	if errors.IsCode(err, code.ErrUserNotFound) {
 		return errors.WithCode(code.ErrUserAlreadyExists, "用户不存在")
 	}
@@ -110,7 +110,11 @@ func (u *userService) Update(ctx context.Context, user *UserDTO) error {
 		return err
 	}
 
-	return u.userData.Update(ctx, &user.UserDO)
+	userDO.NickName = user.NickName
+	userDO.Birthday = user.Birthday
+	userDO.Gender = user.Gender
+
+	return u.userData.Update(ctx, userDO)
 }
 
 func NewUserService(us data.UserData) *userService {

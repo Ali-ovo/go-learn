@@ -2,6 +2,7 @@ package sms
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"math/rand"
 	"shop/pkg/options"
@@ -64,9 +65,19 @@ func (s *smsService) SendSms(ctx context.Context, mobile string, tp string) erro
 	request.QueryParams["TemplateCode"] = s.smsOpts.APICode //阿里云的短信模板号 自己设置
 	request.QueryParams["TemplateParam"] = tp               //短信模板中的验证码内容 自己生成   之前试过直接返回，但是失败，加上code成功。
 	response, err := client.ProcessCommonRequest(request)
-	fmt.Print(client.DoAction(request, response))
 	if err != nil {
 		return err
+	}
+
+	isSendBytes := response.GetHttpContentBytes()
+	isSend := make(map[string]interface{})
+	err = json.Unmarshal(isSendBytes, &isSend)
+	if err != nil {
+		return err
+	}
+
+	if isSend["Message"] != "OK" {
+		return fmt.Errorf("发送短信验证码失败")
 	}
 	return nil
 }

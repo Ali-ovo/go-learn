@@ -7,9 +7,10 @@ import (
 	upbv1 "shop/api/user/v1"
 	dv1 "shop/app/shop_srv/user/srv/internal/data/v1"
 	"shop/app/shop_srv/user/srv/internal/service/v1"
-	"shop/gmicro/pkg/log"
 
 	"github.com/anaskhan96/go-password-encoder"
+
+	"shop/gmicro/pkg/errors"
 )
 
 // CreateUser
@@ -36,8 +37,8 @@ func (uc *userServer) CreateUser(ctx context.Context, info *upbv1.CreateUserInfo
 
 	err := uc.srv.Create(ctx, &userDTO)
 	if err != nil {
-		log.Errorf("create user: %v, error: %v", userDTO, err)
-		return nil, err
+		// log.Errorf("create user: %v, error: %v", userDTO, err)
+		return nil, errors.ToGrpcError(err)
 	}
 
 	userInfoRsp := DTOToResponse(userDTO)

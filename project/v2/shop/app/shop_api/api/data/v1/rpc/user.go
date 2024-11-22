@@ -51,7 +51,7 @@ func (u *users) Create(ctx context.Context, user *data.UserDO) error {
 	}
 	userRsp, err := u.uc.CreateUser(ctx, protoUser)
 	if err != nil {
-		return err
+		return errors.FromGrpcError(err)
 	}
 	user.ID = int64(userRsp.Id)
 	return nil
@@ -66,7 +66,7 @@ func (u *users) Update(ctx context.Context, user *data.UserDO) error {
 	}
 	_, err := u.uc.UpdateUser(ctx, protoUser)
 	if err != nil {
-		return err
+		return errors.FromGrpcError(err)
 	}
 	return nil
 }
@@ -77,7 +77,7 @@ func (u *users) Get(ctx context.Context, userID uint64) (*data.UserDO, error) {
 	}
 	user, err := u.uc.GetUserById(ctx, protoUser)
 	if err != nil {
-		return nil, err
+		return nil, errors.FromGrpcError(err)
 	}
 	return &data.UserDO{
 		ID:       int64(user.Id),
@@ -94,7 +94,7 @@ func (u *users) GetByMobile(ctx context.Context, mobile string) (*data.UserDO, e
 	protoUser := &upbv1.MobileRequest{Mobile: mobile}
 	user, err := u.uc.GetUserByMobile(ctx, protoUser)
 	if err != nil {
-		return nil, err
+		return nil, errors.FromGrpcError(err)
 	}
 	return &data.UserDO{
 		ID:       int64(user.Id),
@@ -114,7 +114,7 @@ func (u *users) CheckPassWord(ctx context.Context, password string, encryptedPwd
 	}
 	cres, err := u.uc.CheckPassWord(ctx, protoUser)
 	if err != nil {
-		return err
+		return errors.FromGrpcError(err)
 	}
 	if cres.Success == true {
 		return nil

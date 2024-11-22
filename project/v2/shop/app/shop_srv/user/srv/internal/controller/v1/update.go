@@ -7,8 +7,9 @@ import (
 
 	"shop/app/shop_srv/user/srv/internal/data/v1"
 	"shop/app/shop_srv/user/srv/internal/service/v1"
-	"shop/gmicro/pkg/log"
 	"time"
+
+	"shop/gmicro/pkg/errors"
 
 	"github.com/golang/protobuf/ptypes/empty"
 )
@@ -30,8 +31,8 @@ func (uc *userServer) UpdateUser(ctx context.Context, info *upbv1.UpdateUserInfo
 
 	err := uc.srv.Update(ctx, &userDTO)
 	if err != nil {
-		log.Errorf("update user: %v, error: %v", userDTO, err)
-		return nil, err
+		// log.Errorf("update user: %v, error: %v", userDTO, err)
+		return nil, errors.ToGrpcError(err)
 	}
 	return &empty.Empty{}, nil
 }

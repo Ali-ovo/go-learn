@@ -41,7 +41,7 @@ func (u *users) List(ctx context.Context, orderby []string, opts metav1.ListMeta
 	// 排序
 	query := u.db
 	for _, v := range orderby {
-		query.Order(v)
+		query = query.Order(v)
 	}
 
 	// 查询 TODO: 可能存在问题 需要跑一下代码

@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	upbv1 "shop/api/user/v1"
+	"shop/gmicro/pkg/errors"
 )
 
 // GetUserById
@@ -18,7 +19,7 @@ func (uc *userServer) GetUserById(ctx context.Context, request *upbv1.IdRequest)
 	user, err := uc.srv.GetByID(ctx, uint64(request.Id))
 	if err != nil {
 		//log.Errorf("get user by id: %s, error: %v", request.Id, err)
-		return nil, err
+		return nil, errors.ToGrpcError(err)
 	}
 	userInfoRsp := DTOToResponse(*user)
 	return userInfoRsp, nil

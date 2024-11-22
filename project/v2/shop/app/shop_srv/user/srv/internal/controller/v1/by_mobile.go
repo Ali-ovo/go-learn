@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	upbv1 "shop/api/user/v1"
+	"shop/gmicro/pkg/errors"
 )
 
 // GetUserByMobile
@@ -18,7 +19,7 @@ func (uc *userServer) GetUserByMobile(ctx context.Context, request *upbv1.Mobile
 	user, err := uc.srv.GetByMobile(ctx, request.Mobile)
 	if err != nil {
 		//log.Errorf("get user by mobile: %s, error: %v", request.Mobile, err)
-		return nil, err
+		return nil, errors.ToGrpcError(err)
 	}
 	userInfoRsp := DTOToResponse(*user)
 	return userInfoRsp, nil

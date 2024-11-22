@@ -1,6 +1,7 @@
 package user
 
 import (
+	"fmt"
 	"shop/gmicro/pkg/common/core"
 	"shop/gmicro/pkg/common/time"
 	"shop/gmicro/server/restserver/middlewares"
@@ -37,7 +38,7 @@ func (us *userController) UpdateUser(ctx *gin.Context) {
 
 	userDTO.NickName = updateForm.Name
 	userDTO.Gender = updateForm.Gender
-	userDTO.Birthday, err = time.ToTime(updateForm.Birthday)
+	userDTO.Birthday, err = time.ToTime(fmt.Sprint(updateForm.Birthday + " 00:00:00"))
 
 	err = us.srv.Update(ctx, userDTO)
 	if err != nil {

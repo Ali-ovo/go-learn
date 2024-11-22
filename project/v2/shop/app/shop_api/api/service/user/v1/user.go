@@ -5,7 +5,6 @@ import (
 	"shop/app/shop_api/api/data/v1"
 	"shop/app/shop_api/api/pkg/auth/JWTAuth"
 	"shop/gmicro/pkg/errors"
-	"shop/gmicro/pkg/log"
 	"shop/gmicro/pkg/storage"
 	"shop/pkg/code"
 	"shop/pkg/options"
@@ -29,8 +28,6 @@ type UserSrv interface {
 	Get(ctx context.Context, userID uint64) (*UserDTO, error)
 	// GetByMobile 通过 手机号 获取 用户信息
 	GetByMobile(ctx context.Context, mobile string) (*UserDTO, error)
-	// CheckPassWord 验证 密码是否正确
-	CheckPassWord(ctx context.Context, password, EncryptedPassword string) (bool, error)
 }
 
 type userService struct {
@@ -89,7 +86,7 @@ func (us *userService) Register(ctx context.Context, mobile, password, codes str
 	}
 	err = us.UserData.Create(ctx, userDO)
 	if err != nil {
-		log.ErrorfC(ctx, "user register error: %v", err)
+		// log.ErrorfC(ctx, "user register error: %v", err)
 		return nil, err
 	}
 
@@ -106,8 +103,17 @@ func (us *userService) Register(ctx context.Context, mobile, password, codes str
 }
 
 func (us *userService) Update(ctx context.Context, userDTO *UserDTO) error {
-	//TODO implement me
-	panic("implement me")
+	var userDO = &data.UserDO{
+		ID:       userDTO.ID,
+		NickName: userDTO.NickName,
+		Birthday: userDTO.Birthday,
+		Gender:   userDTO.Gender,
+	}
+	err := us.UserData.Update(ctx, userDO)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (us *userService) Get(ctx context.Context, userID uint64) (*UserDTO, error) {
@@ -124,11 +130,6 @@ func (us *userService) GetByMobile(ctx context.Context, mobile string) (*UserDTO
 		return nil, err
 	}
 	return &UserDTO{UserDO: *userDO}, nil
-}
-
-func (us *userService) CheckPassWord(ctx context.Context, password, EncryptedPassword string) (bool, error) {
-	//TODO implement me
-	panic("implement me")
 }
 
 var _ UserSrv = (*userService)(nil)
