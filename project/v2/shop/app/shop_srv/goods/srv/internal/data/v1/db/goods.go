@@ -67,8 +67,24 @@ func (g *goods) Create(ctx context.Context, goods *do.GoodsDO) error {
 	return nil
 }
 
+func (g *goods) CreateInTxn(ctx context.Context, txn *gorm.DB, goods *do.GoodsDO) error {
+	tx := txn.Create(goods)
+	if tx.Error != nil {
+		return errors.WithCode(code.ErrDatabase, tx.Error.Error())
+	}
+	return nil
+}
+
 func (g *goods) Update(ctx context.Context, goods *do.GoodsDO) error {
 	tx := g.db.Save(goods)
+	if tx.Error != nil {
+		return errors.WithCode(code.ErrDatabase, tx.Error.Error())
+	}
+	return nil
+}
+
+func (g *goods) UpdateInTxn(ctx context.Context, txn *gorm.DB, goods *do.GoodsDO) error {
+	tx := txn.Save(goods)
 	if tx.Error != nil {
 		return errors.WithCode(code.ErrDatabase, tx.Error.Error())
 	}
@@ -78,9 +94,27 @@ func (g *goods) Update(ctx context.Context, goods *do.GoodsDO) error {
 func (g *goods) Delete(ctx context.Context, ID uint64) error {
 	result := g.db.Delete(&do.GoodsDO{}, ID)
 	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return errors.WithCode(code2.ErrGoodsNotFound, result.Error.Error())
+		}
 		return errors.WithCode(code.ErrDatabase, result.Error.Error())
 	}
 	return nil
+}
+
+func (g *goods) DeleteInTxn(ctx context.Context, txn *gorm.DB, ID uint64) error {
+	result := txn.Delete(&do.GoodsDO{}, ID)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return errors.WithCode(code2.ErrGoodsNotFound, result.Error.Error())
+		}
+		return errors.WithCode(code.ErrDatabase, result.Error.Error())
+	}
+	return nil
+}
+
+func (g *goods) Begin(ctx context.Context) *gorm.DB {
+	return g.db.Begin()
 }
 
 func NewGoods(db *gorm.DB) *goods {

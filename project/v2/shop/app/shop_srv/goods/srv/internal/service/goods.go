@@ -98,14 +98,35 @@ func (gs *goodsService) Get(ctx context.Context, id uint64) (*dto.GoodsDTO, erro
 }
 
 func (gs *goodsService) Create(ctx context.Context, goods *dto.GoodsDTO) error {
-	if _, err := gs.brandsData.Get(ctx, goods.BrandsID); err == nil {
+	/*
+		方案一: 基于可靠消息实现最终一致性 消息队列[事务消息] (更好 代码侵入性强)
+		方案二: 基于mysql事务消息 (有一定的风险 ES 超时但是执行了的情况)
+		方案三: 基于 阿里云开源的 canal
+			读取 mysql binlog文件 并将 数据 分发到 kafka 、 rocketmq 或 hbase 等中间件中
+			只需要监听 这些中间件的 to
+	*/
+	var err error
+	if _, err = gs.brandsData.Get(ctx, goods.BrandsID); err == nil {
 		return err
 	}
-	if _, err := gs.categoryData.Get(ctx, goods.CategoryID); err != nil {
+	if _, err = gs.categoryData.Get(ctx, goods.CategoryID); err != nil {
 		return err
 	}
 
-	if err := gs.goodsData.Create(ctx, &goods.GoodsDO); err != nil {
+	txn := gs.goodsData.Begin(ctx)
+	defer func() { // 异常处理
+		if p := recover(); p != nil {
+			txn.Rollback()
+			log.ErrorfC(ctx, "panic: %v", p)
+			return
+		} else if err != nil {
+			txn.Rollback()
+		} else {
+			txn.Commit()
+		}
+	}()
+
+	if err = gs.goodsData.CreateInTxn(ctx, txn, &goods.GoodsDO); err != nil {
 		return err
 	}
 
@@ -125,9 +146,10 @@ func (gs *goodsService) Create(ctx context.Context, goods *dto.GoodsDTO) error {
 		GoodsBrief:  goods.GoodsBrief,
 		ShopPrice:   goods.ShopPrice,
 	}
-	if err := gs.goodsSerachData.Create(ctx, &goodsSearchDo); err != nil {
+	if err = gs.goodsSerachData.Create(ctx, &goodsSearchDo); err != nil {
 		return err
 	}
+	txn.Commit()
 	return nil
 }
 
