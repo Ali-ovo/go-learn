@@ -27,7 +27,7 @@ type UserSrv interface {
 }
 
 type userService struct {
-	userData data.UserData // 数据的来源
+	data data.UserStore // 数据的来源
 }
 
 var _ UserSrv = &userService{}
@@ -48,7 +48,7 @@ func (u *userService) List(ctx context.Context, orderby []string, opts metav1.Li
 			2. 去删除一些数据
 		3. 如果 data 层的方法有bug 代码想要具备好的可测试性
 	*/
-	doList, err := u.userData.List(ctx, orderby, opts)
+	doList, err := u.data.List(ctx, orderby, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func (u *userService) List(ctx context.Context, orderby []string, opts metav1.Li
 }
 
 func (u *userService) GetByMobile(ctx context.Context, mobile string) (*UserDTO, error) {
-	userDo, err := u.userData.GetByMobile(ctx, mobile)
+	userDo, err := u.data.GetByMobile(ctx, mobile)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func (u *userService) GetByMobile(ctx context.Context, mobile string) (*UserDTO,
 }
 
 func (u *userService) GetByID(ctx context.Context, id uint64) (*UserDTO, error) {
-	userDo, err := u.userData.GetByID(ctx, id)
+	userDo, err := u.data.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -86,9 +86,9 @@ func (u *userService) GetByID(ctx context.Context, id uint64) (*UserDTO, error) 
 
 func (u *userService) Create(ctx context.Context, user *UserDTO) error {
 	// 先判断用户号码是否存在
-	_, err := u.userData.GetByMobile(ctx, user.Mobile)
+	_, err := u.data.GetByMobile(ctx, user.Mobile)
 	if errors.IsCode(err, code.ErrUserNotFound) {
-		return u.userData.Create(ctx, &user.UserDO)
+		return u.data.Create(ctx, &user.UserDO)
 	}
 
 	// 说明 数据库存在问题
@@ -101,7 +101,7 @@ func (u *userService) Create(ctx context.Context, user *UserDTO) error {
 
 func (u *userService) Update(ctx context.Context, user *UserDTO) error {
 	// 先判断用户id 是否存在
-	userDO, err := u.userData.GetByID(ctx, uint64(user.ID))
+	userDO, err := u.data.GetByID(ctx, uint64(user.ID))
 	if errors.IsCode(err, code.ErrUserNotFound) {
 		return errors.WithCode(code.ErrUserAlreadyExists, "用户不存在")
 	}
@@ -114,11 +114,11 @@ func (u *userService) Update(ctx context.Context, user *UserDTO) error {
 	userDO.Birthday = user.Birthday
 	userDO.Gender = user.Gender
 
-	return u.userData.Update(ctx, userDO)
+	return u.data.Update(ctx, userDO)
 }
 
-func NewUserService(us data.UserData) *userService {
+func NewUserService(us data.UserStore) *userService {
 	return &userService{
-		userData: us,
+		data: us,
 	}
 }

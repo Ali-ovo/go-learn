@@ -2,7 +2,7 @@ package rpc
 
 import (
 	"context"
-	upbv1 "shop/api/user/v1"
+	user_pb "shop/api/user/v1"
 	"shop/app/shop_api/api/data/v1"
 	"shop/gmicro/pkg/common/time"
 	"shop/gmicro/pkg/errors"
@@ -14,16 +14,16 @@ import (
 const serviceName = "discovery:///shop_user_srv"
 
 type users struct {
-	uc upbv1.UserClient
+	uc user_pb.UserClient
 }
 
-func NewUsers(uc upbv1.UserClient) *users {
+func NewUsers(uc user_pb.UserClient) *users {
 	return &users{
 		uc: uc,
 	}
 }
 
-func NewUserServiceClient(r registry.Discovery) upbv1.UserClient {
+func NewUserServiceClient(r registry.Discovery) user_pb.UserClient {
 	conn, err := rpcserver.DialInsecure(
 		context.Background(),
 		// 设置负载均衡
@@ -39,12 +39,12 @@ func NewUserServiceClient(r registry.Discovery) upbv1.UserClient {
 		panic(err)
 	}
 
-	c := upbv1.NewUserClient(conn)
+	c := user_pb.NewUserClient(conn)
 	return c
 }
 
 func (u *users) Create(ctx context.Context, user *data.UserDO) error {
-	protoUser := &upbv1.CreateUserInfo{
+	protoUser := &user_pb.CreateUserInfo{
 		Mobile:   user.Mobile,
 		Password: user.PassWord,
 		NickName: user.NickName,
@@ -58,7 +58,7 @@ func (u *users) Create(ctx context.Context, user *data.UserDO) error {
 }
 
 func (u *users) Update(ctx context.Context, user *data.UserDO) error {
-	protoUser := &upbv1.UpdateUserInfo{
+	protoUser := &user_pb.UpdateUserInfo{
 		Id:       int32(user.ID),
 		NickName: user.NickName,
 		Gender:   user.Gender,
@@ -72,7 +72,7 @@ func (u *users) Update(ctx context.Context, user *data.UserDO) error {
 }
 
 func (u *users) Get(ctx context.Context, userID uint64) (*data.UserDO, error) {
-	protoUser := &upbv1.IdRequest{
+	protoUser := &user_pb.IdRequest{
 		Id: int32(userID),
 	}
 	user, err := u.uc.GetUserById(ctx, protoUser)
@@ -91,7 +91,7 @@ func (u *users) Get(ctx context.Context, userID uint64) (*data.UserDO, error) {
 }
 
 func (u *users) GetByMobile(ctx context.Context, mobile string) (*data.UserDO, error) {
-	protoUser := &upbv1.MobileRequest{Mobile: mobile}
+	protoUser := &user_pb.MobileRequest{Mobile: mobile}
 	user, err := u.uc.GetUserByMobile(ctx, protoUser)
 	if err != nil {
 		return nil, errors.FromGrpcError(err)
@@ -108,7 +108,7 @@ func (u *users) GetByMobile(ctx context.Context, mobile string) (*data.UserDO, e
 }
 
 func (u *users) CheckPassWord(ctx context.Context, password string, encryptedPwd string) error {
-	protoUser := &upbv1.PasswordCheckInfo{
+	protoUser := &user_pb.PasswordCheckInfo{
 		Password:          password,
 		EncryptedPassword: encryptedPwd,
 	}

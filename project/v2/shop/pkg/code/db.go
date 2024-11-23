@@ -6,3 +6,11 @@ const (
 	// ErrConnectDB - 500: init db error.
 	ErrConnectDB int = iota + 100501
 )
+
+const (
+	// ErrEsDatabase - 404: EsDatabase error.
+	ErrEsDatabase int = iota + 100601
+
+	// ErrEsUnmarshal - 500: Es unmarshal error.
+	ErrEsUnmarshal
+)

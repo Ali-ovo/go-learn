@@ -18,7 +18,7 @@ type UserDO struct {
 type UserDOList struct {
 	TotalCount int64     `json:"total_count,omitempty"` // 总数
 	Items      []*UserDO `json:"items"`                 // 用户数据
-	//Items []*upbv1.UserInfoResponse `json:"items"`
+	//Items []*user_pb.UserInfoResponse `json:"items"`
 }
 
 type UserData interface {

@@ -3,5 +3,12 @@
 package code
 
 const (
-	ErrGoodsNotFound int = iota + 100701
+	// ErrGoodsNotFound - 404: Goods not found.
+	ErrGoodsNotFound int = iota + 101101
+
+	// ErrCategoryNotFound - 404: Category not found.
+	ErrCategoryNotFound
+
+	// ErrBrandsNotFound - 404: Brand not found.
+	ErrBrandsNotFound
 )

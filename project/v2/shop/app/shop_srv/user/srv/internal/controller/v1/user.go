@@ -1,12 +1,12 @@
 package controller
 
 import (
-	upbv1 "shop/api/user/v1"
+	user_pb "shop/api/user/v1"
 	"shop/app/shop_srv/user/srv/internal/service/v1"
 )
 
 type userServer struct {
-	upbv1.UnimplementedUserServer
+	user_pb.UnimplementedUserServer
 	srv service.UserSrv
 }
 
@@ -14,10 +14,10 @@ func NewUserServer(srv service.UserSrv) *userServer {
 	return &userServer{srv: srv}
 }
 
-func DTOToResponse(userDTO service.UserDTO) *upbv1.UserInfoResponse {
+func DTOToResponse(userDTO service.UserDTO) *user_pb.UserInfoResponse {
 	// 在 grpc 的 message 中字段有默认值, 你不能随便赋值 nil 进去, 容易出错
 	// 这里要搞清, 那些字段是有默认值
-	userInfoRsp := upbv1.UserInfoResponse{
+	userInfoRsp := user_pb.UserInfoResponse{
 		Id:       userDTO.ID,
 		Mobile:   userDTO.Mobile,
 		Password: userDTO.Password,
@@ -31,4 +31,4 @@ func DTOToResponse(userDTO service.UserDTO) *upbv1.UserInfoResponse {
 	return &userInfoRsp
 }
 
-var _ upbv1.UserServer = &userServer{}
+var _ user_pb.UserServer = &userServer{}

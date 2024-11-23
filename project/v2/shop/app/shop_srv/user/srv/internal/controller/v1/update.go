@@ -2,7 +2,7 @@ package controller
 
 import (
 	"context"
-	upbv1 "shop/api/user/v1"
+	user_pb "shop/api/user/v1"
 	"shop/pkg/gorm"
 
 	"shop/app/shop_srv/user/srv/internal/data/v1"
@@ -14,7 +14,7 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 )
 
-func (uc *userServer) UpdateUser(ctx context.Context, info *upbv1.UpdateUserInfo) (*empty.Empty, error) {
+func (uc *userServer) UpdateUser(ctx context.Context, info *user_pb.UpdateUserInfo) (*empty.Empty, error) {
 	//log.Info("update user function called.")
 
 	birthDay := time.Unix(int64(info.BirthDay), 0)

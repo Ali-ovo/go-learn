@@ -62,6 +62,7 @@ require (
 	github.com/cloudwego/base64x v0.1.4 // indirect
 	github.com/cloudwego/iasm v0.2.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
+	github.com/elastic/elastic-transport-go/v8 v8.6.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.6 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
@@ -91,6 +92,7 @@ require (
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1
 	github.com/dlclark/regexp2 v1.7.0 // indirect
+	github.com/elastic/go-elasticsearch/v8 v8.16.0
 	github.com/emicklei/go-restful/v3 v3.9.0 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect

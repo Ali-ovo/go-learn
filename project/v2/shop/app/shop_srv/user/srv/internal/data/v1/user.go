@@ -36,7 +36,7 @@ type UserDOList struct {
 	Items      []*UserDO `json:"data"`                 // 数据
 }
 
-type UserData interface {
+type UserStore interface {
 	/*
 		有数据访问的方法, 一定要有 error
 		参数中最好有 ctx 后期便于管理 比如 cancel掉 链路追踪等

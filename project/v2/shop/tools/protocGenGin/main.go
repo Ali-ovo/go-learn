@@ -2,13 +2,14 @@ package main
 
 import (
 	"flag"
-	"google.golang.org/protobuf/reflect/protodesc"
-	"google.golang.org/protobuf/reflect/protoregistry"
-	"google.golang.org/protobuf/types/descriptorpb"
-	"shop/gmicro/tools/protocGenGin/generator"
 	"os"
 	"os/exec"
 	"path"
+	"shop/tools/protocGenGin/generator"
+
+	"google.golang.org/protobuf/reflect/protodesc"
+	"google.golang.org/protobuf/reflect/protoregistry"
+	"google.golang.org/protobuf/types/descriptorpb"
 
 	"github.com/golang/protobuf/proto"
 	"google.golang.org/protobuf/compiler/protogen"

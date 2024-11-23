@@ -1,7 +1,7 @@
 syntax = "proto3";
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
-option go_package = "./;v1";
+option go_package = "./;user_pb";
 // protoc -I ../../../gmicro/third_party/ -I . --go_out=. --go-grpc_out=. --gin_out=. user.proto
 
 service User {

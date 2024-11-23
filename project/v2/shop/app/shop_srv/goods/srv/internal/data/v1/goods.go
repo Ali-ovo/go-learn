@@ -8,7 +8,7 @@ import (
 
 type GoodsStore interface {
 	Get(ctx context.Context, ID uint64) (*do.GoodsDO, error)
-	ListByIDs(ctx context.Context, ids []uint64, orderby []string) (*do.GoodsDOList, error)
+	ListByIDs(ctx context.Context, ids []uint32, orderby []string) (*do.GoodsDOList, error)
 	List(ctx context.Context, opts metav1.ListMeta, orderby []string) (*do.GoodsDOList, error)
 	Create(ctx context.Context, goods *do.GoodsDO) error
 	Update(ctx context.Context, goods *do.GoodsDO) error

@@ -6,7 +6,7 @@ import (
 
 type BrandsDO struct {
 	gorm.BaseModel
-	Name string `gorm:"type:varchar(20);not null"`
+	Name string `gorm:"type:varchar(50);not null"`
 	Logo string `gorm:"type:varchar(200);default:'';not null"`
 }
 

@@ -22,15 +22,19 @@
 | Identifier | Code | HTTP Code | Description |
 | ---------- | ---- | --------- | ----------- |
 | ErrConnectDB | 100501 | 500 | Internal server error |
-| ErrGoodsNotFound | 100701 | 500 | Internal server error |
-| ErrUserNotFound | 100601 | 404 | User not found |
-| ErrUserAlreadyExists | 100602 | 400 | User already exists |
-| ErrUserPasswordIncorrect | 100603 | 400 | User password is incorrect |
-| ErrSmsSend | 100604 | 400 | Send sms error |
-| ErrJWTDeploy | 100605 | 500 | JWT deploy error |
-| ErrJWTReadFiled | 100606 | 500 | JWT read field error |
-| ErrInvalidPrivKey | 100607 | 500 | Internal server error |
-| ErrFailedTokenCreation | 100608 | 500 | Internal server error |
-| ErrCodeNotExist | 100609 | 400 | Sms code incorrect or expired |
-| ErrCodeExpired | 100610 | 400 | Sms code expired |
+| ErrEsDatabase | 100601 | 404 | EsDatabase error |
+| ErrEsUnmarshal | 100602 | 500 | Es unmarshal error |
+| ErrGoodsNotFound | 101101 | 404 | Goods not found |
+| ErrCategoryNotFound | 101102 | 404 | Category not found |
+| ErrBrandsNotFound | 101103 | 404 | Brand not found |
+| ErrUserNotFound | 101001 | 404 | User not found |
+| ErrUserAlreadyExists | 101002 | 400 | User already exists |
+| ErrUserPasswordIncorrect | 101003 | 400 | User password is incorrect |
+| ErrSmsSend | 101004 | 400 | Send sms error |
+| ErrJWTDeploy | 101005 | 500 | JWT deploy error |
+| ErrJWTReadFiled | 101006 | 500 | JWT read field error |
+| ErrInvalidPrivKey | 101007 | 500 | Internal server error |
+| ErrFailedTokenCreation | 101008 | 500 | Internal server error |
+| ErrCodeNotExist | 101009 | 400 | Sms code incorrect or expired |
+| ErrCodeExpired | 101010 | 400 | Sms code expired |
 

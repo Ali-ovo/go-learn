@@ -4,7 +4,7 @@ import (
 	"context"
 	"crypto/sha512"
 	"fmt"
-	upbv1 "shop/api/user/v1"
+	user_pb "shop/api/user/v1"
 	dv1 "shop/app/shop_srv/user/srv/internal/data/v1"
 	"shop/app/shop_srv/user/srv/internal/service/v1"
 
@@ -19,9 +19,9 @@ import (
 //	@receiver uc
 //	@param ctx
 //	@param info
-//	@return *upbv1.UserInfoResponse
+//	@return *user_pb.UserInfoResponse
 //	@return error
-func (uc *userServer) CreateUser(ctx context.Context, info *upbv1.CreateUserInfo) (*upbv1.UserInfoResponse, error) {
+func (uc *userServer) CreateUser(ctx context.Context, info *user_pb.CreateUserInfo) (*user_pb.UserInfoResponse, error) {
 	//log.Info("create user function called.")
 
 	// 密码加密

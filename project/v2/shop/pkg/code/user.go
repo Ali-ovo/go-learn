@@ -2,7 +2,7 @@ package code
 
 const (
 	// ErrUserNotFound - 404: User not found.
-	ErrUserNotFound int = iota + 100601
+	ErrUserNotFound int = iota + 101001
 
 	// ErrUserAlreadyExists - 400: User already exists.
 	ErrUserAlreadyExists

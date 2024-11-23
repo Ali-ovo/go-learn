@@ -125,4 +125,4 @@ func NewUsers(db *gorm.DB) *users {
 	return &users{db: db}
 }
 
-var _ data.UserData = &users{}
+var _ data.UserStore = &users{}

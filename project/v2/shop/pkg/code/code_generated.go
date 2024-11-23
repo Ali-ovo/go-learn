@@ -7,7 +7,11 @@ package code
 // init register error codes defines in this source code to `czc/pkg/errors`
 func init() {
 	register(ErrConnectDB, 500, "Internal server error")
-	register(ErrGoodsNotFound, 500, "Internal server error")
+	register(ErrEsDatabase, 404, "EsDatabase error")
+	register(ErrEsUnmarshal, 500, "Es unmarshal error")
+	register(ErrGoodsNotFound, 404, "Goods not found")
+	register(ErrCategoryNotFound, 404, "Category not found")
+	register(ErrBrandsNotFound, 404, "Brand not found")
 	register(ErrUserNotFound, 404, "User not found")
 	register(ErrUserAlreadyExists, 400, "User already exists")
 	register(ErrUserPasswordIncorrect, 400, "User password is incorrect")

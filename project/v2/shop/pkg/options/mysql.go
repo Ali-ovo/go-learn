@@ -19,6 +19,7 @@ type MySQLOptions struct {
 	MaxOpenConnections    int           `mapstructure:"max_open_connections" json:"max_open_connections,omitempty"`
 	MaxConnectionLifetime time.Duration `mapstructure:"max_conection_lifetime" json:"max_conection_lifetime,omitempty"`
 	LogLevel              int           `mapstructure:"log_level" json:"log_level,omitempty"`
+	EnableLog             bool          `mapstructure:"enable_log" json:"enable_log"`
 }
 
 // NewMySQLOptions
@@ -65,4 +66,5 @@ func (mo *MySQLOptions) AddFlags(fs *pflag.FlagSet) {
 	fs.IntVar(&mo.MaxOpenConnections, "mysql.max-open-connections", mo.MaxOpenConnections, "Maximum open connections allowed to connect to mysql.")
 	fs.DurationVar(&mo.MaxConnectionLifetime, "mysql.max-connection-life-time", mo.MaxConnectionLifetime, "Maximum connection life time allowed to connecto to mysql.")
 	fs.IntVar(&mo.LogLevel, "mysql.log-mode", mo.LogLevel, "Specify gorm log level.")
+	fs.BoolVar(&mo.EnableLog, "mysql.enable-log", mo.EnableLog, "Enable gorm log.")
 }

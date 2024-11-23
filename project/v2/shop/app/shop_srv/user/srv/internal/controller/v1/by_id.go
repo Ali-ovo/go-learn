@@ -2,7 +2,7 @@ package controller
 
 import (
 	"context"
-	upbv1 "shop/api/user/v1"
+	user_pb "shop/api/user/v1"
 	"shop/gmicro/pkg/errors"
 )
 
@@ -12,9 +12,9 @@ import (
 //	@receiver uc
 //	@param ctx
 //	@param request
-//	@return *upbv1.UserListResponse
+//	@return *user_pb.UserListResponse
 //	@return error
-func (uc *userServer) GetUserById(ctx context.Context, request *upbv1.IdRequest) (*upbv1.UserInfoResponse, error) {
+func (uc *userServer) GetUserById(ctx context.Context, request *user_pb.IdRequest) (*user_pb.UserInfoResponse, error) {
 	//log.Info("get user by id function called.")
 	user, err := uc.srv.GetByID(ctx, uint64(request.Id))
 	if err != nil {

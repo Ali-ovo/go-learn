@@ -7,6 +7,7 @@ import (
 )
 
 type BrandsStore interface {
+	Get(ctx context.Context, ID int32) (*do.BrandsDO, error)
 	List(ctx context.Context, opts metav1.ListMeta, orderby []string) (*do.BrandsDOList, error)
 	Create(ctx context.Context, brands *do.BrandsDO) error
 	Update(ctx context.Context, brands *do.BrandsDO) error

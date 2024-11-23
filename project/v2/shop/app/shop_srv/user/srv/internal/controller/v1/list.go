@@ -2,7 +2,7 @@ package controller
 
 import (
 	"context"
-	upbv1 "shop/api/user/v1"
+	user_pb "shop/api/user/v1"
 	metav1 "shop/gmicro/pkg/common/meta/v1"
 	"shop/gmicro/pkg/errors"
 )
@@ -16,7 +16,7 @@ controller 依赖了 service 并不是直接依赖了具体的 struct 而是依�
 // 代码分层, 第三方服务, rpc, redis, 等等, 带来一定的复杂度
 */
 
-func (uc *userServer) GetUserList(ctx context.Context, request *upbv1.PageInfo) (*upbv1.UserListResponse, error) {
+func (uc *userServer) GetUserList(ctx context.Context, request *user_pb.PageInfo) (*user_pb.UserListResponse, error) {
 	//log.Info("GetUserList is called")
 	srvOpts := metav1.ListMeta{
 		Page:     int(request.Pn),
@@ -27,7 +27,7 @@ func (uc *userServer) GetUserList(ctx context.Context, request *upbv1.PageInfo) 
 		return nil, errors.ToGrpcError(err)
 	}
 
-	var rsp upbv1.UserListResponse
+	var rsp user_pb.UserListResponse
 	for _, value := range dtoList.Items {
 		userRsp := DTOToResponse(*value)
 		rsp.Data = append(rsp.Data, userRsp)
