@@ -69,8 +69,8 @@ func (b *Brands) Delete(ctx context.Context, ID uint64) error {
 	return nil
 }
 
-func NewBrand(db *gorm.DB) *Brands {
-	return &Brands{db}
+func newBrand(factory *mysqlFactory) *Brands {
+	return &Brands{factory.db}
 }
 
 var _ data.BrandsStore = (*Brands)(nil)

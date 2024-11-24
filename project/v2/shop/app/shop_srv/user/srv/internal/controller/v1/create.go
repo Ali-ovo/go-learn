@@ -5,7 +5,7 @@ import (
 	"crypto/sha512"
 	"fmt"
 	user_pb "shop/api/user/v1"
-	dv1 "shop/app/shop_srv/user/srv/internal/data/v1"
+	"shop/app/shop_srv/user/srv/internal/data/v1"
 	"shop/app/shop_srv/user/srv/internal/service/v1"
 
 	"github.com/anaskhan96/go-password-encoder"
@@ -28,7 +28,7 @@ func (uc *userServer) CreateUser(ctx context.Context, info *user_pb.CreateUserIn
 	options := &password.Options{SaltLen: 10, Iterations: 100, KeyLen: 32, HashFunction: sha512.New}
 	salt, encodedPwd := password.Encode(info.Password, options)
 
-	userDO := dv1.UserDO{
+	userDO := data.UserDO{
 		Mobile:   info.Mobile,
 		Password: fmt.Sprintf("$pbkdf2-sha512$%s$%s", salt, encodedPwd),
 		NickName: info.NickName,

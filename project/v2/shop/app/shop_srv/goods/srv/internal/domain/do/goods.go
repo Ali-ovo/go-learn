@@ -121,27 +121,27 @@ type GoodsSearchDOList struct {
 type GoodsDO struct {
 	gorm.BaseModel
 
-	CategoryID int32 `gorm:"type:int;not null"`
+	CategoryID int32 `gorm:"type:int;not null" json:"category_id"`
 	Category   CategoryDO
-	BrandsID   int32 `gorm:"type:int;not null"`
+	BrandsID   int32 `gorm:"type:int;not null" json:"brands_id"`
 	Brands     BrandsDO
 
-	OnSale   bool `gorm:"default:false;not null"`
-	ShipFree bool `gorm:"default:false;not null"`
-	IsNew    bool `gorm:"default:false;not null"`
-	IsHot    bool `gorm:"default:false;not null"`
+	OnSale   bool `gorm:"default:false;not null" json:"on_sale"`
+	ShipFree bool `gorm:"default:false;not null" json:"ship_free"`
+	IsNew    bool `gorm:"default:false;not null" json:"is_new"`
+	IsHot    bool `gorm:"default:false;not null" json:"is_hot"`
 
-	Name            string   `gorm:"type:varchar(100);not null"`
-	GoodsSn         string   `gorm:"type:varchar(50);not null"`
-	ClickNum        int32    `gorm:"type:int;default:0;not null"`
-	SoldNum         int32    `gorm:"type:int;default:0;not null"`
-	FavNum          int32    `gorm:"type:int;default:0;not null"`
-	MarketPrice     float32  `gorm:"not null"`
-	ShopPrice       float32  `gorm:"not null"`
-	GoodsBrief      string   `gorm:"type:varchar(100);not null"`
-	Images          GormList `gorm:"type:json;not null"`
-	DescImages      GormList `gorm:"type:json;not null"`
-	GoodsFrontImage string   `gorm:"type:varchar(200);not null"`
+	Name            string   `gorm:"type:varchar(100);not null" json:"name"`
+	GoodsSn         string   `gorm:"type:varchar(50);not null" json:"goods_sn"`
+	ClickNum        int32    `gorm:"type:int;default:0;not null" json:"click_num"`
+	SoldNum         int32    `gorm:"type:int;default:0;not null" json:"sold_num"`
+	FavNum          int32    `gorm:"type:int;default:0;not null" json:"fav_num"`
+	MarketPrice     float32  `gorm:"not null" json:"market_price"`
+	ShopPrice       float32  `gorm:"not null" json:"shop_price"`
+	GoodsBrief      string   `gorm:"type:varchar(100);not null" json:"goods_brief"`
+	Images          GormList `gorm:"type:varchar(1000);not null" json:"images"`
+	DescImages      GormList `gorm:"type:varchar(1000);not null" json:"desc_images"`
+	GoodsFrontImage string   `gorm:"type:varchar(200);not null" json:"goods_front_image"`
 }
 
 func (GoodsDO) TableName() string {
@@ -151,8 +151,9 @@ func (GoodsDO) TableName() string {
 type GormList []string
 
 // Value 以json二进制格式 反序列化 保存到数据库中
-func (gl *GormList) Value() (driver.Value, error) {
-	return json.Marshal(gl)
+func (gl GormList) Value() (driver.Value, error) {
+	tmp, err := json.Marshal(gl)
+	return tmp, err
 }
 
 // Scan 以 json 二进制格式 序列化

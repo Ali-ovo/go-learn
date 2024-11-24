@@ -8,6 +8,9 @@ const (
 	// ErrSuccess - 200: OK.
 	ErrSuccess int = iota + 100001
 
+	// ErrDataNotFound - 500: Data not found.
+	ErrDataNotFound
+
 	// ErrUnknown - 500: Internal server error.
 	ErrUnknown
 

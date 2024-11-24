@@ -21,13 +21,12 @@ func TestBrands_Get(t *testing.T) {
 		LogLevel:              1,
 		EnableLog:             true,
 	}
-	db, err := GetDBfactoryOr(mysqlOpts)
+	dbFactory, err := GetDBfactoryOr(mysqlOpts)
 	if err != nil {
 		panic(err)
 	}
 
-	brands := NewBrand(db)
-	rsp, err := brands.Get(context.Background(), 111111)
+	rsp, err := dbFactory.Brands().Get(context.Background(), 111111)
 	if err != nil || rsp == nil {
 		panic(err)
 	}

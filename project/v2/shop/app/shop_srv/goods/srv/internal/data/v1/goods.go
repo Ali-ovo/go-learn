@@ -18,6 +18,4 @@ type GoodsStore interface {
 	UpdateInTxn(ctx context.Context, txn *gorm.DB, goods *do.GoodsDO) error
 	Delete(ctx context.Context, ID uint64) error
 	DeleteInTxn(ctx context.Context, txn *gorm.DB, ID uint64) error
-
-	Begin(ctx context.Context) *gorm.DB
 }

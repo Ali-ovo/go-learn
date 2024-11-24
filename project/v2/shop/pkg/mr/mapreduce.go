@@ -7,6 +7,11 @@ import (
 	"sync/atomic"
 )
 
+/*
+	此代码复制于 go-zero https://go-zero.dev/cn/docs/blog/concurrency/mapreduce/
+	用于 并发处理以降低服务响应时间
+*/
+
 const (
 	defaultWorkers = 16
 	minWorkers     = 1
@@ -23,14 +28,20 @@ type (
 	// ForEachFunc is used to do element processing, but no output.
 	ForEachFunc[T any] func(item T)
 	// GenerateFunc is used to let callers send elements into source.
+	// source: 一个容量为0的channel 逐渐收集我们所需要的数据
 	GenerateFunc[T any] func(source chan<- T)
 	// MapFunc is used to do element processing and write the output to writer.
 	MapFunc[T, U any] func(item T, writer Writer[U])
 	// MapperFunc is used to do element processing and write the output to writer,
 	// use cancel func to cancel the processing.
+	// 根据 item数据 开启多个协程 并将数据写道 writer 中  如果执行过程中错误 将 直接返回报错
+	// item: 逐渐接收这个 channel 所给的数据
+	// writer: 执行的结果会写入到此结构体中
+	// cancal: 执行结果后 or 执行错误 此函数会被执行到
 	MapperFunc[T, U any] func(item T, writer Writer[U], cancel func(error))
 	// ReducerFunc is used to reduce all the mapping output and write to writer,
 	// use cancel func to cancel the processing.
+	// pipe: 函数二的 Writer guardedWriter.channel 的数据会存储 pipe 中
 	ReducerFunc[U, V any] func(pipe <-chan U, writer Writer[V], cancel func(error))
 	// VoidReducerFunc is used to reduce all the mapping output, but no output.
 	// Use cancel func to cancel the processing.
@@ -59,7 +70,7 @@ type (
 	}
 )
 
-// Finish runs fns parallelly, cancelled on any error.
+// Finish 并行运行 fns 一旦出现 errors 就取消
 func Finish(fns ...func() error) error {
 	if len(fns) == 0 {
 		return nil
@@ -78,7 +89,8 @@ func Finish(fns ...func() error) error {
 		},
 		func(pipe <-chan any, cancel func(error)) {
 		},
-		WithWorkers(len(fns)))
+		WithWorkers(len(fns)), // 设置 最大并发数
+	)
 }
 
 // FinishVoid runs fns parallelly.
@@ -130,25 +142,25 @@ func ForEach[T any](generate GenerateFunc[T], mapper ForEachFunc[T], opts ...Opt
 
 // MapReduce maps all elements generated from given generate func,
 // and reduces the output elements with given reducer.
-func MapReduce[T, U, V any](generate GenerateFunc[T], mapper MapperFunc[T, U], reducer ReducerFunc[U, V],
-	opts ...Option) (V, error) {
+func MapReduce[T, U, V any](generate GenerateFunc[T], mapper MapperFunc[T, U], reducer ReducerFunc[U, V], opts ...Option) (V, error) {
+	// 用于 存储 错误数据
 	panicChan := &onceChan{channel: make(chan any)}
+	// 遍历需要被执行的函数 传递到 source 中
 	source := buildSource(generate, panicChan)
 	return mapReduceWithPanicChan(source, panicChan, mapper, reducer, opts...)
 }
 
 // MapReduceChan maps all elements from source, and reduce the output elements with given reducer.
-func MapReduceChan[T, U, V any](source <-chan T, mapper MapperFunc[T, U], reducer ReducerFunc[U, V],
-	opts ...Option) (V, error) {
+func MapReduceChan[T, U, V any](source <-chan T, mapper MapperFunc[T, U], reducer ReducerFunc[U, V], opts ...Option) (V, error) {
+	// 用于 存储 错误数据
 	panicChan := &onceChan{channel: make(chan any)}
 	return mapReduceWithPanicChan(source, panicChan, mapper, reducer, opts...)
 }
 
 // mapReduceWithPanicChan maps all elements from source, and reduce the output elements with given reducer.
-func mapReduceWithPanicChan[T, U, V any](source <-chan T, panicChan *onceChan, mapper MapperFunc[T, U],
-	reducer ReducerFunc[U, V], opts ...Option) (val V, err error) {
+func mapReduceWithPanicChan[T, U, V any](source <-chan T, panicChan *onceChan, mapper MapperFunc[T, U], reducer ReducerFunc[U, V], opts ...Option) (val V, err error) {
 	options := buildOptions(opts...)
-	// output is used to write the final result
+	// output 写入最终的数据
 	output := make(chan V)
 	defer func() {
 		// reducer can only write once, if more, panic
@@ -157,7 +169,8 @@ func mapReduceWithPanicChan[T, U, V any](source <-chan T, panicChan *onceChan, m
 		}
 	}()
 
-	// collector is used to collect data from mapper, and consume in reducer
+	// 收集器用于从 mapper 收集数据，并在 reducer 中使用
+	// 创建 channel 根据 设置的最大来定
 	collector := make(chan U, options.workers)
 	// if done is closed, all mappers and reducer should stop processing
 	done := make(chan struct{})
@@ -172,27 +185,32 @@ func mapReduceWithPanicChan[T, U, V any](source <-chan T, panicChan *onceChan, m
 			close(output)
 		})
 	}
-	//
+	// 创建一个用于关闭 的函数
 	cancel := once(func(err error) {
 		if err != nil {
 			retErr.Set(err)
 		} else {
 			retErr.Set(ErrCancelWithNil)
 		}
-
+		// 用于清空 channel 的下水道 避免内存泄露
 		drain(source)
 		finish()
 	})
 
+	// PS 为什么第三个函数reducer 需要比 第二个函数mapper 先被执行
+	// 因为 这个函数需要接收 第二个函数传递 channel 数据  这个channel是无容量的 不这样写 会被hold住
 	go func() {
 		defer func() {
 			drain(collector)
 			if r := recover(); r != nil {
+				// 写入错误信息
 				panicChan.write(r)
 			}
 			finish()
 		}()
-
+		// collector: channel列表根据最大并发量来计算
+		// writer: 被写入的数据流
+		// cancel: 调用结束或失败 时候 关闭用
 		reducer(collector, writer, cancel)
 	}()
 
@@ -201,11 +219,11 @@ func mapReduceWithPanicChan[T, U, V any](source <-chan T, panicChan *onceChan, m
 		mapper: func(item T, w Writer[U]) {
 			mapper(item, w, cancel)
 		},
-		source:    source,
-		panicChan: panicChan,
-		collector: collector,
+		source:    source,    // 已经请求到的数据
+		panicChan: panicChan, // 错误流
+		collector: collector, // channel列表根据最大并发量来计算
 		doneChan:  done,
-		workers:   options.workers,
+		workers:   options.workers, // 最大并发量
 	})
 
 	select {
@@ -229,13 +247,23 @@ func mapReduceWithPanicChan[T, U, V any](source <-chan T, panicChan *onceChan, m
 	return
 }
 
-// MapReduceVoid maps all elements generated from given generate,
-// and reduce the output elements with given reducer.
-func MapReduceVoid[T, U any](generate GenerateFunc[T], mapper MapperFunc[T, U],
-	reducer VoidReducerFunc[U], opts ...Option) error {
-	_, err := MapReduce(generate, mapper, func(input <-chan U, writer Writer[any], cancel func(error)) {
-		reducer(input, cancel)
-	}, opts...)
+// MapReduceVoid  maps all elements generated from given generate, and reduce the output elements with given
+//
+//	@Description:
+//	@param generate
+//	@param mapper
+//	@param U]
+//	@param reducer
+//	@param opts
+//	@return error
+func MapReduceVoid[T, U any](generate GenerateFunc[T], mapper MapperFunc[T, U], reducer VoidReducerFunc[U], opts ...Option) error {
+	_, err := MapReduce(
+		generate,
+		mapper,
+		func(input <-chan U, writer Writer[any], cancel func(error)) {
+			reducer(input, cancel)
+		},
+		opts...)
 	if errors.Is(err, ErrReduceNoOutput) {
 		return nil
 	}
@@ -250,7 +278,11 @@ func WithContext(ctx context.Context) Option {
 	}
 }
 
-// WithWorkers customizes a mapreduce processing with given workers.
+// WithWorkers 设置最大并发量 默认最大并发数 16
+//
+//	@Description:
+//	@param workers
+//	@return Option
 func WithWorkers(workers int) Option {
 	return func(opts *mapReduceOptions) {
 		if workers < minWorkers {
@@ -261,6 +293,7 @@ func WithWorkers(workers int) Option {
 	}
 }
 
+// 生成 mapReduceOptions 结构体
 func buildOptions(opts ...Option) *mapReduceOptions {
 	options := newOptions()
 	for _, opt := range opts {
@@ -270,8 +303,9 @@ func buildOptions(opts ...Option) *mapReduceOptions {
 	return options
 }
 
-// 开启协程 执行逻辑 并且 recover 住里面的错误, 如果有错误 panicChan.write(r) 写入到 panicChan 中
+// 开启协程 执行逻辑 并且 recover 错误, 如果有错误 panicChan.write(r) 写入到 panicChan 中
 func buildSource[T any](generate GenerateFunc[T], panicChan *onceChan) chan T {
+	// 执行的数据 需要存储再 source 中
 	source := make(chan T)
 	go func() {
 		defer func() {
@@ -281,6 +315,7 @@ func buildSource[T any](generate GenerateFunc[T], panicChan *onceChan) chan T {
 			close(source)
 		}()
 
+		// 将 数据 一个个传递到 source 中
 		generate(source)
 	}()
 
@@ -299,20 +334,22 @@ func executeMappers[T, U any](mCtx mapperContext[T, U]) {
 	defer func() {
 		wg.Wait()
 		close(mCtx.collector)
+		// 清空 通道的数据
 		drain(mCtx.source)
 	}()
 
 	var failed int32
 	pool := make(chan struct{}, mCtx.workers)
 	writer := newGuardedWriter(mCtx.ctx, mCtx.collector, mCtx.doneChan)
+	// 如果 failed == 0 循环执行 报错退出
 	for atomic.LoadInt32(&failed) == 0 {
 		select {
 		case <-mCtx.ctx.Done():
 			return
 		case <-mCtx.doneChan:
 			return
-		case pool <- struct{}{}:
-			item, ok := <-mCtx.source
+		case pool <- struct{}{}: // 存入 空结构
+			item, ok := <-mCtx.source // 逐个获取的 source channel 中的数据
 			if !ok {
 				<-pool
 				return
@@ -335,6 +372,7 @@ func executeMappers[T, U any](mCtx mapperContext[T, U]) {
 	}
 }
 
+// 创建 默认 mapReduceOptions
 func newOptions() *mapReduceOptions {
 	return &mapReduceOptions{
 		ctx:     context.Background(),
@@ -366,6 +404,7 @@ func newGuardedWriter[T any](ctx context.Context, channel chan<- T, done <-chan 
 	}
 }
 
+// 写入数据到 gw.channel 中
 func (gw guardedWriter[T]) Write(v T) {
 	select {
 	case <-gw.ctx.Done():

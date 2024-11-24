@@ -22,13 +22,12 @@ func TestList(t *testing.T) {
 		LogLevel:              1,
 		EnableLog:             true,
 	}
-	db, err := GetDBfactoryOr(mysqlOpts)
+	dbFactory, err := GetDBfactoryOr(mysqlOpts)
 	if err != nil {
 		panic(err)
 	}
 
-	banner := NewBanner(db)
-	rsp, err := banner.List(context.Background(), metav1.ListMeta{
+	rsp, err := dbFactory.Brands().List(context.Background(), metav1.ListMeta{
 		Page:     0,
 		PageSize: 10,
 	}, []string{})

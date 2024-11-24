@@ -34,8 +34,6 @@ type Server struct {
 	port int
 	// 开发模式 默认值 debug
 	mode string
-	// 是否开启健康检查接口 默认开启, 如果开启会自动添加 /health
-	healthz bool
 	// 是否开启 pprof接口, 默认开启, 如果开启会自动添加 /debug/pprof 接口
 	enableProfiling bool
 	// 是否开启 链路追踪 默认开启

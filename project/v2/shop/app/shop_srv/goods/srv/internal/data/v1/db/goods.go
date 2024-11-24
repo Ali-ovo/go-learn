@@ -117,8 +117,8 @@ func (g *goods) Begin(ctx context.Context) *gorm.DB {
 	return g.db.Begin()
 }
 
-func NewGoods(db *gorm.DB) *goods {
-	return &goods{db}
+func newGoods(factory *mysqlFactory) *goods {
+	return &goods{factory.db}
 }
 
 var _ data.GoodsStore = (*goods)(nil)

@@ -65,8 +65,8 @@ func (c *category) Delete(ctx context.Context, ID int64) error {
 	return nil
 }
 
-func NewCategory(db *gorm.DB) *category {
-	return &category{db}
+func newCategory(factory *mysqlFactory) *category {
+	return &category{factory.db}
 }
 
 var _ data.CategoryStore = (*category)(nil)

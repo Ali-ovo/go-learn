@@ -56,8 +56,8 @@ func (cb *categoryBrands) Delete(ctx context.Context, ID uint64) error {
 	return nil
 }
 
-func NewCategoryBrands(db *gorm.DB) *categoryBrands {
-	return &categoryBrands{db}
+func newCategoryBrands(factory *mysqlFactory) *categoryBrands {
+	return &categoryBrands{factory.db}
 }
 
 var _ data.GoodsCategoryBrandStore = (*categoryBrands)(nil)

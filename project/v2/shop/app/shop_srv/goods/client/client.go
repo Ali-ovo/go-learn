@@ -3,27 +3,24 @@ package main
 import (
 	"context"
 	"fmt"
-	user_pb "shop/api/user/v1"
+	goods_pb "shop/api/goods/v1"
+	"shop/gmicro/registry/consul"
 	rpc "shop/gmicro/server/rpcserver"
 	"shop/gmicro/server/rpcserver/clientinterceptors"
-	_ "shop/gmicro/server/rpcserver/resolver/direct" // 必填
-	"time"
-
 	"shop/gmicro/server/rpcserver/selector"
 	"shop/gmicro/server/rpcserver/selector/random"
+	"time"
 
 	"github.com/hashicorp/consul/api"
-
-	"shop/gmicro/registry/consul"
 )
 
 func main() {
-
+	//设置全局的负载均衡策略
 	selector.SetGlobalSelector(random.NewBuilder())
 	rpc.InitBuilder()
 
 	conf := api.DefaultConfig()
-	conf.Address = "172.16.89.133:8500"
+	conf.Address = "192.168.101.49:8500"
 	conf.Scheme = "http"
 	cli, err := api.NewClient(conf)
 	if err != nil {
@@ -32,27 +29,27 @@ func main() {
 
 	conn, err := rpc.DialInsecure(
 		context.Background(),
-		// 设置负载均衡
 		rpc.WithBanlancerName("selector"),
 		rpc.WithDiscovery(consul.New(cli, consul.WithHealthCheck(true))),
-		rpc.WithEndpoint("discovery:///user_srv"),
+		rpc.WithEndpoint("discovery:///shop-goods-srv"),
 		rpc.WithClientEnableTracing(false),
 		rpc.WithClientUnaryInterceptor(clientinterceptors.UnaryTracingInterceptor),
-		rpc.WithClientTimeout(time.Duration(1000)*time.Second),
+		rpc.WithClientTimeout(time.Second*5000),
 	)
 	if err != nil {
 		panic(err)
 	}
 	defer conn.Close()
 
-	uc := user_pb.NewUserClient(conn)
+	uc := goods_pb.NewGoodsClient(conn)
 
-	for {
-		r, err := uc.GetUserList(context.Background(), &user_pb.PageInfo{})
-		if err != nil {
-			panic(err)
-		}
-		fmt.Println(r)
-		time.Sleep(time.Second * 5)
+	re, err := uc.GoodsList(context.Background(), &goods_pb.GoodsFilterRequest{
+		KeyWords: "猕猴桃",
+	})
+	if err != nil {
+		panic(err)
 	}
+
+	fmt.Println(re)
+	time.Sleep(time.Second * 5)
 }

@@ -22,13 +22,12 @@ func TestListAll(t *testing.T) {
 		LogLevel:              1,
 		EnableLog:             true,
 	}
-	db, err := GetDBfactoryOr(mysqlOpts)
+	dbFactory, err := GetDBfactoryOr(mysqlOpts)
 	if err != nil {
 		panic(err)
 	}
 
-	category := NewCategory(db)
-	rsp, err := category.Get(context.Background(), 130364)
+	rsp, err := dbFactory.Category().Get(context.Background(), 130364)
 	if err != nil {
 		panic(err)
 	}

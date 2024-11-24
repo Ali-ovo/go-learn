@@ -14,9 +14,9 @@ func NewUserServer(srv service.UserSrv) *userServer {
 	return &userServer{srv: srv}
 }
 
+var _ user_pb.UserServer = &userServer{}
+
 func DTOToResponse(userDTO service.UserDTO) *user_pb.UserInfoResponse {
-	// 在 grpc 的 message 中字段有默认值, 你不能随便赋值 nil 进去, 容易出错
-	// 这里要搞清, 那些字段是有默认值
 	userInfoRsp := user_pb.UserInfoResponse{
 		Id:       userDTO.ID,
 		Mobile:   userDTO.Mobile,
@@ -30,5 +30,3 @@ func DTOToResponse(userDTO service.UserDTO) *user_pb.UserInfoResponse {
 	}
 	return &userInfoRsp
 }
-
-var _ user_pb.UserServer = &userServer{}

@@ -166,4 +166,10 @@ func (g *goods) Delete(ctx context.Context, ID uint64) error {
 	return nil
 }
 
+func newGoods(ds *dataSearch) *goods {
+	return &goods{
+		esClient: ds.esClient,
+	}
+}
+
 var _ data_search.GoodsStore = (*goods)(nil)

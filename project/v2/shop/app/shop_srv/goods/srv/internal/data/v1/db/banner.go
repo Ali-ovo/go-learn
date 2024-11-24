@@ -55,10 +55,8 @@ func (b *Banner) Delete(ctx context.Context, ID int64) error {
 	return nil
 }
 
-func NewBanner(db *gorm.DB) *Banner {
-	return &Banner{
-		db: db,
-	}
+func newBanner(factory *mysqlFactory) *Banner {
+	return &Banner{factory.db}
 }
 
 var _ data.BannerStore = (*Banner)(nil)

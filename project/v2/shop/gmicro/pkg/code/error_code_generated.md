@@ -28,6 +28,7 @@
 | ErrTokenInvalid | 100005 | 401 | Token invalid |
 | ErrPageNotFound | 100006 | 404 | Page not found |
 | ErrDatabase | 100101 | 500 | Database error |
+| ErrDataNotFound | 100102 | 500 | Data not found |
 | ErrEncrypt | 100201 | 401 | Error occurred while encrypting the user password |
 | ErrSignatureInvalid | 100202 | 401 | Signature is invalid |
 | ErrExpired | 100203 | 401 | Token expired |
