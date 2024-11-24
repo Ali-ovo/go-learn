@@ -27,7 +27,6 @@ type MySQLOptions struct {
 func NewMySQLClient(opts *MySQLOptions) (*gorm.DB, error) {
 	var newLogger logger.Interface
 
-	//dsn := "root:56248123@tcp(192.168.16.110:3306)/shop_user_srv?charset=utf8mb4&parseTime=True&loc=Local"
 	dsn := fmt.Sprintf(
 		"%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		opts.Username,

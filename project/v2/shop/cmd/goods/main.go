@@ -17,5 +17,5 @@ func main() {
 		runtime.GOMAXPROCS(runtime.NumCPU()) // 用于指定并发执行时可以使用的最大 CPU 核心数。这个函数通常在初始化程序时使用，以确保最大化利用系统资源
 	}
 
-	srv.NewApp("api_server")
+	srv.NewApp("api_server").Run()
 }

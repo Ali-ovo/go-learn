@@ -20,7 +20,7 @@ func main() {
 	rpc.InitBuilder()
 
 	conf := api.DefaultConfig()
-	conf.Address = "192.168.101.49:8500"
+	conf.Address = "192.168.189.128:8500"
 	conf.Scheme = "http"
 	cli, err := api.NewClient(conf)
 	if err != nil {
@@ -31,7 +31,7 @@ func main() {
 		context.Background(),
 		rpc.WithBanlancerName("selector"),
 		rpc.WithDiscovery(consul.New(cli, consul.WithHealthCheck(true))),
-		rpc.WithEndpoint("discovery:///shop-goods-srv"),
+		rpc.WithEndpoint("discovery:///goods_srv"),
 		rpc.WithClientEnableTracing(false),
 		rpc.WithClientUnaryInterceptor(clientinterceptors.UnaryTracingInterceptor),
 		rpc.WithClientTimeout(time.Second*5000),
