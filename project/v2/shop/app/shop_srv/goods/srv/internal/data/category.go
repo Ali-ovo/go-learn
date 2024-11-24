@@ -6,7 +6,8 @@ import (
 )
 
 type CategoryStore interface {
-	Get(ctx context.Context, ID int32) (*do.CategoryDO, error)
+	Get(ctx context.Context, ID int64) (*do.CategoryDO, error)
+	List(ctx context.Context, level int32) (*do.CategoryDOList, error)
 	ListAll(ctx context.Context, orderby []string) (*do.CategoryDOList, error)
 	Create(ctx context.Context, category *do.CategoryDO) error
 	Update(ctx context.Context, category *do.CategoryDO) error

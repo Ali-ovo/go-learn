@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"shop/app/shop_srv/goods/srv/internal/data_search/v1"
+	"shop/app/shop_srv/goods/srv/internal/domain/do"
 	"shop/gmicro/pkg/conn"
 	"shop/gmicro/pkg/errors"
 	"shop/gmicro/pkg/log"
+	"shop/gmicro/pkg/mapstructure"
 	"shop/pkg/code"
 	"shop/pkg/options"
 	"sync"
@@ -75,32 +77,71 @@ type CanalData struct {
 
 func GoodsSaveToES(Esopts *options.EsOptions) func(ctx context.Context, msgs ...*primitive.MessageExt) (consumer.ConsumeResult, error) {
 	return func(ctx context.Context, msgs ...*primitive.MessageExt) (consumer.ConsumeResult, error) {
-		//searchFactory, err := GetSearchFactoryOr(Esopts)
-		//if err != nil {
-		//	log.Fatal(err.Error())
-		//}
+		searchFactory, err := GetSearchFactoryOr(Esopts)
+		if err != nil {
+			log.Fatal(err.Error())
+		}
 
 		for _, msg := range msgs {
 			var data CanalData
-			var goodsMap []map[string]interface{}
+			var mapGoods []map[string]interface{}
+			var goodsSearchDOList []*do.GoodsSearchDO
 			if err := json.Unmarshal(msg.Body, &data); err != nil {
-				panic(err)
+				log.Error(err.Error())
 				return consumer.ConsumeRetryLater, err
 			}
 
-			if err := json.Unmarshal(data.Data, &goodsMap); err != nil {
-				panic(err)
+			if err := json.Unmarshal(data.Data, &mapGoods); err != nil {
+				log.Error(err.Error())
+				return consumer.ConsumeRetryLater, err
+			}
+
+			err := mapstructure.Decode(mapGoods, &goodsSearchDOList)
+			if err != nil {
+				log.Error(err.Error())
 				return consumer.ConsumeRetryLater, err
 			}
 
 			switch data.Type {
 			case "INSERT":
-				//searchFactory.Goods().Update(ctx)
+				for _, goodsSearchDO := range goodsSearchDOList {
+					//log.Infof("[goods-srv] 新增数据 %v", goodsSearchDO)
+					err := searchFactory.Goods().Create(ctx, goodsSearchDO)
+					if err != nil {
+						log.Error(err.Error())
+						return consumer.ConsumeRetryLater, err
+					}
+				}
+			case "UPDATE":
+				// TODO 有bug
+				for _, goodsSearchDO := range goodsSearchDOList {
+					if goodsSearchDO.DeleteAt == nil || !goodsSearchDO.DeleteAt.IsZero() {
+						//log.Infof("[goods-srv] 删除数据 %v", goodsSearchDO)
+						err := searchFactory.Goods().Delete(ctx, uint64(goodsSearchDO.ID))
+						if err != nil {
+							log.Error(err.Error())
+							return consumer.ConsumeRetryLater, err
+						}
+					} else {
+						//log.Infof("[goods-srv] 更新数据 %v", goodsSearchDO)
+						err := searchFactory.Goods().Update(ctx, goodsSearchDO)
+						if err != nil {
+							log.Error(err.Error())
+							return consumer.ConsumeRetryLater, err
+						}
+					}
+				}
 			case "DELETE":
-
+				for _, goodsSearchDO := range goodsSearchDOList {
+					//log.Infof("[goods-srv] 删除数据 %v", goodsSearchDO)
+					err := searchFactory.Goods().Delete(ctx, uint64(goodsSearchDO.ID))
+					if err != nil {
+						log.Error(err.Error())
+						return consumer.ConsumeRetryLater, err
+					}
+				}
 			}
-
 		}
-		return consumer.ConsumeRetryLater, nil
+		return consumer.ConsumeSuccess, nil
 	}
 }

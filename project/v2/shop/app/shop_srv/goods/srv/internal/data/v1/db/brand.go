@@ -2,12 +2,11 @@ package db
 
 import (
 	"context"
-	"shop/app/shop_srv/goods/srv/internal/data/v1"
+	"shop/app/shop_srv/goods/srv/internal/data"
 	"shop/app/shop_srv/goods/srv/internal/domain/do"
 	"shop/gmicro/pkg/code"
 	metav1 "shop/gmicro/pkg/common/meta/v1"
 	"shop/gmicro/pkg/errors"
-
 	code2 "shop/pkg/code"
 
 	"gorm.io/gorm"
@@ -17,7 +16,7 @@ type Brands struct {
 	db *gorm.DB
 }
 
-func (b *Brands) Get(ctx context.Context, ID int32) (*do.BrandsDO, error) {
+func (b *Brands) Get(ctx context.Context, ID int64) (*do.BrandsDO, error) {
 	ret := &do.BrandsDO{}
 
 	if err := b.db.Where("id =?", ID).First(ret).Error; err != nil {
@@ -61,7 +60,7 @@ func (b *Brands) Update(ctx context.Context, brands *do.BrandsDO) error {
 	return nil
 }
 
-func (b *Brands) Delete(ctx context.Context, ID uint64) error {
+func (b *Brands) Delete(ctx context.Context, ID int64) error {
 	result := b.db.Delete(&do.BrandsDO{}, ID)
 	if result.Error != nil {
 		return errors.WithCode(code.ErrDatabase, result.Error.Error())
@@ -69,8 +68,6 @@ func (b *Brands) Delete(ctx context.Context, ID uint64) error {
 	return nil
 }
 
-func newBrand(factory *mysqlFactory) *Brands {
+func newBrand(factory *mysqlFactory) data.BrandsStore {
 	return &Brands{factory.db}
 }
-
-var _ data.BrandsStore = (*Brands)(nil)

@@ -7,7 +7,7 @@ import (
 type CategoryDO struct {
 	gorm.BaseModel
 	Name             string        `gorm:"type:varchar(20);not null,unique" json:"name"`
-	ParentCategoryID int32         `json:"parent"`
+	ParentCategoryID int64         `json:"parent"`
 	ParentCategory   *CategoryDO   `json:"-"`                                                             // 一对一
 	SubCategory      []*CategoryDO `gorm:"foreignKey:ParentCategoryID;references:ID" json:"sub_category"` // 一对多
 	Level            int32         `gorm:"type:int;not null;default:1" json:"level"`

@@ -2,7 +2,7 @@ package db
 
 import (
 	"context"
-	"shop/app/shop_srv/goods/srv/internal/data/v1"
+	"shop/app/shop_srv/goods/srv/internal/data"
 	"shop/app/shop_srv/goods/srv/internal/domain/do"
 	"shop/gmicro/pkg/code"
 	"shop/gmicro/pkg/errors"
@@ -15,8 +15,8 @@ type category struct {
 	db *gorm.DB
 }
 
-func (c *category) Get(ctx context.Context, ID int32) (*do.CategoryDO, error) {
-	ret := &do.CategoryDO{}
+func (c *category) Get(ctx context.Context, ID int64) (*do.CategoryDO, error) {
+	var ret do.CategoryDO
 
 	if err := c.db.Preload("SubCategory.SubCategory").First(&ret, ID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -24,7 +24,21 @@ func (c *category) Get(ctx context.Context, ID int32) (*do.CategoryDO, error) {
 		}
 		return nil, errors.WithCode(code.ErrDatabase, err.Error())
 	}
-	return ret, nil
+	return &ret, nil
+}
+
+func (c *category) List(ctx context.Context, level int32) (*do.CategoryDOList, error) {
+	ret := do.CategoryDOList{}
+
+	query := c.db.Where("level =?", level).Find(&ret.Items)
+	if query.Error != nil {
+		if errors.Is(query.Error, gorm.ErrRecordNotFound) {
+			return nil, errors.WithCode(code2.ErrCategoryNotFound, query.Error.Error())
+		}
+		return nil, errors.WithCode(code.ErrDatabase, query.Error.Error())
+	}
+	query.Count(&ret.TotalCount)
+	return &ret, nil
 }
 
 func (c *category) ListAll(ctx context.Context, orderby []string) (*do.CategoryDOList, error) {
@@ -38,6 +52,12 @@ func (c *category) ListAll(ctx context.Context, orderby []string) (*do.CategoryD
 	// 加载其他表数据
 	query = query.Where("level=1").Preload("SuCategory.SubCategory").Find(&ret.Items)
 
+	if query.Error != nil {
+		if errors.Is(query.Error, gorm.ErrRecordNotFound) {
+			return nil, errors.WithCode(code2.ErrCategoryNotFound, query.Error.Error())
+		}
+		return nil, errors.WithCode(code.ErrDatabase, query.Error.Error())
+	}
 	return ret, query.Error
 }
 
@@ -65,8 +85,6 @@ func (c *category) Delete(ctx context.Context, ID int64) error {
 	return nil
 }
 
-func newCategory(factory *mysqlFactory) *category {
+func newCategory(factory *mysqlFactory) data.CategoryStore {
 	return &category{factory.db}
 }
-
-var _ data.CategoryStore = (*category)(nil)

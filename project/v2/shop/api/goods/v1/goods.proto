@@ -49,9 +49,9 @@ message CategoryListRequest {
 
 
 message CategoryInfoRequest {
-  int32 id = 1;
+  int64 id = 1;
   string name = 2;
-  int32 parentCategory = 3;
+  int64 parentCategory = 3;
   int32 level = 4;
   bool isTab = 5;
 }
@@ -67,9 +67,9 @@ message QueryCategoryRequest {
 }
 
 message CategoryInfoResponse {
-  int32 id = 1;
+  int64 id = 1;
   string name = 2;
-  int32 parentCategory = 3;
+  int64 parentCategory = 3;
   int32 level = 4;
   bool isTab = 5;
 }
@@ -89,33 +89,29 @@ message SubCategoryListResponse {
 message CategoryBrandFilterRequest  {
   int32 pages = 1;
   int32 pagePerNums = 2;
-}
-
-message FilterRequest  {
-  int32 pages = 1;
-  int32 pagePerNums = 2;
+  repeated string orderby = 3;
 }
 
 message CategoryBrandRequest{
-  int32 id = 1;
-  int32 categoryId = 2;
-  int32 brandId = 3;
+  int64 id = 1;
+  int64 categoryId = 2;
+  int64 brandId = 3;
 }
 message CategoryBrandResponse{
-  int32 id = 1;
+  int64 id = 1;
   BrandInfoResponse brand = 2;
   CategoryInfoResponse category = 3;
 }
 
 message BannerRequest {
-  int32 id = 1;
+  int64 id = 1;
   int32 index = 2;
   string image = 3;
   string url = 4;
 }
 
 message BannerResponse {
-  int32 id = 1;
+  int64 id = 1;
   int32 index = 2;
   string image = 3;
   string url = 4;
@@ -124,16 +120,17 @@ message BannerResponse {
 message BrandFilterRequest {
   int32 pages = 1;
   int32 pagePerNums = 2;
+  repeated string orderby = 3;
 }
 
 message BrandRequest {
-  int32 id = 1;
+  int64 id = 1;
   string name = 2;
   string logo = 3;
 }
 
 message BrandInfoResponse {
-  int32 id = 1;
+  int64 id = 1;
   string name = 2;
   string logo = 3;
 }
@@ -156,7 +153,7 @@ message CategoryBrandListResponse {
 
 
 message BatchGoodsIdInfo {
-  repeated int32 id = 1;
+  repeated int64 id = 1;
 }
 
 
@@ -165,7 +162,7 @@ message DeleteGoodsInfo {
 }
 
 message CategoryBriefInfoResponse {
-  int32 id = 1;
+  int64 id = 1;
   string name = 2;
 }
 
@@ -179,23 +176,23 @@ message GoodInfoRequest {
 }
 
 message CreateGoodsInfo {
-  int32 id = 1;
+  int64 id = 1;
   string name = 2;
   string goodsSn = 3;
-  int32 stocks = 7; //库存，
-  float marketPrice = 8;
-  float shopPrice = 9;
-  string goodsBrief = 10;
-  string goodsDesc = 11;
-  bool shipFree = 12;
-  repeated string images = 13;
-  repeated string descImages = 14;
-  string goodsFrontImage = 15;
-  bool isNew = 16;
-  bool isHot = 17;
-  bool onSale = 18;
-  int32 categoryId = 19;
-  int32 brandId = 20;
+  int32 stocks = 4; //库存，
+  float marketPrice = 5;
+  float shopPrice = 6;
+  string goodsBrief = 7;
+  string goodsDesc = 8;
+  bool shipFree = 9;
+  repeated string images = 10;
+  repeated string descImages = 11;
+  string goodsFrontImage = 12;
+  bool isNew = 13;
+  bool isHot = 14;
+  bool onSale = 15;
+  int64 categoryId = 16;
+  int64 brandId = 17;
 }
 
 message GoodsReduceRequest {
@@ -204,7 +201,7 @@ message GoodsReduceRequest {
 }
 
 message BatchCategoryInfoRequest {
-  repeated int32 id = 1;
+  repeated int64 id = 1;
   int32 goodsNums = 2;
   int32 brandNums = 3;
 }
@@ -220,16 +217,18 @@ message GoodsFilterRequest  {
   int32 pagePerNums = 8;
   string keyWords = 9;
   int32 brand = 10;
+  repeated string orderby = 11;
 }
 
 message GoodsInfoResponse {
-  int32 id = 1;
-  int32 categoryId = 2;
+  int64 id = 1;
+  int64 categoryId = 2;
   string name = 3;
   string goodsSn = 4;
   int32 clickNum = 5;
   int32 soldNum = 6;
   int32 favNum = 7;
+  int32 stocks = 8;
   float marketPrice = 9;
   float shopPrice = 10;
   string goodsBrief = 11;

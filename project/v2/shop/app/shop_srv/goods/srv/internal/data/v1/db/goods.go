@@ -2,7 +2,7 @@ package db
 
 import (
 	"context"
-	"shop/app/shop_srv/goods/srv/internal/data/v1"
+	"shop/app/shop_srv/goods/srv/internal/data"
 	"shop/app/shop_srv/goods/srv/internal/domain/do"
 	"shop/gmicro/pkg/code"
 	metav1 "shop/gmicro/pkg/common/meta/v1"
@@ -113,12 +113,6 @@ func (g *goods) DeleteInTxn(ctx context.Context, txn *gorm.DB, ID uint64) error 
 	return nil
 }
 
-func (g *goods) Begin(ctx context.Context) *gorm.DB {
-	return g.db.Begin()
-}
-
-func newGoods(factory *mysqlFactory) *goods {
+func newGoods(factory *mysqlFactory) data.GoodsStore {
 	return &goods{factory.db}
 }
-
-var _ data.GoodsStore = (*goods)(nil)

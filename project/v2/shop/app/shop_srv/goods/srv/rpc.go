@@ -7,7 +7,7 @@ import (
 	"shop/app/shop_srv/goods/srv/internal/controller/v1"
 	"shop/app/shop_srv/goods/srv/internal/data/v1/db"
 	"shop/app/shop_srv/goods/srv/internal/data_search/v1/es"
-	srv "shop/app/shop_srv/goods/srv/internal/service/v1"
+	srv "shop/app/shop_srv/goods/srv/internal/service/v2"
 	"shop/gmicro/core/trace"
 	"shop/gmicro/pkg/log"
 	"shop/gmicro/server/rpcserver"

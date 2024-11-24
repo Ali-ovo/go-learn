@@ -10,7 +10,6 @@ import (
 	"shop/app/shop_srv/goods/srv/internal/service"
 	"shop/gmicro/pkg/log"
 	"shop/pkg/mr"
-	"sync"
 )
 
 type goodsService struct {
@@ -101,44 +100,10 @@ func (gs *goodsService) Create(ctx context.Context, goods *dto.GoodsDTO) (int64,
 		return 0, err
 	}
 
-	txn := gs.data.Begin()
-	defer func() { // 异常处理
-		if p := recover(); p != nil {
-			txn.Rollback()
-			log.ErrorfC(ctx, "goodsService.Create panic: %v", p)
-			return
-		} else if err != nil {
-			txn.Rollback()
-		} else {
-			txn.Commit()
-		}
-	}()
-
-	if err = gs.data.Goods().CreateInTxn(ctx, txn, &goods.GoodsDO); err != nil {
-		log.Errorf("data.CreateInTxn err: %v", err)
+	if err = gs.data.Goods().Create(ctx, &goods.GoodsDO); err != nil {
+		log.Errorf("data.Create err: %v", err)
 		return 0, err
 	}
-
-	goodsSearchDo := do.GoodsSearchDO{
-		ID:          goods.ID,
-		CategoryID:  goods.CategoryID,
-		BrandsID:    goods.BrandsID,
-		OnSale:      goods.OnSale,
-		ShipFree:    goods.ShipFree,
-		IsNew:       goods.IsNew,
-		IsHot:       goods.IsHot,
-		Name:        goods.Name,
-		ClickNum:    goods.ClickNum,
-		SoldNum:     goods.SoldNum,
-		FavNum:      goods.FavNum,
-		MarketPrice: goods.MarketPrice,
-		GoodsBrief:  goods.GoodsBrief,
-		ShopPrice:   goods.ShopPrice,
-	}
-	if err = gs.seachData.Goods().Create(ctx, &goodsSearchDo); err != nil {
-		return 0, err
-	}
-	txn.Commit()
 	return goods.ID, nil
 }
 
@@ -174,70 +139,18 @@ func (gs *goodsService) Update(ctx context.Context, goods *dto.GoodsDTO) error {
 		goodDO.GoodsFrontImage = goods.GoodsFrontImage
 	}
 
-	txn := gs.data.Begin()
-	defer func() { // 异常处理
-		if p := recover(); p != nil {
-			txn.Rollback()
-			log.ErrorfC(ctx, "goodsService.Create panic: %v", p)
-			return
-		} else if err != nil {
-			txn.Rollback()
-		} else {
-			txn.Commit()
-		}
-	}()
-
-	if err = gs.data.Goods().UpdateInTxn(ctx, txn, goodDO); err != nil {
+	if err = gs.data.Goods().Update(ctx, goodDO); err != nil {
 		return err
 	}
-
-	goodsSearchDo := do.GoodsSearchDO{
-		ID:          goods.ID,
-		CategoryID:  goods.CategoryID,
-		BrandsID:    goods.BrandsID,
-		OnSale:      goods.OnSale,
-		ShipFree:    goods.ShipFree,
-		IsNew:       goods.IsNew,
-		IsHot:       goods.IsHot,
-		Name:        goods.Name,
-		ClickNum:    goods.ClickNum,
-		SoldNum:     goods.SoldNum,
-		FavNum:      goods.FavNum,
-		MarketPrice: goods.MarketPrice,
-		GoodsBrief:  goods.GoodsBrief,
-		ShopPrice:   goods.ShopPrice,
-	}
-	if err = gs.seachData.Goods().Update(ctx, &goodsSearchDo); err != nil {
-		return err
-	}
-	txn.Commit()
 	return nil
 }
 
 func (gs *goodsService) Delete(ctx context.Context, id uint64) error {
 	var err error
 
-	txn := gs.data.Begin()
-	defer func() { // 异常处理
-		if p := recover(); p != nil {
-			txn.Rollback()
-			log.ErrorfC(ctx, "goodsService.Create panic: %v", p)
-			return
-		} else if err != nil {
-			txn.Rollback()
-		} else {
-			txn.Commit()
-		}
-	}()
-
-	if err = gs.data.Goods().DeleteInTxn(ctx, txn, id); err != nil {
+	if err = gs.data.Goods().Delete(ctx, id); err != nil {
 		return err
 	}
-
-	if err = gs.seachData.Goods().Delete(ctx, id); err != nil {
-		return err
-	}
-	txn.Commit()
 	return nil
 }
 
@@ -285,10 +198,6 @@ func (gs *goodsService) BatchGet(ctx context.Context, ids []int64) ([]*dto.Goods
 	if err != nil {
 		return nil, err
 	}
-	if err != nil {
-		return nil, err
-	}
-
 	//var ret []*dto.GoodsDTO
 	//
 	//ds, err := gs.goodsData.ListByIDs(ctx, ids, []string{})
@@ -303,48 +212,9 @@ func (gs *goodsService) BatchGet(ctx context.Context, ids []int64) ([]*dto.Goods
 	return ret, nil
 }
 
-func (gs *goodsService) BatchGetTwe(ctx context.Context, ids []uint64) ([]*dto.GoodsDTO, error) {
-	var ret []*dto.GoodsDTO
-
-	ds, err := gs.data.Goods().ListByIDs(ctx, ids, []string{})
-	if err != nil {
-		return nil, err
-	}
-	for _, value := range ds.Items {
-		ret = append(ret, &dto.GoodsDTO{
-			GoodsDO: *value,
-		})
-	}
-	return ret, nil
-}
-
-func (gs *goodsService) BatchGetThree(ctx context.Context, ids []uint64) ([]*dto.GoodsDTO, error) {
-	var ret []*dto.GoodsDTO
-	var callFuncs []func() error
-	var mu sync.Mutex
-	for _, value := range ids {
-		// 坑!!! 因为 这里的函数不是在此函数内执行的, 所以 value 会被动态的修改 需要需要在此函数内声明一个全新的变量来使用
-		tmp := value
-		callFuncs = append(callFuncs, func() error {
-			goodsDTO, err := gs.Get(ctx, tmp)
-			mu.Lock()
-			ret = append(ret, goodsDTO)
-			mu.Unlock()
-			return err
-		})
-	}
-	err := mr.Finish(callFuncs...)
-	if err != nil {
-		return nil, err
-	}
-	return ret, nil
-}
-
 func newGoods(srv *serviceFactory) service.GoodsSrv {
 	return &goodsService{
 		data:      srv.data,
 		seachData: srv.dataSearch,
 	}
 }
-
-var _ service.GoodsSrv = (*goodsService)(nil)

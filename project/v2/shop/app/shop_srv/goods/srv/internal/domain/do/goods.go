@@ -4,24 +4,25 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"shop/pkg/gorm"
+	"time"
 )
 
 type GoodsSearchDO struct {
-	ID         int32 `json:"id"`
-	CategoryID int32 `json:"category_id"`
-	BrandsID   int32 `json:"brand_id"`
-	OnSale     bool  `json:"on_sale"`
-	ShipFree   bool  `json:"ship_free"`
-	IsNew      bool  `json:"is_new"`
-	IsHot      bool  `json:"is_hot"`
-
-	Name        string  `json:"name"`
-	ClickNum    int32   `json:"click_num"`
-	SoldNum     int32   `json:"sold_num"`
-	FavNum      int32   `json:"fav_num"`
-	MarketPrice float32 `json:"market_price"`
-	GoodsBrief  string  `json:"goods_brief"`
-	ShopPrice   float32 `json:"shop_price"`
+	ID          int64      `json:"id" mapstructure:"id"`
+	CategoryID  int64      `json:"category_id" mapstructure:"category_id"`
+	BrandsID    int64      `json:"brand_id" mapstructure:"brand_id"`
+	OnSale      bool       `json:"on_sale" mapstructure:"on_sale"`
+	ShipFree    bool       `json:"ship_free" mapstructure:"ship_free"`
+	IsNew       bool       `json:"is_new" mapstructure:"is_new"`
+	IsHot       bool       `json:"is_hot" mapstructure:"is_hot"`
+	Name        string     `json:"name" mapstructure:"name"`
+	ClickNum    int32      `json:"click_num" mapstructure:"click_num"`
+	SoldNum     int32      `json:"sold_num" mapstructure:"sold_num"`
+	FavNum      int32      `json:"fav_num" mapstructure:"fav_num"`
+	MarketPrice float32    `json:"market_price" mapstructure:"market_price"`
+	GoodsBrief  string     `json:"goods_brief" mapstructure:"goods_brief"`
+	ShopPrice   float32    `json:"shop_price" mapstructure:"shop_price"`
+	DeleteAt    *time.Time `json:"delete_at" mapstructure:"delete_at"`
 }
 
 func (fsd *GoodsSearchDO) GetIndexName() string {
@@ -121,9 +122,9 @@ type GoodsSearchDOList struct {
 type GoodsDO struct {
 	gorm.BaseModel
 
-	CategoryID int32 `gorm:"type:int;not null" json:"category_id"`
+	CategoryID int64 `gorm:"type:int;not null" json:"category_id"`
 	Category   CategoryDO
-	BrandsID   int32 `gorm:"type:int;not null" json:"brands_id"`
+	BrandsID   int64 `gorm:"type:int;not null" json:"brands_id"`
 	Brands     BrandsDO
 
 	OnSale   bool `gorm:"default:false;not null" json:"on_sale"`

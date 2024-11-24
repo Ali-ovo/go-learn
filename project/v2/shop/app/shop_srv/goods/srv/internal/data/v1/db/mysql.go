@@ -2,7 +2,7 @@ package db
 
 import (
 	"fmt"
-	"shop/app/shop_srv/goods/srv/internal/data/v1"
+	"shop/app/shop_srv/goods/srv/internal/data"
 	"shop/gmicro/pkg/conn"
 	"shop/gmicro/pkg/errors"
 	"shop/gmicro/pkg/log"
@@ -38,7 +38,7 @@ func (mf *mysqlFactory) Banner() data.BannerStore {
 	return newBanner(mf)
 }
 
-func (mf *mysqlFactory) CategoryBrands() data.GoodsCategoryBrandStore {
+func (mf *mysqlFactory) CategoryBrands() data.CategoryBrandStore {
 	return newCategoryBrands(mf)
 }
 
@@ -107,7 +107,7 @@ func paginate(db *gorm.DB, page int, pageSize int, orderBy []string, conditions 
 		offset = (page - 1) * limit
 	}
 
-	// 排序
+	// 排序 如: age desc, name 等  age 为降序, name 为升序
 	for _, v := range orderBy {
 		db = db.Order(v)
 	}

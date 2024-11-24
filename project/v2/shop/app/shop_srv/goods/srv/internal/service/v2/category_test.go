@@ -3,13 +3,14 @@ package srv
 import (
 	"context"
 	"fmt"
+	"shop/app/shop_srv/goods/srv/internal/data"
 	"shop/app/shop_srv/goods/srv/internal/data/v1/db"
 	"shop/pkg/options"
 	"testing"
 	"time"
 )
 
-func TestGoodsBatchGet(t *testing.T) {
+func conn() data.DataFactory {
 	mysqlOpts := &options.MySQLOptions{
 		Host:                  "192.168.101.49",
 		Port:                  3306,
@@ -26,24 +27,33 @@ func TestGoodsBatchGet(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
+	return dbFactory
+}
 
-	goodsService := goodsService{
+func TestCategory_Get(t *testing.T) {
+	dbFactory := conn()
+
+	categoryService := CategoryService{
 		data: dbFactory,
 	}
 
-	get, err := goodsService.BatchGet(context.Background(), []int64{840, 839, 838, 837, 836})
+	category, err := categoryService.Get(context.Background(), 130370)
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println(category)
+}
 
-	//get, err = goodsService.BatchGetTwe(context.Background(), []uint64{845, 840, 839, 838, 837, 836})
-	//if err != nil {
-	//	panic(err)
-	//}
+func TestCategory_List(t *testing.T) {
+	dbFactory := conn()
 
-	//get, err = goodsService.BatchGetThree(context.Background(), []uint64{845, 840, 839, 838, 837, 836})
-	//if err != nil {
-	//	panic(err)
-	//}
-	fmt.Println(get)
+	categoryService := CategoryService{
+		data: dbFactory,
+	}
+
+	category, err := categoryService.List(context.Background(), 1)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(category)
 }

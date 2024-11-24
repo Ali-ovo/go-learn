@@ -11,11 +11,11 @@ import (
 
 func TestList(t *testing.T) {
 	mysqlOpts := &options.MySQLOptions{
-		Host:                  "192.168.189.128",
+		Host:                  "192.168.16.124",
 		Port:                  3306,
 		Username:              "root",
 		Password:              "56248123",
-		Database:              "mxshop_goods_srv",
+		Database:              "shop_goods_srv",
 		MaxIdleConnections:    100,
 		MaxOpenConnections:    100,
 		MaxConnectionLifetime: time.Second * time.Duration(10),

@@ -1,35 +1,29 @@
 package db
 
 import (
-	"context"
-	"fmt"
 	"shop/pkg/options"
 	"testing"
 	"time"
 )
 
-func TestBrands_Get(t *testing.T) {
+// TestGetDBfactoryOr 测试 mysql 连接  和 创建表
+//
+//	@Description:
+//	@param t
+func TestGetDBfactoryOr(t *testing.T) {
 	mysqlOpts := &options.MySQLOptions{
 		Host:                  "192.168.101.49",
 		Port:                  3306,
 		Username:              "root",
 		Password:              "56248123",
-		Database:              "shop_goods_srv",
+		Database:              "demo",
 		MaxIdleConnections:    100,
 		MaxOpenConnections:    100,
 		MaxConnectionLifetime: time.Second * time.Duration(10),
-		LogLevel:              1,
-		EnableLog:             true,
+		LogLevel:              4,
 	}
-	dbFactory, err := GetDBfactoryOr(mysqlOpts)
+	_, err := GetDBfactoryOr(mysqlOpts)
 	if err != nil {
 		panic(err)
 	}
-
-	rsp, err := dbFactory.Brands().Get(context.Background(), 111111)
-	if err != nil || rsp == nil {
-		panic(err)
-	}
-
-	fmt.Println(rsp)
 }

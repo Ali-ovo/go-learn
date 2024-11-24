@@ -59,7 +59,7 @@ func (u *users) Create(ctx context.Context, user *data.UserDO) error {
 
 func (u *users) Update(ctx context.Context, user *data.UserDO) error {
 	protoUser := &user_pb.UpdateUserInfo{
-		Id:       int32(user.ID),
+		Id:       user.ID,
 		NickName: user.NickName,
 		Gender:   user.Gender,
 		BirthDay: uint64(user.Birthday.Unix()),

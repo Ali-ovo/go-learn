@@ -30,14 +30,6 @@ type userService struct {
 	data data.UserStore // 数据的来源
 }
 
-var _ UserSrv = &userService{}
-
-// UserDTOList 返回 自定义的结构体 解耦
-type UserDTOList struct {
-	TotalCount int64      `json:"totalCount,omitempty"` // 总数
-	Items      []*UserDTO `json:"data"`                 // 数据
-}
-
 func (u *userService) List(ctx context.Context, orderby []string, opts metav1.ListMeta) (*UserDTOList, error) {
 	// 业务逻辑1
 
@@ -46,22 +38,19 @@ func (u *userService) List(ctx context.Context, orderby []string, opts metav1.Li
 		2. 在写测试案例的时候每次测试底层的data层的数据按照我期望的返回
 			1. 先手动去插入一些数据
 			2. 去删除一些数据
-		3. 如果 data 层的方法有bug 代码想要具备好的可测试性
+		3. 如果 data 层的方法有bug 代码想要具备 良好可测试性
 	*/
 	doList, err := u.data.List(ctx, orderby, opts)
 	if err != nil {
 		return nil, err
 	}
 	// 业务逻辑2
-	// 代码不方便写单元测试用例
 	// 代码不方便 会导致写单元测试用例难写
 	var userDTOList UserDTOList
 	for _, value := range doList.Items {
 		projectDTO := UserDTO{*value}
 		userDTOList.Items = append(userDTOList.Items, &projectDTO)
 	}
-
-	// 业务逻辑3
 
 	return &userDTOList, nil
 }
@@ -109,7 +98,6 @@ func (u *userService) Update(ctx context.Context, user *UserDTO) error {
 	if err != nil {
 		return err
 	}
-
 	userDO.NickName = user.NickName
 	userDO.Birthday = user.Birthday
 	userDO.Gender = user.Gender
@@ -117,8 +105,14 @@ func (u *userService) Update(ctx context.Context, user *UserDTO) error {
 	return u.data.Update(ctx, userDO)
 }
 
-func NewUserService(us data.UserStore) *userService {
+func NewUserService(us data.UserStore) UserSrv {
 	return &userService{
 		data: us,
 	}
+}
+
+// UserDTOList 返回 自定义的结构体 解耦
+type UserDTOList struct {
+	TotalCount int64      `json:"totalCount,omitempty"` // 总数
+	Items      []*UserDTO `json:"data"`                 // 数据
 }

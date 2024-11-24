@@ -7,7 +7,7 @@ type DataFactory interface {
 	Category() CategoryStore
 	Brands() BrandsStore
 	Banner() BannerStore
-	CategoryBrands() GoodsCategoryBrandStore
+	CategoryBrands() CategoryBrandStore
 
 	Begin() *gorm.DB
 }
