@@ -27,7 +27,7 @@ func (g *goods) Get(ctx context.Context, ID uint64) (*do.GoodsDO, error) {
 	return &good, nil
 }
 
-func (g *goods) ListByIDs(ctx context.Context, ids []uint32, orderby []string) (*do.GoodsDOList, error) {
+func (g *goods) ListByIDs(ctx context.Context, ids []uint64, orderby []string) (*do.GoodsDOList, error) {
 	ret := &do.GoodsDOList{}
 
 	// 排序

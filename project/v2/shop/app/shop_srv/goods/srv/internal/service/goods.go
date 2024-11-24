@@ -18,11 +18,11 @@ type GoodsSrv interface {
 	// Create 创建商品
 	Create(ctx context.Context, goods *dto.GoodsDTO) error
 	// Update 更新商品
-	Update(ctx context.Context, id int64, goods *dto.GoodsDTO) error
+	Update(ctx context.Context, goods *dto.GoodsDTO) error
 	// Delete 删除商品
-	Delete(ctx context.Context, id int64) error
+	Delete(ctx context.Context, id uint64) error
 	// BatchGet 批量查询商品
-	BatchGet(ctx context.Context, ids []int64) ([]*dto.GoodsDTO, error)
+	BatchGet(ctx context.Context, ids []uint64) ([]*dto.GoodsDTO, error)
 }
 
 type goodsService struct {
@@ -69,9 +69,9 @@ func (gs *goodsService) List(ctx context.Context, req *goods_pb.GoodsFilterReque
 	}
 
 	// 通过 id 批量查询 mysql 数据
-	goodsIDs := []uint32{}
+	goodsIDs := []uint64{}
 	for _, value := range goodsList.Items {
-		goodsIDs = append(goodsIDs, uint32(value.ID))
+		goodsIDs = append(goodsIDs, uint64(value.ID))
 	}
 	goodsData, err := gs.goodsData.ListByIDs(ctx, goodsIDs, orderby)
 	if err != nil {
@@ -86,8 +86,8 @@ func (gs *goodsService) List(ctx context.Context, req *goods_pb.GoodsFilterReque
 	return ret, nil
 }
 
-func (gs *goodsService) Get(ctx context.Context, id uint64) (*dto.GoodsDTO, error) {
-	good, err := gs.goodsData.Get(ctx, id)
+func (gs *goodsService) Get(ctx context.Context, ID uint64) (*dto.GoodsDTO, error) {
+	good, err := gs.goodsData.Get(ctx, ID)
 	if err != nil {
 		log.ErrorfC(ctx, "data.Get err: %v", err)
 		return nil, err
@@ -102,8 +102,9 @@ func (gs *goodsService) Create(ctx context.Context, goods *dto.GoodsDTO) error {
 		方案一: 基于可靠消息实现最终一致性 消息队列[事务消息] (更好 代码侵入性强)
 		方案二: 基于mysql事务消息 (有一定的风险 ES 超时但是执行了的情况)
 		方案三: 基于 阿里云开源的 canal
-			读取 mysql binlog文件 并将 数据 分发到 kafka 、 rocketmq 或 hbase 等中间件中
-			只需要监听 这些中间件的 to
+			读取 mysql binlog文件 并将 数据 分发到 kafka 、 rocketmq 或 hbase 等中间件
+		方案四: 创建一张表 专门记录 执行 ES数据失败的信息 (比如记录 数据库的id)
+			然后设置一个定时任务, 定时向ES执行 失败的数据的数据 (根据 记录的 ID 从mysql中 读取并且再次执行)
 	*/
 	var err error
 	if _, err = gs.brandsData.Get(ctx, goods.BrandsID); err == nil {
@@ -117,7 +118,7 @@ func (gs *goodsService) Create(ctx context.Context, goods *dto.GoodsDTO) error {
 	defer func() { // 异常处理
 		if p := recover(); p != nil {
 			txn.Rollback()
-			log.ErrorfC(ctx, "panic: %v", p)
+			log.ErrorfC(ctx, "goodsService.Create panic: %v", p)
 			return
 		} else if err != nil {
 			txn.Rollback()
@@ -127,6 +128,7 @@ func (gs *goodsService) Create(ctx context.Context, goods *dto.GoodsDTO) error {
 	}()
 
 	if err = gs.goodsData.CreateInTxn(ctx, txn, &goods.GoodsDO); err != nil {
+		log.Errorf("data.CreateInTxn err: %v", err)
 		return err
 	}
 
@@ -153,19 +155,90 @@ func (gs *goodsService) Create(ctx context.Context, goods *dto.GoodsDTO) error {
 	return nil
 }
 
-func (gs *goodsService) Update(ctx context.Context, id int64, goods *dto.GoodsDTO) error {
-	//TODO implement me
-	panic("implement me")
+func (gs *goodsService) Update(ctx context.Context, goods *dto.GoodsDTO) error {
+	var err error
+
+	txn := gs.goodsData.Begin(ctx)
+	defer func() { // 异常处理
+		if p := recover(); p != nil {
+			txn.Rollback()
+			log.ErrorfC(ctx, "goodsService.Create panic: %v", p)
+			return
+		} else if err != nil {
+			txn.Rollback()
+		} else {
+			txn.Commit()
+		}
+	}()
+
+	if err = gs.goodsData.UpdateInTxn(ctx, txn, &goods.GoodsDO); err != nil {
+		return err
+	}
+
+	goodsSearchDo := do.GoodsSearchDO{
+		ID:          goods.ID,
+		CategoryID:  goods.CategoryID,
+		BrandsID:    goods.BrandsID,
+		OnSale:      goods.OnSale,
+		ShipFree:    goods.ShipFree,
+		IsNew:       goods.IsNew,
+		IsHot:       goods.IsHot,
+		Name:        goods.Name,
+		ClickNum:    goods.ClickNum,
+		SoldNum:     goods.SoldNum,
+		FavNum:      goods.FavNum,
+		MarketPrice: goods.MarketPrice,
+		GoodsBrief:  goods.GoodsBrief,
+		ShopPrice:   goods.ShopPrice,
+	}
+	if err = gs.goodsSerachData.Update(ctx, &goodsSearchDo); err != nil {
+		return err
+	}
+	txn.Commit()
+	return nil
 }
 
-func (gs *goodsService) Delete(ctx context.Context, id int64) error {
-	//TODO implement me
-	panic("implement me")
+func (gs *goodsService) Delete(ctx context.Context, id uint64) error {
+	var err error
+
+	txn := gs.goodsData.Begin(ctx)
+	defer func() { // 异常处理
+		if p := recover(); p != nil {
+			txn.Rollback()
+			log.ErrorfC(ctx, "goodsService.Create panic: %v", p)
+			return
+		} else if err != nil {
+			txn.Rollback()
+		} else {
+			txn.Commit()
+		}
+	}()
+
+	if err = gs.goodsData.DeleteInTxn(ctx, txn, id); err != nil {
+		return err
+	}
+
+	if err = gs.goodsSerachData.Delete(ctx, id); err != nil {
+		return err
+	}
+	txn.Commit()
+	return nil
 }
 
-func (gs *goodsService) BatchGet(ctx context.Context, ids []int64) ([]*dto.GoodsDTO, error) {
-	//TODO implement me
-	panic("implement me")
+func (gs *goodsService) BatchGet(ctx context.Context, ids []uint64) ([]*dto.GoodsDTO, error) {
+	// 并发去请求数据 一次性启动多个 goroutine 需要去监听
+	var ret []*dto.GoodsDTO
+
+	ds, err := gs.goodsData.ListByIDs(ctx, ids, []string{})
+	if err != nil {
+		return nil, err
+	}
+	for _, value := range ds.Items {
+		ret = append(ret, &dto.GoodsDTO{
+			GoodsDO: *value,
+		})
+	}
+	return ret, nil
 }
 
 func NewGoodsService(gs data.GoodsStore, sgs data_search.GoodsStore, cs data.CategoryStore, bs data.BrandsStore) GoodsSrv {
