@@ -2,7 +2,7 @@ package db
 
 import (
 	"context"
-	"shop/app/shop_srv/goods/srv/internal/data"
+	"shop/app/shop_srv/goods/srv/internal/data/v1"
 	"shop/app/shop_srv/goods/srv/internal/domain/do"
 	"shop/gmicro/pkg/code"
 	"shop/gmicro/pkg/errors"

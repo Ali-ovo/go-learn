@@ -10,6 +10,7 @@ import (
 	"shop/gmicro/registry"
 	"shop/gmicro/registry/consul"
 	"shop/pkg/options"
+	"sync"
 
 	"github.com/hashicorp/consul/api"
 )
@@ -69,7 +70,10 @@ func NewUserApp(cfg *config.Config) (*gapp.App, error) {
 		SSLInsecureSkipVerify: cfg.Redis.SSLInsecureSkipVerify,
 		EnableTracing:         cfg.Redis.EnableTracing,
 	}
-	go storage.ConnectToRedis(context.Background(), redisConfig)
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	go storage.ConnectToRedis(context.Background(), &wg, redisConfig)
+	wg.Wait()
 
 	// 生成 http 服务
 	httpServer, err := NewAPIHTTPServer(cfg)

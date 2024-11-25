@@ -10,6 +10,7 @@ import (
 	code2 "shop/pkg/code"
 	"shop/pkg/es"
 	"strconv"
+	"strings"
 
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/esapi"
@@ -22,6 +23,7 @@ type goods struct {
 
 func (g *goods) Search(ctx context.Context, req *data_search.GoodsFilterRequest) (*do.GoodsSearchDOList, error) {
 	var ret do.GoodsSearchDOList
+	var orderby []map[string]any
 
 	boolQuery, query := (*do.GoodsSearchDO)(nil).GetSearchBool()
 	if req.KeyWords != "" {
@@ -102,11 +104,28 @@ func (g *goods) Search(ctx context.Context, req *data_search.GoodsFilterRequest)
 	query["from"] = (req.Pages - 1) * req.PagePerNums
 	query["size"] = req.PagePerNums
 
+	for _, order := range req.Orderby {
+		sort := "asc"
+		if order[0] == '-' {
+			sort = "desc"
+
+		}
+		orderby = append(orderby, map[string]any{
+			strings.TrimLeft(order, "-"): map[string]any{
+				"order": sort,
+			},
+		})
+	}
+	query["sort"] = append(orderby, query["sort"].([]map[string]any)...)
+
 	res, err := esapi.SearchRequest{
 		Index: []string{(*do.GoodsSearchDO)(nil).GetIndexName()},
 		Body:  esutil.NewJSONReader(query),
 	}.Do(context.Background(), g.esClient)
-	if err != nil {
+	if err != nil || res.StatusCode != 200 {
+		if res.StatusCode != 200 {
+			return nil, errors.WithCode(code2.ErrEsDatabase, "Es 查询语句出现问题")
+		}
 		return nil, errors.WithCode(code2.ErrEsDatabase, err.Error())
 	}
 	defer res.Body.Close()

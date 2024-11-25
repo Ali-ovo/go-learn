@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -148,7 +149,7 @@ func clusterConnectionIsOpen(ctx context.Context, cluster RedisCluster) bool {
 
 // ConnectToRedis starts a go routine that periodically tries to connect to redis.
 // ConnectToRedis 启动一个Go协程，定期尝试连接到Redis
-func ConnectToRedis(ctx context.Context, config *Config) {
+func ConnectToRedis(ctx context.Context, wg *sync.WaitGroup, config *Config) {
 	tick := time.NewTicker(time.Second) // 1s 定时器
 	defer tick.Stop()
 
@@ -173,6 +174,7 @@ func ConnectToRedis(ctx context.Context, config *Config) {
 	}
 	// 否则 redis 当前是可用的
 	redisUp.Store(ok)
+	wg.Done()
 again:
 	for {
 		select {

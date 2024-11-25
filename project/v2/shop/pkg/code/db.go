@@ -19,3 +19,8 @@ const (
 	// ErrConnectGRPC - 500: Connect to grpc error.
 	ErrConnectGRPC int = iota + 100701
 )
+
+const (
+	// ErrRedisDatabase - 500: Redis data base error.
+	ErrRedisDatabase int = iota + 100801
+)

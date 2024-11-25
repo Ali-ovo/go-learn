@@ -2,7 +2,7 @@ package db
 
 import (
 	"context"
-	"shop/app/shop_srv/goods/srv/internal/data"
+	"shop/app/shop_srv/goods/srv/internal/data/v1"
 	"shop/app/shop_srv/goods/srv/internal/domain/do"
 	"shop/gmicro/pkg/code"
 	metav1 "shop/gmicro/pkg/common/meta/v1"
@@ -36,9 +36,12 @@ func (g *goods) ListByIDs(ctx context.Context, ids []uint64, orderby []string) (
 		query = query.Order(v)
 	}
 
-	d := query.Where("id in ?", ids).Find(&ret.Items).Count(&ret.TotalCount)
-	if d.Error != nil {
-		return nil, errors.WithCode(code.ErrDatabase, d.Error.Error())
+	result := query.Where("id in ?", ids).Find(&ret.Items).Count(&ret.TotalCount)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, errors.WithCode(code2.ErrGoodsNotFound, result.Error.Error())
+		}
+		return nil, errors.WithCode(code.ErrDatabase, result.Error.Error())
 	}
 	return ret, nil
 }
@@ -50,9 +53,12 @@ func (g *goods) List(ctx context.Context, opts metav1.ListMeta, orderby []string
 	query := g.db.Preload("Category").Preload("Brands")
 	// 处理分页 排序
 	query, count := paginate(query, opts.Page, opts.PageSize, orderby)
-	query.Find(&ret.Items)
-	if query.Error != nil {
-		return nil, errors.WithCode(code.ErrDatabase, query.Error.Error())
+	result := query.Find(&ret.Items)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, errors.WithCode(code2.ErrGoodsNotFound, result.Error.Error())
+		}
+		return nil, errors.WithCode(code.ErrDatabase, result.Error.Error())
 	}
 	ret.TotalCount = count
 

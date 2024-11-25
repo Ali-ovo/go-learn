@@ -25,10 +25,15 @@
 | ErrEsDatabase | 100601 | 404 | EsDatabase error |
 | ErrEsUnmarshal | 100602 | 500 | Es unmarshal error |
 | ErrConnectGRPC | 100701 | 500 | Connect to grpc error |
+| ErrRedisDatabase | 100801 | 500 | Redis data base error |
 | ErrGoodsNotFound | 101101 | 404 | Goods not found |
 | ErrCategoryNotFound | 101102 | 404 | Category not found |
 | ErrBrandsNotFound | 101103 | 404 | Brand not found |
 | ErrCategoryBrandsNotFound | 101104 | 404 | CategoryBrands not found |
+| ErrInventoryNotFound | 101201 | 404 | Goods not found |
+| ErrInvSellDetailNotFound | 101202 | 400 | Inventory sell detail not found |
+| ErrInvNotEnough | 101203 | 404 | Inventory not enough |
+| ErrstockNotFound | 101204 | 404 | Order not found |
 | ErrUserNotFound | 101001 | 404 | User not found |
 | ErrUserAlreadyExists | 101002 | 400 | User already exists |
 | ErrUserPasswordIncorrect | 101003 | 400 | User password is incorrect |

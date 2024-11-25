@@ -1,7 +1,7 @@
 package srv
 
 import (
-	"shop/app/shop_srv/goods/srv/internal/data"
+	"shop/app/shop_srv/goods/srv/internal/data/v1"
 	"shop/app/shop_srv/goods/srv/internal/data_search/v1"
 	"shop/app/shop_srv/goods/srv/internal/service"
 )

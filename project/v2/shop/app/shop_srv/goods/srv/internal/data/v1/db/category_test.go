@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"shop/app/shop_srv/goods/srv/internal/data"
+	"shop/app/shop_srv/goods/srv/internal/data/v1"
 	"shop/pkg/options"
 	"testing"
 	"time"

@@ -153,7 +153,6 @@ func (s *Server) Start(ctx context.Context) error {
 }
 
 func (s *Server) Stop(ctx context.Context) error {
-	log.Infof("stop rest server")
 	if err := s.server.Shutdown(ctx); err != nil {
 		log.Errorf("shutdown rest server error: %s", err.Error())
 		return err

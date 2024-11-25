@@ -2,7 +2,7 @@ package db
 
 import (
 	"fmt"
-	"shop/app/shop_srv/goods/srv/internal/data"
+	"shop/app/shop_srv/goods/srv/internal/data/v1"
 	"shop/gmicro/pkg/conn"
 	"shop/gmicro/pkg/errors"
 	"shop/gmicro/pkg/log"

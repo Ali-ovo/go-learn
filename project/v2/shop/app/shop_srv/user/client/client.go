@@ -6,7 +6,8 @@ import (
 	user_pb "shop/api/user/v1"
 	rpc "shop/gmicro/server/rpcserver"
 	"shop/gmicro/server/rpcserver/clientinterceptors"
-	_ "shop/gmicro/server/rpcserver/resolver/direct" // 必填
+
+	// _ "shop/gmicro/server/rpcserver/resolver/direct" // 必填
 	"time"
 
 	"shop/gmicro/server/rpcserver/selector"

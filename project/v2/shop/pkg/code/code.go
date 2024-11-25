@@ -1,9 +1,10 @@
 package code
 
 import (
-	"github.com/novalagung/gubrak"
-	"shop/gmicro/pkg/errors"
 	"net/http"
+	"shop/gmicro/pkg/errors"
+
+	"github.com/novalagung/gubrak"
 )
 
 type ErrCode struct {
@@ -38,7 +39,7 @@ func (e ErrCode) Code() int {
 }
 
 func register(code int, httpStatus int, message string, refs ...string) {
-	found, _ := gubrak.Includes([]int{200, 400, 401, 403, 404, 500}, httpStatus)
+	found, _ := gubrak.Includes([]int{200, 400, 401, 403, 404, 409, 500}, httpStatus)
 	if !found {
 		panic("http code not in `200, 400, 401, 403, 404, 500`")
 	}

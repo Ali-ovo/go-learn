@@ -16,19 +16,17 @@ type GoodsService struct {
 }
 
 func (gs *GoodsService) GoodsList(ctx context.Context, req *dtoGoods.GoodsFilter) (*dtoGoods.GoodDTOList, error) {
-	var err error
 	var dtoGoodsList dtoGoods.GoodDTOList
 	var doGoodsFilter goods_pb.GoodsFilterRequest
 
 	byteReq, _ := json.Marshal(req)
-	err = json.Unmarshal(byteReq, &doGoodsFilter)
-	if err != nil {
+	if err := json.Unmarshal(byteReq, &doGoodsFilter); err != nil {
 		return nil, errors.WithCode(code2.ErrEncodingJSON, "编码 json数据 失败")
 	}
 
 	doGoods, err := gs.data.Goods().GoodsList(ctx, &doGoodsFilter)
 	if err != nil {
-		return nil, err
+		return nil, errors.FromGrpcError(err)
 	}
 
 	byteDoGoods, _ := json.Marshal(doGoods)

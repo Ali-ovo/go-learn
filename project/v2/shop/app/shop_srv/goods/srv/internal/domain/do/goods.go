@@ -41,8 +41,8 @@ func (fsd *GoodsSearchDO) GetSearchBool() (boolQuery map[string]any, query map[s
 		"query": map[string]any{
 			"bool": boolQuery,
 		},
-		"sort": []any{
-			map[string]any{
+		"sort": []map[string]any{
+			{
 				"_score": map[string]any{
 					"order": "desc",
 				},

@@ -2,7 +2,7 @@ package srv
 
 import (
 	"context"
-	"shop/app/shop_srv/goods/srv/internal/data"
+	"shop/app/shop_srv/goods/srv/internal/data/v1"
 	"shop/app/shop_srv/goods/srv/internal/data_search/v1"
 	"shop/app/shop_srv/goods/srv/internal/domain/do"
 	"shop/app/shop_srv/goods/srv/internal/domain/dto"
