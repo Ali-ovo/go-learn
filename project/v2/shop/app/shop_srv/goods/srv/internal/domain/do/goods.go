@@ -140,8 +140,8 @@ type GoodsDO struct {
 	MarketPrice     float32  `gorm:"not null" json:"market_price"`
 	ShopPrice       float32  `gorm:"not null" json:"shop_price"`
 	GoodsBrief      string   `gorm:"type:varchar(100);not null" json:"goods_brief"`
-	Images          GormList `gorm:"type:varchar(1000);not null" json:"images"`
-	DescImages      GormList `gorm:"type:varchar(1000);not null" json:"desc_images"`
+	Images          GormList `gorm:"type:json;not null" json:"images"`
+	DescImages      GormList `gorm:"type:json;not null" json:"desc_images"`
 	GoodsFrontImage string   `gorm:"type:varchar(200);not null" json:"goods_front_image"`
 }
 

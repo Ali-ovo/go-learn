@@ -7,10 +7,10 @@ import (
 )
 
 type TelemetryOptions struct {
-	Name     string  `json:"name"`
-	Endpoint string  `json:"endpoint"`
-	Sampler  float64 `json:"sampler"`
-	Batcher  string  `json:"batcher"`
+	Name     string  `json:"name"     mapstructure:"name"`
+	Endpoint string  `json:"endpoint" mapstructure:"endpoint"`
+	Sampler  float64 `json:"sampler"  mapstructure:"sampler"`
+	Batcher  string  `json:"batcher"  mapstructure:"batcher"`
 }
 
 func NewTelemetryOptions() *TelemetryOptions {

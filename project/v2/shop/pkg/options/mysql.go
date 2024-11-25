@@ -10,16 +10,18 @@ import (
 )
 
 type MySQLOptions struct {
-	Host                  string        `mapstructure:"host" json:"host,omitempty"`
-	Port                  int           `mapstructure:"port" json:"port,omitempty"`
-	Username              string        `mapstructure:"username" json:"username,omitempty"`
-	Password              string        `mapstructure:"password" json:"password,omitempty"`
-	Database              string        `mapstructure:"database" json:"database"`
-	MaxIdleConnections    int           `mapstructure:"max_idle_connections" json:"max_idle_connections,omitempty"`
-	MaxOpenConnections    int           `mapstructure:"max_open_connections" json:"max_open_connections,omitempty"`
-	MaxConnectionLifetime time.Duration `mapstructure:"max_conection_lifetime" json:"max_conection_lifetime,omitempty"`
-	LogLevel              int           `mapstructure:"log_level" json:"log_level,omitempty"`
-	EnableLog             bool          `mapstructure:"enable_log" json:"enable_log"`
+	Host                  string        `mapstructure:"host"                    json:"host,omitempty"`
+	Port                  int           `mapstructure:"port"                    json:"port,omitempty"`
+	Username              string        `mapstructure:"username"                json:"username,omitempty"`
+	Password              string        `mapstructure:"password"                json:"password,omitempty"`
+	Database              string        `mapstructure:"database"                json:"database"`
+	MaxIdleConnections    int           `mapstructure:"max-idle-connections"    json:"max-idle-connections,omitempty"`
+	MaxOpenConnections    int           `mapstructure:"max-open-connections"    json:"max-open-connections,omitempty"`
+	MaxConnectionLifetime time.Duration `mapstructure:"max-connection-lifetime" json:"max-connection-lifetime,omitempty"`
+	EnableLog             bool          `mapstructure:"enable-log"              json:"enable-log"`
+	LogLevel              int           `mapstructure:"log-level"               json:"log-level,omitempty"`
+	SlowThreshold         time.Duration `mapstructure:"slow-threshold"          json:"slow-threshold"`
+	EnableColorful        bool          `mapstructure:"enable-colorful"         json:"enable-color"`
 }
 
 // NewMySQLOptions
@@ -36,7 +38,6 @@ func NewMySQLOptions() *MySQLOptions {
 		MaxIdleConnections:    100,
 		MaxOpenConnections:    100,
 		MaxConnectionLifetime: time.Duration(10) * time.Second,
-		LogLevel:              1,
 	}
 }
 
@@ -65,6 +66,8 @@ func (mo *MySQLOptions) AddFlags(fs *pflag.FlagSet) {
 	fs.IntVar(&mo.MaxIdleConnections, "mysql.max-idle-connections", mo.MaxOpenConnections, "Maximum idle connections allowed to connect to mysql.")
 	fs.IntVar(&mo.MaxOpenConnections, "mysql.max-open-connections", mo.MaxOpenConnections, "Maximum open connections allowed to connect to mysql.")
 	fs.DurationVar(&mo.MaxConnectionLifetime, "mysql.max-connection-life-time", mo.MaxConnectionLifetime, "Maximum connection life time allowed to connecto to mysql.")
-	fs.IntVar(&mo.LogLevel, "mysql.log-mode", mo.LogLevel, "Specify gorm log level.")
 	fs.BoolVar(&mo.EnableLog, "mysql.enable-log", mo.EnableLog, "Enable gorm log.")
+	fs.IntVar(&mo.LogLevel, "mysql.log-mode", mo.LogLevel, "Specify gorm log level.")
+	fs.DurationVar(&mo.SlowThreshold, "mysql.slow-threshold", mo.SlowThreshold, "Specify gorm slow threshold.")
+	fs.BoolVar(&mo.EnableColorful, "mysql.enable-colorful", mo.EnableColorful, "Enable gorm log colorful.")
 }

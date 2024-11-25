@@ -1,7 +1,6 @@
 package BasicAuth
 
 import (
-	"shop/app/shop_api/api/service/user/v1"
 	"shop/gmicro/server/restserver/middlewares"
 	"shop/gmicro/server/restserver/middlewares/auth"
 
@@ -13,7 +12,7 @@ import (
 //	@Description:
 //	@param srv
 //	@return middlewares.AuthStrategy
-func NewBasicAuth(srv user.UserSrv) auth.BasicStrategy {
+func NewBasicAuth(srv user.user) auth.BasicStrategy {
 	return auth.NewBasicStrategy(func(c *gin.Context, username string, password string) bool {
 		userDTO, err := srv.MobileLogin(c, username, password)
 		if err != nil {

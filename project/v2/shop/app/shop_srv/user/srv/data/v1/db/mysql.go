@@ -2,7 +2,6 @@ package db
 
 import (
 	"fmt"
-	"shop/app/shop_srv/goods/srv/internal/data"
 	"shop/gmicro/pkg/conn"
 	"shop/gmicro/pkg/errors"
 	"shop/gmicro/pkg/log"
@@ -14,39 +13,9 @@ import (
 )
 
 var (
-	dbFactory data.DataFactory
+	dbFactory *gorm.DB
 	once      sync.Once
 )
-
-type mysqlFactory struct {
-	db *gorm.DB
-}
-
-func (mf *mysqlFactory) Goods() data.GoodsStore {
-	return newGoods(mf)
-}
-
-func (mf *mysqlFactory) Category() data.CategoryStore {
-	return newCategory(mf)
-}
-
-func (mf *mysqlFactory) Brands() data.BrandsStore {
-	return newBrand(mf)
-}
-
-func (mf *mysqlFactory) Banner() data.BannerStore {
-	return newBanner(mf)
-}
-
-func (mf *mysqlFactory) CategoryBrands() data.CategoryBrandStore {
-	return newCategoryBrands(mf)
-}
-
-func (mf *mysqlFactory) Begin() *gorm.DB {
-	return mf.db.Begin()
-}
-
-var _ data.DataFactory = (*mysqlFactory)(nil)
 
 // GetDBfactoryOr
 //
@@ -54,7 +23,7 @@ var _ data.DataFactory = (*mysqlFactory)(nil)
 //	@param myqslOpts
 //	@return *gorm.DB
 //	@return error
-func GetDBfactoryOr(mysqlOpts *options.MySQLOptions) (data.DataFactory, error) {
+func GetDBfactoryOr(mysqlOpts *options.MySQLOptions) (*gorm.DB, error) {
 	if mysqlOpts == nil && dbFactory == nil {
 		return nil, fmt.Errorf("failed to get mysql store factory")
 	}
@@ -62,25 +31,17 @@ func GetDBfactoryOr(mysqlOpts *options.MySQLOptions) (data.DataFactory, error) {
 	var err error
 
 	once.Do(func() {
-		msqDB, err := conn.NewMySQLClient((*conn.MySQLOptions)(mysqlOpts))
+		dbFactory, err = conn.NewMySQLClient((*conn.MySQLOptions)(mysqlOpts))
 		if err != nil {
 			return
 		}
 
 		//// 定义一个表结构, 将表结构直接生成对应的表 - migrations
 		//// 迁移 schema
-		//_ = msqDB.AutoMigrate(
-		//	&do.CategoryDO{},
-		//	&do.BrandsDO{},
-		//	&do.CategoryBrandDO{},
-		//	&do.BannerDO{},
-		//	&do.GoodsDO{},
+		//_ = dbFactory.AutoMigrate(
+		//	&users{},
 		//)
-
-		dbFactory = &mysqlFactory{
-			db: msqDB,
-		}
-		log.Info("[goods-srv] 初始化 Mysql 完成")
+		log.Info("[user-srv] 初始化 Mysql 完成")
 	})
 
 	if dbFactory == nil || err != nil {
@@ -118,7 +79,7 @@ func paginate(db *gorm.DB, page int, pageSize int, orderBy []string, conditions 
 		offset = (page - 1) * limit
 	}
 
-	// 排序 如: age desc, name 等  age 为降序, name 为升序
+	// 排序
 	for _, v := range orderBy {
 		db = db.Order(v)
 	}

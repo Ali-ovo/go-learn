@@ -11,7 +11,7 @@ import (
 )
 
 type RocketmqOptions struct {
-	Addr      []string `mapstructure:"addr" json:"addr,omitempty"`
+	Addr      []string `mapstructure:"addr"       json:"addr,omitempty"`
 	GroupName string   `mapstructure:"group-name" json:"group-name,omitempty"`
 }
 

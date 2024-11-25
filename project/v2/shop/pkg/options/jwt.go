@@ -7,18 +7,18 @@ import (
 )
 
 type JwtOptions struct {
-	Realm       string        `json:"realm" mapstructure:"realm"`                 // 区分项目用
-	Method      string        `json:"method" mapstructure:"method"`               // 加密方式
-	Key         string        `json:"key" mapstructure:"key"`                     // jwt密钥
+	Realm       string        `json:"realm"         mapstructure:"realm"`         // 区分项目用
+	Method      string        `json:"method"        mapstructure:"method"`        // 加密方式
+	Key         string        `json:"key"           mapstructure:"key"`           // jwt密钥
 	PrivKeyFile string        `json:"priv-key-file" mapstructure:"priv-key-file"` // 非对称加密 私钥
-	PubKeyFile  string        `json:"pub-key-file" mapstructure:"pub-key-file"`   // 非对称加密 公钥
-	Timeout     time.Duration `json:"timeout" mapstructure:"timeout"`             // jwt 超时时间
-	MaxRefresh  time.Duration `json:"max-refresh" mapstructure:"max-refresh"`     // jwt 刷新时间
+	PubKeyFile  string        `json:"pub-key-file"  mapstructure:"pub-key-file"`  // 非对称加密 公钥
+	Timeout     time.Duration `json:"timeout"       mapstructure:"timeout"`       // jwt 超时时间
+	MaxRefresh  time.Duration `json:"max-refresh"   mapstructure:"max-refresh"`   // jwt 刷新时间
 }
 
 func NewJwtOptions() *JwtOptions {
 	return &JwtOptions{
-		Realm:      "ali",
+		Realm:      "czc",
 		Method:     "HS256",
 		Key:        "tg6l9aaJk$dkXrknppFbXExPrC4ta",
 		Timeout:    time.Duration(24) * time.Hour,
@@ -28,7 +28,6 @@ func NewJwtOptions() *JwtOptions {
 
 func (j *JwtOptions) Validate() []error {
 	var errs []error
-
 	return errs
 }
 

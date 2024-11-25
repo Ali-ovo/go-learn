@@ -2,8 +2,8 @@ package JWTAuth
 
 import (
 	"os"
-	"shop/app/shop_api/api/data/v1"
-	"shop/app/shop_api/api/service"
+	"shop/app/shop_api/api/internal/data/v1"
+	"shop/app/shop_api/api/internal/service"
 	"shop/gmicro/pkg/errors"
 	"shop/gmicro/server/restserver/middlewares"
 	"shop/gmicro/server/restserver/middlewares/auth"

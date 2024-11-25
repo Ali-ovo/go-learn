@@ -50,6 +50,8 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(re)
+	for _, item := range re.Data {
+		fmt.Println(item)
+	}
 	time.Sleep(time.Second * 5)
 }

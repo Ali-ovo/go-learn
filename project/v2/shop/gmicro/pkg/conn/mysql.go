@@ -12,21 +12,24 @@ import (
 )
 
 type MySQLOptions struct {
-	Host                  string        `mapstructure:"host" json:"host,omitempty"`
-	Port                  int           `mapstructure:"port" json:"port,omitempty"`
-	Username              string        `mapstructure:"username" json:"username,omitempty"`
-	Password              string        `mapstructure:"password" json:"password,omitempty"`
-	Database              string        `mapstructure:"database" json:"database"`
-	MaxIdleConnections    int           `mapstructure:"max_idle_connections" json:"max_idle_connections,omitempty"`
-	MaxOpenConnections    int           `mapstructure:"max_open_connections" json:"max_open_connections,omitempty"`
+	Host                  string        `mapstructure:"host"                   json:"host,omitempty"`
+	Port                  int           `mapstructure:"port"                   json:"port,omitempty"`
+	Username              string        `mapstructure:"username"               json:"username,omitempty"`
+	Password              string        `mapstructure:"password"               json:"password,omitempty"`
+	Database              string        `mapstructure:"database"               json:"database"`
+	MaxIdleConnections    int           `mapstructure:"max_idle_connections"   json:"max_idle_connections,omitempty"`
+	MaxOpenConnections    int           `mapstructure:"max_open_connections"   json:"max_open_connections,omitempty"`
 	MaxConnectionLifetime time.Duration `mapstructure:"max_conection_lifetime" json:"max_conection_lifetime,omitempty"`
-	LogLevel              int           `mapstructure:"log_level" json:"log_level,omitempty"`
-	EnableLog             bool          `mapstructure:"enable_log" json:"enable_log"`
+	EnableLog             bool          `mapstructure:"enable_log"             json:"enable_log"`
+	LogLevel              int           `mapstructure:"log_level"              json:"log_level,omitempty"`
+	SlowThreshold         time.Duration `mapstructure:"slow-threshold"         json:"slow-threshold"`
+	EnableColorful        bool          `mapstructure:"enable-colorful"        json:"enable-color"`
 }
 
 func NewMySQLClient(opts *MySQLOptions) (*gorm.DB, error) {
 	var newLogger logger.Interface
 
+	//dsn := "root:56248123@tcp(192.168.16.110:3306)/mxshop_user_srv?charset=utf8mb4&parseTime=True&loc=Local"
 	dsn := fmt.Sprintf(
 		"%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		opts.Username,
@@ -40,9 +43,9 @@ func NewMySQLClient(opts *MySQLOptions) (*gorm.DB, error) {
 		newLogger = logger.New(
 			log.StdInfoLogger(),
 			logger.Config{
-				SlowThreshold: time.Second, // 慢 SQL 阈值
-				LogLevel:      logger.Info, // Log level
-				Colorful:      true,        // 禁用彩色打印
+				SlowThreshold: opts.SlowThreshold,             // 慢 SQL 阈值
+				LogLevel:      logger.LogLevel(opts.LogLevel), // Log level
+				Colorful:      opts.EnableColorful,            // 禁用彩色打印
 			},
 		)
 	}
@@ -56,16 +59,6 @@ func NewMySQLClient(opts *MySQLOptions) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	//// 定义一个表结构, 将表结构直接生成对应的表 - migrations
-	//// 迁移 schema
-	//_ = dbFactory.AutoMigrate(
-	//	&do2.CategoryDO{},
-	//	&do2.BrandsDO{},
-	//	&do2.GoodsCategoryBrandDO{},
-	//	&do2.BannerDO{},
-	//	&do2.GoodsDO{},
-	//)
 
 	sqlDB, _ := dbFactory.DB()
 	// 最大允许 连接数

@@ -8,7 +8,7 @@ import (
 
 type RegistryOptions struct {
 	Address string `mapstructure:"address" json:"address,omitempty"`
-	Scheme  string `mapstructure:"scheme" json:"scheme,omitempty"`
+	Scheme  string `mapstructure:"scheme"  json:"scheme,omitempty"`
 	//Version string `mapstructure:"version" json:"version"` // 设置版本等级
 }
 

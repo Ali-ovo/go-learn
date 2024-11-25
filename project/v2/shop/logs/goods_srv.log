@@ -49,3 +49,31 @@ runtime.main
 2024-11-24 12:19:55.440	[34mINFO[0m	rpcserver/server.go:181	[gRPC] server listening on: 172.20.209.226:8151
 2024-11-24 12:21:11.344	[34mINFO[0m	v2/goods.go:53	goodsSerachData.Search err: EsDatabase error	{"trace_id": "8dc2800b9568d047e937fe7b3ed952d4"}
 2024-11-24 12:21:12.212	[31mERROR[0m	trace/agent.go:83	[otel] error: Post "http://192.168.189.128:14268/api/traces": dial tcp 192.168.189.128:14268: connect: connection refused
+2024-11-25 11:53:10.015	[34mINFO[0m	srv/es.go:30	[goods-srv] 启动 Rocketmq 完成
+2024-11-25 11:53:10.089	[31mFATAL[0m	srv/rpc.go:28	Internal server error
+shop/app/shop_srv/goods/srv.NewGoodsRPCServer
+	/Users/ctw/AllCodes/GOProject/go-learn/project/v2/shop/app/shop_srv/goods/srv/rpc.go:28
+shop/app/shop_srv/goods/srv.NewGoodsApp
+	/Users/ctw/AllCodes/GOProject/go-learn/project/v2/shop/app/shop_srv/goods/srv/app.go:56
+shop/app/shop_srv/goods/srv.NewApp.run.func2
+	/Users/ctw/AllCodes/GOProject/go-learn/project/v2/shop/app/shop_srv/goods/srv/app.go:31
+shop/gmicro/pkg/app.(*App).runCommand
+	/Users/ctw/AllCodes/GOProject/go-learn/project/v2/shop/gmicro/pkg/app/app.go:249
+github.com/spf13/cobra.(*Command).execute
+	/Users/ctw/go/pkg/mod/github.com/spf13/cobra@v1.6.1/command.go:916
+github.com/spf13/cobra.(*Command).ExecuteC
+	/Users/ctw/go/pkg/mod/github.com/spf13/cobra@v1.6.1/command.go:1044
+github.com/spf13/cobra.(*Command).Execute
+	/Users/ctw/go/pkg/mod/github.com/spf13/cobra@v1.6.1/command.go:968
+shop/gmicro/pkg/app.(*App).Run
+	/Users/ctw/AllCodes/GOProject/go-learn/project/v2/shop/gmicro/pkg/app/app.go:198
+main.main
+	/Users/ctw/AllCodes/GOProject/go-learn/project/v2/shop/cmd/goods/main.go:20
+runtime.main
+	/opt/homebrew/Cellar/go/1.23.2/libexec/src/runtime/proc.go:272
+2024-11-25 11:54:52.723	[34mINFO[0m	srv/es.go:30	[goods-srv] 启动 Rocketmq 完成
+2024-11-25 11:54:52.794	[34mINFO[0m	db/mysql.go:72	[goods-srv] 初始化 Mysql 完成
+2024-11-25 11:54:52.795	[34mINFO[0m	es/es.go:53	[goods-srv] 初始化 Es 完成
+2024-11-25 11:54:52.798	[34mINFO[0m	app/app.go:94	start rest server
+2024-11-25 11:54:52.798	[34mINFO[0m	rpcserver/server.go:181	[gRPC] server listening on: 172.16.100.208:8151
+2024-11-25 12:01:28.022	[34mINFO[0m	rpcserver/server.go:189	[gRPC] server stopping
