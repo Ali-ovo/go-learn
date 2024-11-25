@@ -20,7 +20,7 @@ func NewApp(basename string) *app.App {
 	cfg := config.NewConfig()
 
 	return app.NewApp(
-		"user_api",
+		"shop_api",
 		basename,
 		app.WithOptions(cfg), // 初始 log server 配置
 		app.WithRunFunc(run(cfg)),
@@ -83,7 +83,7 @@ func NewUserApp(cfg *config.Config) (*gapp.App, error) {
 	// 运行 http 服务
 	return gapp.New(
 		gapp.WithName(cfg.Server.Name),
-		gapp.WithRestServer(httpServer),
+		gapp.WithServer(httpServer),
 		gapp.WithRegistrar(register),
 	), nil
 }

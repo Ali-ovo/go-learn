@@ -31,7 +31,7 @@ func main() {
 		context.Background(),
 		rpc.WithBanlancerName("selector"),
 		rpc.WithDiscovery(consul.New(cli, consul.WithHealthCheck(true))),
-		rpc.WithEndpoint("discovery:///goods_srv"),
+		rpc.WithEndpoint("discovery:///shop"),
 		rpc.WithClientEnableTracing(false),
 		rpc.WithClientUnaryInterceptor(clientinterceptors.UnaryTracingInterceptor),
 		rpc.WithClientTimeout(time.Second*5000),
@@ -53,5 +53,5 @@ func main() {
 	for _, item := range re.Data {
 		fmt.Println(item)
 	}
-	time.Sleep(time.Second * 5)
+	time.Sleep(time.Second * 3)
 }

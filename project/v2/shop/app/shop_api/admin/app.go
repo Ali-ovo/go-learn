@@ -58,7 +58,7 @@ func NewUserApp(cfg *config.Config) (*gapp.App, error) {
 	// 运行 http 服务
 	return gapp.New(
 		gapp.WithName(cfg.Server.Name),
-		gapp.WithRestServer(httpServer),
+		gapp.WithServer(httpServer),
 		gapp.WithRegistrar(register),
 	), nil
 }

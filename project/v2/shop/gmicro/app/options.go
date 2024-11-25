@@ -4,8 +4,7 @@ import (
 	"net/url"
 	"os"
 	"shop/gmicro/registry"
-	"shop/gmicro/server/restserver"
-	"shop/gmicro/server/rpcserver"
+	"shop/gmicro/server"
 	"syscall"
 	"time"
 
@@ -27,10 +26,11 @@ type options struct {
 	registrarTimeout time.Duration
 	// stopTimeout 注销超时退出
 	stopTimeout time.Duration
-	// rpc 服务
-	rpcServer *rpcserver.Server
-	// http 服务
-	restServer *restserver.Server
+	servers     []server.Server
+	//// rpc 服务
+	//rpcServer []*rpcserver.Server
+	//// http 服务
+	//restServer *restserver.Server
 }
 
 func DefaultOptions() options {
@@ -71,16 +71,21 @@ func WithSigs(sigs []os.Signal) Option {
 	}
 }
 
-func WithRPCServer(server *rpcserver.Server) Option {
-	return func(o *options) {
-		o.rpcServer = server
-	}
-}
+//func WithRPCServer(server *rpcserver.Server) Option {
+//	return func(o *options) {
+//		o.rpcServer = server
+//	}
+//}
+//
+//func WithRestServer(server *restserver.Server) Option {
+//	return func(o *options) {
+//		o.restServer = server
+//	}
+//}
 
-func WithRestServer(server *restserver.Server) Option {
-	return func(o *options) {
-		o.restServer = server
-	}
+// WithServer with servers.
+func WithServer(srv ...server.Server) Option {
+	return func(o *options) { o.servers = srv }
 }
 
 func WithRegistrar(registrar registry.Registrar) Option {

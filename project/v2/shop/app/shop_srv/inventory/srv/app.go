@@ -81,7 +81,7 @@ func NewUserApp(cfg *config.Config) (*gapp.App, error) {
 	// 运行 RPC 服务
 	return gapp.New(
 		gapp.WithName(cfg.Server.Name),
-		gapp.WithRPCServer(rpcServer),
+		gapp.WithServer(rpcServer),
 		gapp.WithRegistrar(register),
 	), nil
 }

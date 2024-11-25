@@ -94,9 +94,10 @@ package errors
 
 import (
 	"fmt"
+	"io"
+
 	gCodes "google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"io"
 )
 
 // New 返回一条带有指定信息的错误信息
@@ -360,11 +361,31 @@ func WrapC(err error, code int, format string, args ...interface{}) error {
 // Error 返回外部安全的错误消息
 func (w *withCode) Error() string { return fmt.Sprintf("%v", w) }
 
+// Cause 返回错误码
+func (w *withCode) Code() int { return w.code }
+
 // Cause 返回带有代码的错误的原因
 func (w *withCode) Cause() error { return w.cause }
 
 // Unwrap 提供了Go 1.13错误链的兼容性
 func (w *withCode) Unwrap() error { return w.cause }
+
+// Code
+//
+//	@Description: return errCode
+//	@param err
+//	@return int
+func Code(err error) int {
+	type coder interface {
+		Code() int
+	}
+	code, ok := err.(coder) // 判断 是否 err 结构体中 有 causer 方法
+	if !ok {
+		return 0
+	}
+	errCode := code.Code()
+	return errCode
+}
 
 // Cause 返回错误的根本原因，如果可能的话。
 // 如果一个错误值实现了以下接口，则它有一个原因：

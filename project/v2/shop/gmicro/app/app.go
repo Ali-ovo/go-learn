@@ -2,12 +2,11 @@ package app
 
 import (
 	"context"
-	"net/url"
 	"os"
 	"os/signal"
 	"shop/gmicro/pkg/log"
 	"shop/gmicro/registry"
-	gs "shop/gmicro/server"
+	"shop/gmicro/server"
 	"sync"
 
 	"golang.org/x/sync/errgroup"
@@ -58,28 +57,19 @@ func (a *App) Run() error {
 					调用进行中的cancel
 				3. start已经完成
 					调用stop
-		如果我们的服务启动了然后这个时候用户立马进行了访问
+		如果服务启动了然后这个时候用户立马进行了访问
 	*/
 
-	var servers []gs.Server
-	if a.opts.restServer != nil {
-		servers = append(servers, a.opts.restServer)
-	}
-
-	if a.opts.rpcServer != nil {
-		servers = append(servers, a.opts.rpcServer)
-	}
-
-	// 启动 resetserver
+	// 启动 restServer 和 rpcServer
 	parentCtx, cancel := context.WithCancel(context.Background())
 	a.cancel = cancel
 	eg, ctx := errgroup.WithContext(parentCtx)
 	wg := sync.WaitGroup{}
-	for _, srv := range servers {
+	for _, srv := range a.opts.servers {
 		// 这样 协程中调用的 srv 就会引用函数内部的变量  不会因为 srv 的改变而改变
 		// 不做此操作 有可能发生 下面协程 srv.Start 中 srv 启动的是 其他的 微服务 而没启动 本身的微服务
 		srv := srv
-
+		// 再启动一个 groutine 去监听是否有 err 产生
 		eg.Go(func() error {
 			<-ctx.Done() // wait for stop signal
 			// 不可能无休止的等待 stop 信号
@@ -91,7 +81,7 @@ func (a *App) Run() error {
 		wg.Add(1)
 		eg.Go(func() error {
 			wg.Done()
-			// log.Info("start rest server")
+			//log.Info("start rest server")
 			return srv.Start(ctx)
 		})
 	}
@@ -128,12 +118,12 @@ func (a *App) Run() error {
 }
 
 /*
-	http basic 认证
-	cache
-	cache 1. redis 2.memcache 3. local cache
-	jwt
+http basic 认证
+cache 1. redis 2.memcache 3. local cache
+jwt
 */
 
+// Stop 停止服务
 func (a *App) Stop() error {
 	a.lk.Lock()
 	instance := a.instance
@@ -155,19 +145,21 @@ func (a *App) Stop() error {
 
 // 创建服务注册结构体
 func (a *App) buildInstance() (*registry.ServiceInstance, error) {
-	endpoints := make([]string, 0)
+	endpoints := make([]string, 0, len(a.opts.endpoints))
 	for _, e := range a.opts.endpoints {
 		endpoints = append(endpoints, e.String())
 	}
 
-	// 从rpcserver, restserver 去主动获取这些信息
-	if a.opts.rpcServer != nil {
-		// u := a.opts.rpcServer.Endpoint()
-		u := &url.URL{
-			Scheme: "grpc",
-			Host:   a.opts.rpcServer.Address(),
+	if len(endpoints) == 0 {
+		for _, srv := range a.opts.servers {
+			if r, ok := srv.(server.Endpointer); ok {
+				e, err := r.Endpoint()
+				if err != nil {
+					return nil, err
+				}
+				endpoints = append(endpoints, e.String())
+			}
 		}
-		endpoints = append(endpoints, u.String())
 	}
 
 	return &registry.ServiceInstance{

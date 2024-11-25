@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"shop/app/shop_api/api/config"
 	"shop/gmicro/core/trace"
 	"shop/gmicro/server/restserver"
@@ -15,9 +16,10 @@ func NewAPIHTTPServer(cfg *config.Config) (*restserver.Server, error) {
 		Batcher:  cfg.Telemetry.Batcher,
 	})
 
+	rpcAddr := fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.HttpPort)
 	aRestServer := restserver.NewServer(
 		restserver.WithMode(cfg.Server.HttpMode),                       // 设置 gin 模式
-		restserver.WithPort(cfg.Server.HttpPort),                       // 设置端口号
+		restserver.WithAddress(rpcAddr),                                // 设置地址
 		restserver.WithMiddlewares(cfg.Server.Middlewares),             // 设置中间件
 		restserver.WithClientEnableTracing(cfg.Server.EnableTelemetry), // 开启 open-telemetry
 		restserver.WithEnableMetrics(cfg.Server.EnableMetrics),         // 是否开启 普罗米修斯监控 默认开启

@@ -2,14 +2,15 @@ package rpcserver
 
 import (
 	"context"
+	"crypto/tls"
 	"shop/gmicro/registry"
 	"shop/gmicro/server/rpcserver/clientinterceptors"
 	"shop/gmicro/server/rpcserver/resolver/discovery"
 	"time"
 
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
-
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	grpcinsecure "google.golang.org/grpc/credentials/insecure"
 )
 
@@ -17,6 +18,7 @@ type ClientOption func(o *clientOptions)
 
 type clientOptions struct {
 	endpoint string
+	tlsConf  *tls.Config
 	timeout  time.Duration
 	// discovery 接口
 	discovery    registry.Discovery             // 服务发现
@@ -24,10 +26,16 @@ type clientOptions struct {
 	streamIntes  []grpc.StreamClientInterceptor // 流式拦截器
 	rpcOpts      []grpc.DialOption
 	balancerName string
-	//logger        log.LogHelper
 	//log          log.LogHelper
 	enableTracing bool
 	enableMetrics bool
+}
+
+// WithTLSConfig with tls config.
+func WithTLSConfig(c *tls.Config) ClientOption {
+	return func(o *clientOptions) {
+		o.tlsConf = c
+	}
 }
 
 // WithEndpoint 设置地址
@@ -142,9 +150,10 @@ func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.Clien
 		grpc.WithChainStreamInterceptor(sints...),
 	}
 
-	//  服务发现的选项
+	// 服务发现的选项
 	if options.discovery != nil {
 		grpcOpts = append(grpcOpts, grpc.WithResolvers( // 添加解析器	参数需要 resolver.Builder
+			// 这里创建了一个 结构体 resolver.Builder 然后 grpc 会调用 这个结构的 build 方法 resolver.Builder.Build 实现 服务发现的功能
 			discovery.NewBuilder(
 				options.discovery,
 				discovery.WithInsecure(insecure),
@@ -155,7 +164,9 @@ func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.Clien
 	if insecure {
 		grpcOpts = append(grpcOpts, grpc.WithTransportCredentials(grpcinsecure.NewCredentials()))
 	}
-
+	if options.tlsConf != nil {
+		grpcOpts = append(grpcOpts, grpc.WithTransportCredentials(credentials.NewTLS(options.tlsConf)))
+	}
 	if len(options.rpcOpts) > 0 {
 		grpcOpts = append(grpcOpts, options.rpcOpts...)
 	}

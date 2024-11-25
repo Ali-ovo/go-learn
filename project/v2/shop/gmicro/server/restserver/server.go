@@ -2,37 +2,43 @@ package restserver
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
+	"net"
 	"net/http"
-	"strings"
-
-	"github.com/gin-gonic/gin"
-
+	"net/url"
+	"shop/gmicro/pkg/common/endpoint"
+	"shop/gmicro/pkg/host"
 	"shop/gmicro/pkg/log"
 	"shop/gmicro/server/restserver/middlewares"
 	"shop/gmicro/server/restserver/pprof"
 	"shop/gmicro/server/restserver/validation"
+	"strings"
 
+	"github.com/gin-gonic/gin"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/penglongli/gin-metrics/ginmetrics"
 )
 
-// type JwtInfo struct {
-// 	// default to "JWT"
-// 	Realm string
-// 	// default to empty
-// 	Key string
-// 	// default to 7 days
-// 	Timeout time.Duration
-// 	// default to 7 days
-// 	MaxRefresh time.Duration
-// }
+//type JwtInfo struct {
+//	// default to "JWT"
+//	Realm string
+//	// default to empty
+//	Key string
+//	// default to 7 days
+//	Timeout time.Duration
+//	// default to 7 days
+//	MaxRefresh time.Duration
+//}
 
 // Server wrapper for gin.Engine
 type Server struct {
 	*gin.Engine
-	// 端口号
-	port int
+	address  string
+	lis      net.Listener
+	tlsConf  *tls.Config
+	endpoint *url.URL
+	err      error
 	// 开发模式 默认值 debug
 	mode string
 	// 是否开启 pprof接口, 默认开启, 如果开启会自动添加 /debug/pprof 接口
@@ -41,13 +47,11 @@ type Server struct {
 	enableTracing bool
 	// 是否开启 metrics 接口, 默认开启, 如果开启会自动添加 /metrics 接口
 	enableMetrics bool
-
 	// 中间件
 	//customMiddlewares []gin.HandlerFunc
 	middlewares []string // 这里不选择注入的方式  选择做好的方法 选择用即可
-	// //jwt配置信息
-	// jwt *JwtInfo
-
+	////jwt配置信息
+	//jwt *JwtInfo
 	// 翻译器
 	transName   string
 	trans       ut.Translator
@@ -61,7 +65,7 @@ func (s *Server) Translator() ut.Translator {
 
 func NewServer(opts ...ServerOption) *Server {
 	srv := &Server{
-		port:            8080,
+		address:         ":0",
 		mode:            "debug",
 		enableProfiling: true,
 		enableTracing:   true,
@@ -112,11 +116,11 @@ func NewServer(opts ...ServerOption) *Server {
 
 	// 根据配置初始化 pprof 路由
 	if srv.enableProfiling {
-		pprof.Register(srv.Engine)
+		pprof.Register(srv.Engine) // TODO 不知道有什么用
 	}
 
 	// 开启 普罗米修斯监控
-	if srv.enableMetrics {
+	if srv.enableMetrics { // TODO 需要重新巩固一下
 		m := ginmetrics.GetMonitor() // gin-metrics 可以自动 收集相关信息 并且开启 /metrics 的 接口
 
 		// +optional set metric path, default /debug/metrics
@@ -135,10 +139,9 @@ func NewServer(opts ...ServerOption) *Server {
 
 // Start rest server
 func (s *Server) Start(ctx context.Context) error {
-	log.Infof("[gin] start rest server on port: %d", s.port)
-	address := fmt.Sprintf(":%d", s.port)
+	log.Infof("[gin] start rest server on %s", s.address)
 	s.server = &http.Server{
-		Addr:    address,
+		Addr:    s.address,
 		Handler: s.Engine,
 	}
 	// 在 Gin 框架中，SetTrustedProxies 方法是 gin.Engine 结构体的一个方法，用于设置信任的代理服务器，
@@ -146,7 +149,14 @@ func (s *Server) Start(ctx context.Context) error {
 	_ = s.SetTrustedProxies(nil)
 	//err = s.Run(fmt.Sprintf(":%d", s.port))
 	// http.ErrServerClosed 表示服务已经优雅退出了
-	if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+	var err error
+	if s.tlsConf != nil {
+		// 需要你填写具体的证书
+		err = s.server.ServeTLS(s.lis, "", "")
+	} else {
+		err = s.server.Serve(s.lis)
+	}
+	if err != nil && err != http.ErrServerClosed {
 		return err
 	}
 	return nil
@@ -159,4 +169,31 @@ func (s *Server) Stop(ctx context.Context) error {
 	}
 	log.Info("rest server stopped")
 	return nil
+}
+
+func (s *Server) Endpoint() (*url.URL, error) {
+	if err := s.listenAndEndpoint(); err != nil {
+		return nil, err
+	}
+	return s.endpoint, nil
+}
+
+func (s *Server) listenAndEndpoint() error {
+	if s.lis == nil {
+		lis, err := net.Listen("tcp", s.address)
+		if err != nil {
+			return err
+		}
+		s.lis = lis
+	}
+	if s.endpoint == nil {
+		addr, err := host.Extract(s.address, s.lis)
+		if err != nil {
+			s.err = err
+			_ = s.lis.Close()
+			return err
+		}
+		s.endpoint = endpoint.NewEndpoint(endpoint.Scheme("http", s.tlsConf != nil), addr)
+	}
+	return s.err
 }

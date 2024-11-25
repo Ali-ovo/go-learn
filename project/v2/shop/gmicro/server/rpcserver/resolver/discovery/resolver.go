@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/url"
-	"strconv"
+	"shop/gmicro/pkg/common/endpoint"
 	"time"
 
 	"shop/gmicro/pkg/log"
@@ -16,8 +16,8 @@ import (
 )
 
 type discoveryResolver struct {
-	w  registry.Watcher
-	cc resolver.ClientConn
+	w  registry.Watcher    // 监控器
+	cc resolver.ClientConn // 客户端连接
 
 	ctx    context.Context
 	cancel context.CancelFunc
@@ -32,7 +32,7 @@ func (r *discoveryResolver) watch() {
 			return
 		default:
 		}
-		ins, err := r.w.Next()
+		ins, err := r.w.Next() // 健康的连接列表
 		if err != nil {
 			if errors.Is(err, context.Canceled) {
 				return
@@ -49,24 +49,25 @@ func (r *discoveryResolver) update(ins []*registry.ServiceInstance) {
 	addrs := make([]resolver.Address, 0)
 	endpoints := make(map[string]struct{})
 	for _, in := range ins {
-		endpoint, err := ParseEndpoint(in.Endpoints, "grpc", !r.insecure)
+		ept, err := endpoint.ParseEndpoint(in.Endpoints, endpoint.Scheme("grpc", !r.insecure))
 		if err != nil {
 			log.Errorf("[resolver] Failed to parse discovery endpoint: %v", err)
 			continue
 		}
-		if endpoint == "" {
+		if ept == "" {
 			continue
 		}
 		// filter redundant endpoints
-		if _, ok := endpoints[endpoint]; ok {
+		if _, ok := endpoints[ept]; ok {
 			continue
 		}
-		endpoints[endpoint] = struct{}{}
+		endpoints[ept] = struct{}{}
 		addr := resolver.Address{
 			ServerName: in.Name,
 			Attributes: parseAttributes(in.Metadata),
-			Addr:       endpoint,
+			Addr:       ept,
 		}
+		// addr.Attributes.WithValue 返回一个新的 Attributes 键值对
 		addr.Attributes = addr.Attributes.WithValue("rawServiceInstance", in)
 		addrs = append(addrs, addr)
 	}
@@ -74,7 +75,7 @@ func (r *discoveryResolver) update(ins []*registry.ServiceInstance) {
 		log.Warnf("[resolver] Zero endpoint found,refused to write, instances: %v", ins)
 		return
 	}
-	err := r.cc.UpdateState(resolver.State{Addresses: addrs})
+	err := r.cc.UpdateState(resolver.State{Addresses: addrs}) // 更新 gRPC 解析器的状态，以通知客户端当前可用的服务端地址列表
 	if err != nil {
 		log.Errorf("[resolver] failed to update state: %s", err)
 	}
@@ -111,29 +112,4 @@ func NewEndpoint(scheme, host string, isSecure bool) *url.URL {
 		query = "isSecure=true"
 	}
 	return &url.URL{Scheme: scheme, Host: host, RawQuery: query}
-}
-
-// ParseEndpoint parses an Endpoint URL.
-func ParseEndpoint(endpoints []string, scheme string, isSecure bool) (string, error) {
-	for _, e := range endpoints {
-		u, err := url.Parse(e)
-		if err != nil {
-			return "", err
-		}
-		if u.Scheme == scheme {
-			if IsSecure(u) == isSecure {
-				return u.Host, nil
-			}
-		}
-	}
-	return "", nil
-}
-
-// IsSecure parses isSecure for Endpoint URL.
-func IsSecure(u *url.URL) bool {
-	ok, err := strconv.ParseBool(u.Query().Get("isSecure"))
-	if err != nil {
-		return false
-	}
-	return ok
 }

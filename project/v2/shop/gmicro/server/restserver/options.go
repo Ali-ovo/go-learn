@@ -1,5 +1,7 @@
 package restserver
 
+import "crypto/tls"
+
 type ServerOption func(*Server)
 
 func WithEnableProfiling(enable bool) ServerOption {
@@ -14,15 +16,22 @@ func WithMode(mode string) ServerOption {
 	}
 }
 
-func WithPort(port int) ServerOption {
+func WithAddress(addr string) ServerOption {
 	return func(s *Server) {
-		s.port = port
+		s.address = addr
 	}
 }
 
 func WithMiddlewares(middlewares []string) ServerOption {
 	return func(s *Server) {
 		s.middlewares = middlewares
+	}
+}
+
+// TLSConfig with TLS config.
+func TLSConfig(c *tls.Config) ServerOption {
+	return func(o *Server) {
+		o.tlsConf = c
 	}
 }
 

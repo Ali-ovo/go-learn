@@ -7,6 +7,7 @@ import (
 	"shop/app/shop_srv/inventory/srv/internal/domain/do"
 	"shop/app/shop_srv/inventory/srv/internal/domain/dto"
 	"shop/app/shop_srv/inventory/srv/internal/service"
+	code2 "shop/gmicro/pkg/code"
 	"shop/gmicro/pkg/errors"
 	"shop/gmicro/pkg/log"
 	"shop/pkg/code"
@@ -98,8 +99,13 @@ func (is *inventoryService) Sell(ctx context.Context, ordersn string, details []
 
 		_, err := is.data.Inventory().CreateStockSellDetail(ctx, sourceTx, &sellDetail)
 		if err != nil {
-			log.Errorf("订单 %s 创建扣减库存记录失败", ordersn)
-			return status.Error(codes.FailedPrecondition, err.Error()) // 数据库:重试   json:回滚
+			if errors.Code(err) != code2.ErrDecodingJSON {
+				log.Errorf("订单 %s 创建扣减库存记录失败", ordersn)
+				return status.Error(codes.FailedPrecondition, err.Error()) // 数据库:重试
+			} else {
+				log.Errorf("订单 %s JSON 映射失败回滚", ordersn)
+				return status.Error(codes.Aborted, err.Error()) // json:回滚
+			}
 		}
 		return nil
 	})
