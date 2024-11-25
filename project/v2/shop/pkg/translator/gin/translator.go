@@ -1,11 +1,12 @@
-package gin
+package translatorGin
 
 import (
+	"net/http"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
-	"net/http"
-	"strings"
 )
 
 func removeTopStruct(fileds map[string]string) map[string]string {

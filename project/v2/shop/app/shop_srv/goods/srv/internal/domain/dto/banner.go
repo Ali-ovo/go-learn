@@ -7,6 +7,6 @@ type BannerDTO struct {
 }
 
 type BannerDTOList struct {
-	TotalCount int64        `json:"total_count,omitempty"`
+	TotalCount int64        `json:"total,omitempty"`
 	Items      []*BannerDTO `json:"data"`
 }

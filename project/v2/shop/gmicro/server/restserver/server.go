@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -97,6 +98,7 @@ func NewServer(opts ...ServerOption) *Server {
 	gin.SetMode(srv.mode)
 	// 修改 gin 调试日志输出格式
 	gin.DebugPrintRouteFunc = func(httpMethod, absolutePath, handlerName string, nuHandlers int) {
+		handlerName = strings.SplitN(handlerName, ".", 2)[0]
 		log.Infof("%-6s %-s --> %s(%d handlers)", httpMethod, absolutePath, handlerName, nuHandlers)
 	}
 

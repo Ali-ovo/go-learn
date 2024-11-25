@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/rand"
+	srvSms "shop/app/shop_api/api/internal/service/sms"
 	"shop/pkg/options"
 	"strings"
 	"time"
@@ -15,23 +16,8 @@ import (
 
 type SmsDTO struct{}
 
-type SmsSrv interface {
-	// SendSms
-	//  @Description: 发送短信验证码
-	//  @param ctx
-	//  @param mobile: 手机号码
-	//  @param tpc: template code 消息模板编号
-	//  @param tp: template param 消息参数
-	//  @return error
-	SendSms(ctx context.Context, mobile string, tp string) error
-}
-
 type smsService struct {
 	smsOpts *options.SmsOptions
-}
-
-func NewSmsService(smsOpts *options.SmsOptions) SmsSrv {
-	return &smsService{smsOpts: smsOpts}
 }
 
 func GenerateSmsCode(witdh int) string {
@@ -48,6 +34,14 @@ func GenerateSmsCode(witdh int) string {
 	return sb.String()
 }
 
+// SendSms
+//
+//	@Description: 发送短信验证码
+//	@param ctx
+//	@param mobile: 手机号码
+//	@param tpc: template code 消息模板编号
+//	@param tp: template param 消息参数
+//	@return error
 func (s *smsService) SendSms(ctx context.Context, mobile string, tp string) error {
 	client, err := dysmsapi.NewClientWithAccessKey("cn-beijing", s.smsOpts.APIKey, s.smsOpts.APISecret)
 	if err != nil {
@@ -80,4 +74,8 @@ func (s *smsService) SendSms(ctx context.Context, mobile string, tp string) erro
 		return fmt.Errorf("发送短信验证码失败")
 	}
 	return nil
+}
+
+func NewSmsService(smsOpts *options.SmsOptions) srvSms.SmsSrv {
+	return &smsService{smsOpts: smsOpts}
 }

@@ -91,7 +91,7 @@ func (a *App) Run() error {
 		wg.Add(1)
 		eg.Go(func() error {
 			wg.Done()
-			log.Info("start rest server")
+			// log.Info("start rest server")
 			return srv.Start(ctx)
 		})
 	}

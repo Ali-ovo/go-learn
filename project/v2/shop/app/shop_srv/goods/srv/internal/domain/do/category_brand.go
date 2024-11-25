@@ -18,6 +18,6 @@ func (CategoryBrandDO) TableName() string {
 }
 
 type CategoryBrandDOList struct {
-	TotalCount int64              `json:"totalCount,omitempty"`
-	Items      []*CategoryBrandDO `json:"Items,omitempty"`
+	TotalCount int64              `json:"total,omitempty"`
+	Items      []*CategoryBrandDO `json:"data,omitempty"`
 }

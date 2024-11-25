@@ -1,16 +1,43 @@
 package rpc
 
 import (
+	"fmt"
+	goods_pb "shop/api/goods/v1"
+	user_pb "shop/api/user/v1"
 	"shop/app/shop_api/api/internal/data/v1"
+	"shop/app/shop_api/api/internal/data/v1/rpc/goods"
+	"shop/app/shop_api/api/internal/data/v1/rpc/user"
+	"shop/app/shop_api/api/internal/data/v1/userSrv"
+	"shop/gmicro/pkg/errors"
 	"shop/gmicro/registry"
 	"shop/gmicro/registry/consul"
 	"shop/gmicro/server/rpcserver"
 	"shop/gmicro/server/rpcserver/selector"
 	"shop/gmicro/server/rpcserver/selector/random"
+	"shop/pkg/code"
 	"shop/pkg/options"
+	"sync"
 
 	"github.com/hashicorp/consul/api"
 )
+
+var (
+	dbFactory data.DataFactory
+	once      sync.Once
+)
+
+type GrpcFactory struct {
+	UserClient  user_pb.UserClient
+	GoodsClient goods_pb.GoodsClient
+}
+
+func (g GrpcFactory) User() userSrv.UserData {
+	return user.NewUser(g.UserClient)
+}
+
+func (g GrpcFactory) Goods() goods_pb.GoodsClient {
+	return g.GoodsClient
+}
 
 func NewDiscovery(options *options.RegistryOptions) registry.Discovery {
 	conf := api.DefaultConfig()
@@ -24,12 +51,24 @@ func NewDiscovery(options *options.RegistryOptions) registry.Discovery {
 }
 
 // GetDataFactoryOr gRPC 的连接  基于服务发现
-func GetDataFactoryOr(options *options.RegistryOptions) (data.UserData, error) {
-	// 这里负责底层依赖的所有的rpc连接
-	selector.SetGlobalSelector(random.NewBuilder()) // 设置全局的负载均衡策略
-	rpcserver.InitBuilder()
+func GetDataFactoryOr(options *options.RegistryOptions) (data.DataFactory, error) {
+	if options == nil && dbFactory == nil {
+		return nil, fmt.Errorf("failed to get grpc store factory")
+	}
 
-	discovery := NewDiscovery(options)
-	userClient := NewUserServiceClient(discovery)
-	return NewUsers(userClient), nil
+	// 这里负责底层依赖的所有的rpc连接
+	once.Do(func() {
+		selector.SetGlobalSelector(random.NewBuilder()) // 设置全局的负载均衡策略
+		rpcserver.InitBuilder()                         // 构建负载均衡器的 构建器
+
+		discovery := NewDiscovery(options)
+		userClient := user.NewUserServiceClient(discovery)
+		goodsClient := goods.NewGoodsServiceClient(discovery)
+		dbFactory = &GrpcFactory{userClient, goodsClient}
+	})
+
+	if dbFactory == nil {
+		return nil, errors.WithCode(code.ErrConnectGRPC, "failed to get grpc store factory")
+	}
+	return dbFactory, nil
 }

@@ -7,6 +7,6 @@ type GoodsDTO struct {
 }
 
 type GoodsDTOList struct {
-	TotalCount int64       `json:"total_count,omitempty"`
+	TotalCount int64       `json:"total,omitempty"`
 	Items      []*GoodsDTO `json:"data"`
 }

@@ -9,7 +9,7 @@ import (
 
 func (us *userController) GetUserDetail(ctx *gin.Context) {
 	userID, _ := ctx.Get(middlewares.KeyUserID)
-	userDTO, err := us.srv.Get(ctx, uint64(userID.(float64)))
+	userDTO, err := us.srv.User().Get(ctx, uint64(userID.(float64)))
 	if err != nil {
 		core.WriteResponse(ctx, err, nil)
 		return

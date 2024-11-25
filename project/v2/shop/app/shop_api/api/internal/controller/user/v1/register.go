@@ -3,7 +3,7 @@ package controllerUser
 import (
 	"shop/gmicro/pkg/common/core"
 	"shop/gmicro/pkg/log"
-	gin2 "shop/pkg/translator/gin"
+	translatorGin "shop/pkg/translator/gin"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,11 +20,11 @@ func (us *userController) Register(ctx *gin.Context) {
 	// 表单验证
 	regForm := RegisterForm{}
 	if err := ctx.ShouldBind(&regForm); err != nil {
-		gin2.HandleValidatorError(ctx, err, us.trans)
+		translatorGin.HandleValidatorError(ctx, err, us.trans)
 		return
 	}
 
-	userDTO, err := us.srv.Register(ctx, regForm.Mobile, regForm.Password, regForm.Code)
+	userDTO, err := us.srv.User().Register(ctx, regForm.Mobile, regForm.Password, regForm.Code)
 	if err != nil {
 		core.WriteResponse(ctx, err, nil)
 		return

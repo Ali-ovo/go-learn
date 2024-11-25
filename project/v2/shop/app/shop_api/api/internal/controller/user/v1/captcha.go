@@ -1,11 +1,10 @@
 package controllerUser
 
 import (
-	"image/color"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/mojocn/base64Captcha"
+	"image/color"
+	"net/http"
 )
 
 // 有 10 分钟超时机制 也可自己定义

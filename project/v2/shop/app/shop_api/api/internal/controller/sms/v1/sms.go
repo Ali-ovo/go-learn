@@ -1,15 +1,15 @@
 package controllerSms
 
 import (
+	serviceSms "shop/app/shop_api/api/internal/service/sms/v1"
 	"shop/gmicro/pkg/common/core"
 	"shop/gmicro/pkg/errors"
 	"shop/gmicro/pkg/storage"
 	"shop/pkg/code"
-	gin2 "shop/pkg/translator/gin"
+	translatorGin "shop/pkg/translator/gin"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	ut "github.com/go-playground/universal-translator"
 )
 
 type SendSmsForm struct {
@@ -18,27 +18,15 @@ type SendSmsForm struct {
 	Type   uint   `form:"type" json:"type" binding:"required,oneof=1 2"`
 }
 
-type smsController struct {
-	trans ut.Translator
-	srv   serviceSms.SmsSrv
-}
-
-func NewSmsController(trans ut.Translator, sms serviceSms.SmsSrv) *smsController {
-	return &smsController{
-		trans: trans,
-		srv:   sms,
-	}
-}
-
 func (ss *smsController) SendSms(ctx *gin.Context) {
 	sendSmsForm := SendSmsForm{}
 	if err := ctx.ShouldBind(&sendSmsForm); err != nil {
-		gin2.HandleValidatorError(ctx, err, ss.trans)
+		translatorGin.HandleValidatorError(ctx, err, ss.trans)
 		return
 	}
 
 	smsCode := serviceSms.GenerateSmsCode(6)
-	err := ss.srv.SendSms(ctx, sendSmsForm.Mobile, "{\"code\":"+smsCode+"}")
+	err := ss.srv.Sms().SendSms(ctx, sendSmsForm.Mobile, "{\"code\":"+smsCode+"}")
 	if err != nil {
 		core.WriteResponse(ctx, errors.WithCode(code.ErrSmsSend, err.Error()), nil)
 		return

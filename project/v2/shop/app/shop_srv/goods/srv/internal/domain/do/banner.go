@@ -16,6 +16,6 @@ func (BannerDO) TableName() string {
 }
 
 type BannerDOList struct {
-	TotalCount int64       `json:"totalCount,omitempty"`
-	Items      []*BannerDO `json:"Items"`
+	TotalCount int64       `json:"total,omitempty"`
+	Items      []*BannerDO `json:"data"`
 }

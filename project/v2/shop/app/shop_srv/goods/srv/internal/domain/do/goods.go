@@ -163,6 +163,6 @@ func (gl *GormList) Scan(value interface{}) error {
 }
 
 type GoodsDOList struct {
-	TotalCount int64      `json:"totalCount,omitempty"`
-	Items      []*GoodsDO `json:"Items,omitempty"`
+	TotalCount int64      `json:"total,omitempty"`
+	Items      []*GoodsDO `json:"data,omitempty"`
 }

@@ -6,7 +6,7 @@ import (
 	"shop/gmicro/pkg/common/core"
 	"shop/gmicro/pkg/errors"
 	"shop/gmicro/pkg/log"
-	gin2 "shop/pkg/translator/gin"
+	translatorGin "shop/pkg/translator/gin"
 
 	"github.com/gin-gonic/gin"
 )
@@ -24,7 +24,7 @@ func (us *userController) Login(ctx *gin.Context) {
 	// 表单验证
 	passwordLoginForm := PassWordLoginForm{}
 	if err := ctx.ShouldBind(&passwordLoginForm); err != nil {
-		gin2.HandleValidatorError(ctx, err, us.trans)
+		translatorGin.HandleValidatorError(ctx, err, us.trans)
 		return
 	}
 
@@ -34,7 +34,7 @@ func (us *userController) Login(ctx *gin.Context) {
 	//	core.WriteResponse(ctx, errors.WithCode(code.ErrValidation, "验证码错误"), nil)
 	//	return
 	//}
-	userDTO, err := us.srv.MobileLogin(ctx, passwordLoginForm.Mobile, passwordLoginForm.PassWord)
+	userDTO, err := us.srv.User().MobileLogin(ctx, passwordLoginForm.Mobile, passwordLoginForm.PassWord)
 	if err != nil {
 		core.WriteResponse(ctx, errors.WithCode(code.ErrPasswordIncorrect, "登录失败"), nil)
 		return

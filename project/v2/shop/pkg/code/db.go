@@ -14,3 +14,8 @@ const (
 	// ErrEsUnmarshal - 500: Es unmarshal error.
 	ErrEsUnmarshal
 )
+
+const (
+	// ErrConnectGRPC - 500: Connect to grpc error.
+	ErrConnectGRPC int = iota + 100701
+)

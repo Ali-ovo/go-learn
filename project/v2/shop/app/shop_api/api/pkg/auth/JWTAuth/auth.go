@@ -2,8 +2,7 @@ package JWTAuth
 
 import (
 	"os"
-	"shop/app/shop_api/api/internal/data/v1"
-	"shop/app/shop_api/api/internal/service"
+	doUser "shop/app/shop_api/api/internal/domain/do/user"
 	"shop/gmicro/pkg/errors"
 	"shop/gmicro/server/restserver/middlewares"
 	"shop/gmicro/server/restserver/middlewares/auth"
@@ -17,6 +16,13 @@ import (
 )
 
 var j *middlewares.JWT
+
+type CustomClaims struct {
+	UserID      uint `json:"userid"`
+	NickName    string
+	AuthorityId uint
+	jwt.RegisteredClaims
+}
 
 // generateJwt 生成 JWT 结构体 (自定义的JWT结构体)
 //
@@ -61,7 +67,7 @@ func generateJwt(opts *options.JwtOptions) error {
 //	@param opts	JWT相关配置
 //	@return string
 //	@return error
-func CreateJWT(user *data.UserDO, opts *options.JwtOptions) (string, error) {
+func CreateJWT(user *doUser.UserDO, opts *options.JwtOptions) (string, error) {
 	// 生成 token
 	if j == nil {
 		err := generateJwt(opts)
@@ -70,7 +76,7 @@ func CreateJWT(user *data.UserDO, opts *options.JwtOptions) (string, error) {
 		}
 	}
 
-	claims := service.CustomClaims{
+	claims := CustomClaims{
 		UserID:      uint(user.ID),
 		NickName:    user.NickName,
 		AuthorityId: uint(user.Role),

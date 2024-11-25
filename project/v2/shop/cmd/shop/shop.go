@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	// -c ./configs/user/srv.yaml
+	// -c ./configs/shop/api.yaml
 	// --log.level=error
 
 	rand.NewSource(time.Now().UnixNano())
