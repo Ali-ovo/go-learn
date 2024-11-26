@@ -17,7 +17,7 @@ func main() {
 			GoodsInfo: []*inventory_pb.GoodsInvInfo{
 				{
 					GoodsId: 421,
-					Num:     2,
+					Num:     11,
 				},
 			},
 			OrderSn: orderSn,
@@ -32,9 +32,11 @@ func main() {
 		err := saga.Submit()
 		if err != nil {
 			fmt.Printf("saga 提交失败: %s\r\n", err.Error())
-			c.JSON(500, gin.H{"message": err.Error()})
+
+			return
 		}
 		c.JSON(200, gin.H{"message": "ok"})
+		return
 	})
 	r.Run(":8089")
 }

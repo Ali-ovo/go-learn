@@ -32,7 +32,7 @@ func (bs *bannerService) List(ctx context.Context) (*dto.BannerDTOList, error) {
 }
 
 func (bs *bannerService) Create(ctx context.Context, branner *dto.BannerDTO) (int64, error) {
-	if err := bs.data.Banner().Create(ctx, &branner.BannerDO); err != nil {
+	if err := bs.data.Banner().Create(ctx, nil, &branner.BannerDO); err != nil {
 		log.Errorf("data.Create err: %v", err)
 		return 0, err
 	}
@@ -51,7 +51,7 @@ func (bs *bannerService) Update(ctx context.Context, branner *dto.BannerDTO) err
 	brannerDO.Url = branner.Url
 	brannerDO.Index = branner.Index
 
-	if err = bs.data.Banner().Update(ctx, brannerDO); err != nil {
+	if err = bs.data.Banner().Update(ctx, nil, brannerDO); err != nil {
 		//log.Errorf("data.Update err: %v", err)
 		return err
 	}
@@ -59,7 +59,7 @@ func (bs *bannerService) Update(ctx context.Context, branner *dto.BannerDTO) err
 }
 
 func (bs *bannerService) Delete(ctx context.Context, id int64) error {
-	if err := bs.data.Banner().Delete(ctx, id); err != nil {
+	if err := bs.data.Banner().Delete(ctx, nil, id); err != nil {
 		log.Errorf("data.Delete err: %v", err)
 		return err
 	}

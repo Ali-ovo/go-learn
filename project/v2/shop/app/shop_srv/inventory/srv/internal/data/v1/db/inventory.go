@@ -54,12 +54,12 @@ func (i *inventory) GetSellDetail(ctx context.Context, txn *gorm.DB, ordersn str
 	return &ordersellDetail, err
 }
 
-func (i *inventory) Reduce(ctx context.Context, txn *gorm.DB, goodsID int64, num int32) error {
+func (i *inventory) Reduce(ctx context.Context, txn *gorm.DB, goodsID int64, num int32) *gorm.DB {
 	db := i.db
 	if txn != nil {
 		db = txn
 	}
-	return db.Model(&do.InventoryDO{}).Where("goods=?", goodsID).Where("stocks >= ?", num).UpdateColumn("stocks", gorm.Expr("stocks - ?", num)).Error
+	return db.Model(&do.InventoryDO{}).Where("goods=?", goodsID).Where("stocks >= ?", num).UpdateColumn("stocks", gorm.Expr("stocks - ?", num))
 }
 
 func (i *inventory) Increase(ctx context.Context, txn *gorm.DB, goodsID int64, num int32) error {

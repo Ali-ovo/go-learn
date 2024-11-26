@@ -12,11 +12,8 @@ import (
 	"shop/gmicro/pkg/log"
 	"shop/pkg/code"
 	"sort"
-	"strconv"
-	"strings"
 
 	"github.com/dtm-labs/client/dtmgrpc"
-	"github.com/go-redsync/redsync/v4"
 	redsyncredis "github.com/go-redsync/redsync/v4/redis"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -46,7 +43,7 @@ func (is *inventoryService) Get(ctx context.Context, goodsID int64) (*dto.Invent
 func (is *inventoryService) Sell(ctx context.Context, ordersn string, details []do.GoodsDetail) error {
 	log.Infof("订单 %s 扣减库存", ordersn)
 
-	rs := redsync.New(is.pool)
+	//rs := redsync.New(is.pool)
 
 	barrier, _ := dtmgrpc.BarrierFromGrpc(ctx)
 	txn := is.data.Begin()
@@ -64,13 +61,13 @@ func (is *inventoryService) Sell(ctx context.Context, ordersn string, details []
 		}
 
 		for _, goodsInfo := range detail {
-			mutexGoods := rs.NewMutex(strings.Join([]string{inventoryLockPrefix, strconv.Itoa(int(goodsInfo.Goods))}, "_"))
-			if err := mutexGoods.Lock(); err != nil {
-				log.InfofC(ctx, "商品 %d 获取锁失败", goodsInfo.Goods)
-				return status.Error(codes.Aborted, err.Error()) // 回滚
-
-			}
-			defer mutexGoods.Unlock()
+			//mutexGoods := rs.NewMutex(strings.Join([]string{inventoryLockPrefix, strconv.Itoa(int(goodsInfo.Goods))}, "_"))
+			//if err := mutexGoods.Lock(); err != nil {
+			//	log.InfofC(ctx, "商品 %d 获取锁失败", goodsInfo.Goods)
+			//	return status.Error(codes.Aborted, err.Error()) // 回滚
+			//
+			//}
+			//defer mutexGoods.Unlock()
 
 			// 查询库存信息是否存在
 			var inv *do.InventoryDO
@@ -106,6 +103,7 @@ func (is *inventoryService) Sell(ctx context.Context, ordersn string, details []
 				log.Errorf("订单 %s JSON 映射失败回滚", ordersn)
 				return status.Error(codes.Aborted, err.Error()) // json:回滚
 			}
+
 		}
 		return nil
 	})
@@ -116,9 +114,9 @@ func (is *inventoryService) Sell(ctx context.Context, ordersn string, details []
 }
 
 func (is *inventoryService) Repack(ctx context.Context, ordersn string, details []do.GoodsDetail) error {
-	log.Infof("订单 %s 归还库存", ordersn)
+	//log.Infof("订单 %s 归还库存", ordersn)
 
-	rs := redsync.New(is.pool)
+	//rs := redsync.New(is.pool)
 
 	barrier, _ := dtmgrpc.BarrierFromGrpc(ctx)
 	txn := is.data.Begin()
@@ -145,12 +143,12 @@ func (is *inventoryService) Repack(ctx context.Context, ordersn string, details 
 		sort.Sort(&detail)
 
 		for _, goodsInfo := range sellDetail.Detail {
-			mutexGoods := rs.NewMutex(strings.Join([]string{inventoryLockPrefix, strconv.Itoa(int(goodsInfo.Goods))}, "_"))
-			if err = mutexGoods.Lock(); err != nil {
-				log.InfofC(ctx, "订单 %s 获取锁失败", ordersn)
-				return status.Error(codes.FailedPrecondition, err.Error()) // 重试 redis 出现问题
-			}
-			defer mutexGoods.Unlock()
+			//mutexGoods := rs.NewMutex(strings.Join([]string{inventoryLockPrefix, strconv.Itoa(int(goodsInfo.Goods))}, "_"))
+			//if err = mutexGoods.Lock(); err != nil {
+			//	log.InfofC(ctx, "订单 %s 获取锁失败", ordersn)
+			//	return status.Error(codes.FailedPrecondition, err.Error()) // 重试 redis 出现问题
+			//}
+			//defer mutexGoods.Unlock()
 
 			inv, err := is.data.Inventory().Get(ctx, goodsInfo.Goods)
 			if err != nil {

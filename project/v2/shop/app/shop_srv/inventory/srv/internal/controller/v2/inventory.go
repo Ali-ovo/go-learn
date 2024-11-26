@@ -6,7 +6,6 @@ import (
 	"shop/app/shop_srv/inventory/srv/internal/domain/do"
 	"shop/app/shop_srv/inventory/srv/internal/domain/dto"
 	"shop/gmicro/pkg/errors"
-	"shop/gmicro/pkg/log"
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -81,7 +80,7 @@ func (is *InventoryServer) Sell(ctx context.Context, info *inventory_pb.SellInfo
 //	@return *empty.Empty
 //	@return error
 func (is *InventoryServer) Reback(ctx context.Context, info *inventory_pb.SellInfo) (*empty.Empty, error) {
-	log.Infof("订单 %s 归还库存", info.OrderSn)
+	// log.Infof("订单 %s 归还库存", info.OrderSn)
 	var detail []do.GoodsDetail
 	for _, v := range info.GoodsInfo {
 		detail = append(detail, do.GoodsDetail{Goods: v.GoodsId, Num: v.Num})

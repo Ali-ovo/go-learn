@@ -32,7 +32,7 @@ func (bs *bannerService) List(ctx context.Context) (*dto.BannerDTOList, error) {
 }
 
 func (bs *bannerService) Create(ctx context.Context, branner *dto.BannerDTO) (int64, error) {
-	if err := bs.data.Banner().Create(ctx, &branner.BannerDO); err != nil {
+	if err := bs.data.Banner().Create(ctx, nil, &branner.BannerDO); err != nil {
 		log.Errorf("data.Create err: %v", err)
 		return 0, err
 	}

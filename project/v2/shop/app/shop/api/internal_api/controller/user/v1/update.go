@@ -2,11 +2,11 @@ package controllerUser
 
 import (
 	"fmt"
-	translatorGin "mxshop/pkg/translator/gin"
 	"shop/gmicro/pkg/common/core"
 	"shop/gmicro/pkg/common/time"
 	"shop/gmicro/server/restserver/middlewares"
 	"shop/pkg/translator/gin"
+	translatorGin "shop/pkg/translator/gin"
 
 	"github.com/gin-gonic/gin"
 )

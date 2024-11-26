@@ -99,8 +99,8 @@ func (is *inventoryService) Sell(ctx context.Context, ordersn string, details []
 		}
 		inv.Stocks -= goodsInfo.Num
 
-		err = is.data.Inventory().Reduce(ctx, txn, goodsInfo.Goods, goodsInfo.Num)
-		if err != nil {
+		result := is.data.Inventory().Reduce(ctx, txn, goodsInfo.Goods, goodsInfo.Num)
+		if result.RowsAffected == 0 || result.Error != nil {
 			log.Errorf("订单 %s 扣减库存失败", ordersn)
 			return err
 		}

@@ -31,7 +31,7 @@ func main() {
 		context.Background(),
 		rpc.WithBanlancerName("selector"),
 		rpc.WithDiscovery(consul.New(cli, consul.WithHealthCheck(true))),
-		rpc.WithEndpoint("discovery:///shop"),
+		rpc.WithEndpoint("discovery:///goods_srv"),
 		rpc.WithClientEnableTracing(false),
 		rpc.WithClientUnaryInterceptor(clientinterceptors.UnaryTracingInterceptor),
 		rpc.WithClientTimeout(time.Second*5000),

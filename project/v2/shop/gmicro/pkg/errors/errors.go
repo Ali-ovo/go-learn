@@ -170,7 +170,8 @@ func ToGrpcError(err error) error {
 		err := status.Error(gCodes.Code(perr.code), perr.err.Error())
 		return err
 	}
-	return status.Error(gCodes.Unknown, err.Error())
+	// return status.Error(gCodes.Unknown, err.Error())
+	return err
 }
 
 // WithStack 函数会在调用 WithStack 的时候，为 err 添加一个堆栈跟踪。
