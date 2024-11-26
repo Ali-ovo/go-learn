@@ -11,7 +11,12 @@ service Order {
   rpc DeleteCartItem(CartItemRequest) returns (google.protobuf.Empty);  // 删除购物车条目
 
   // 订单
-  rpc CreateOrder(OrderRequest) returns (OrderInfoResponse);                 // 创建订单
+  rpc SubmitOrder(OrderRequest) returns (google.protobuf.Empty);        // 提交订单 到 dtm
+  rpc CreateOrder(OrderRequest) returns (google.protobuf.Empty);        // 创建订单
+  rpc CreateOrderCom(OrderRequest) returns (google.protobuf.Empty);     // 创建订单 补偿
+  rpc RollBackOrder(OrderRequest) returns (google.protobuf.Empty);      // 回滚订单
+  rpc RollBackOrderCom(OrderRequest) returns (google.protobuf.Empty);   // 回滚订单 补偿
+
   rpc OrderList(OrderFilterRequest) returns (OrderListResponse);        // 订单列表
   rpc OrderDetail(OrderRequest) returns (OrderInfoDetailResponse);      // 订单详情
   rpc UpdateOrderStatus(OrderStatus) returns (google.protobuf.Empty);   // 修改订单状态
@@ -29,8 +34,8 @@ message OrderStatus {
 
 message CartItemRequest {
   int32 id = 1;
-  int32 userId = 2;
-  int32 goodsId = 3;
+  int64 userId = 2;
+  int64 goodsId = 3;
   string goodsName = 4;
   string goodsImage = 5;
   float goodsPrict = 6;
@@ -40,16 +45,22 @@ message CartItemRequest {
 
 message OrderRequest {
   int32 id = 1;
-  int32 userId = 2;
+  int64 userId = 2;
   string address = 3;
   string name = 4;
   string mobile = 5;
   string post = 6;
+  string orderSn = 7;
+  repeated OrderItemResponse orderItems = 8;  // 由上层提供 订单商品信息
+}
+
+message OrderGoods {
+
 }
 
 message OrderInfoResponse {
   int32 id = 1;
-  int32 userId = 2;
+  int64 userId = 2;
   string orderSn = 3;
   string payType = 4;
   string status = 5;
@@ -63,7 +74,7 @@ message OrderInfoResponse {
 
 message ShopCartInfoResponse {
   int32 id = 1;
-  int32 userId = 2;
+  int64 userId = 2;
   int32 goodsId = 3;
   int32 nums = 4;
   bool checked = 5;
@@ -71,8 +82,8 @@ message ShopCartInfoResponse {
 
 message OrderItemResponse {
   int32 id = 1;
-  int32 orderId = 2;
-  int32 goodsId = 3;
+  int64 orderId = 2;
+  int64 goodsId = 3;
   string goodsName = 4;
   string goodsImage = 5;
   float goodsPrice = 6;
@@ -85,7 +96,7 @@ message OrderInfoDetailResponse {
 }
 
 message OrderFilterRequest {
-  int32 userId = 1;
+  int64 userId = 1;
   int32 pages = 2;
   int32 pagePerNums = 3;
 }

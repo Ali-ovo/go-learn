@@ -59,7 +59,7 @@ func (cs *CategoryService) Get(ctx context.Context, id int64) (*dto.CategoryDTO,
 }
 
 func (cs *CategoryService) Create(ctx context.Context, category *dto.CategoryDTO) (int64, error) {
-	if err := cs.data.Category().Create(ctx, &category.CategoryDO); err != nil {
+	if err := cs.data.Category().Create(ctx, nil, &category.CategoryDO); err != nil {
 		log.Errorf("data.Create err: %v", err)
 		return 0, err
 	}
@@ -79,7 +79,7 @@ func (cs *CategoryService) Update(ctx context.Context, category *dto.CategoryDTO
 	categoryDO.Level = category.Level
 	categoryDO.IsTab = category.IsTab
 
-	if err = cs.data.Category().Update(ctx, &category.CategoryDO); err != nil {
+	if err = cs.data.Category().Update(ctx, nil, &category.CategoryDO); err != nil {
 		//log.Errorf("data.Update err: %v", err)
 		return err
 	}
@@ -87,7 +87,7 @@ func (cs *CategoryService) Update(ctx context.Context, category *dto.CategoryDTO
 }
 
 func (cs *CategoryService) Delete(ctx context.Context, id int64) error {
-	if err := cs.data.Category().Delete(ctx, id); err != nil {
+	if err := cs.data.Category().Delete(ctx, nil, id); err != nil {
 		log.Errorf("data.Delete err: %v", err)
 		return err
 	}

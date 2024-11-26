@@ -16,10 +16,11 @@ type categoryBrands struct {
 }
 
 func (cb *categoryBrands) List(ctx context.Context, opts metav1.ListMeta, orderby []string) (*do.CategoryBrandDOList, error) {
-	ret := &do.CategoryBrandDOList{}
+	db := cb.db.WithContext(ctx)
+	var ret do.CategoryBrandDOList
 
 	// 这里 赋值是为了保证 db的作用域不受影响
-	query := cb.db.Model(&do.CategoryBrandDO{})
+	query := db.Model(&do.CategoryBrandDO{})
 	// 处理分页 排序
 	query, count := paginate(query, opts.Page, opts.PageSize, orderby)
 	query.Find(&ret.Items)
@@ -28,13 +29,14 @@ func (cb *categoryBrands) List(ctx context.Context, opts metav1.ListMeta, orderb
 	}
 	ret.TotalCount = count
 
-	return ret, nil
+	return &ret, nil
 }
 
 func (cb *categoryBrands) GetBrandList(ctx context.Context, categoryID int64) (*do.CategoryBrandDOList, error) {
+	db := cb.db.WithContext(ctx)
 	var ret do.CategoryBrandDOList
 
-	query := cb.db.Model(&do.CategoryBrandDO{})
+	query := db.Model(&do.CategoryBrandDO{})
 	query = query.Preload("Category").Preload("Brands").Where("category_id =?", categoryID)
 	query.Find(&ret.Items)
 	if err := query.Error; err != nil {
@@ -49,9 +51,10 @@ func (cb *categoryBrands) GetBrandList(ctx context.Context, categoryID int64) (*
 }
 
 func (cb *categoryBrands) Get(ctx context.Context, id int64) (*do.CategoryBrandDO, error) {
+	db := cb.db.WithContext(ctx)
 	var ret do.CategoryBrandDO
 
-	if err := cb.db.Where("id =?", id).First(&ret).Error; err != nil {
+	if err := db.Where("id =?", id).First(&ret).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.WithCode(code2.ErrCategoryBrandsNotFound, err.Error())
 		}
@@ -60,24 +63,39 @@ func (cb *categoryBrands) Get(ctx context.Context, id int64) (*do.CategoryBrandD
 	return &ret, nil
 }
 
-func (cb *categoryBrands) Create(ctx context.Context, gcb *do.CategoryBrandDO) error {
-	tx := cb.db.Create(gcb)
+func (cb *categoryBrands) Create(ctx context.Context, txn *gorm.DB, gcb *do.CategoryBrandDO) error {
+	db := cb.db.WithContext(ctx)
+	if txn != nil {
+		db = txn.WithContext(ctx)
+	}
+
+	tx := db.Create(gcb)
 	if tx.Error != nil {
 		return errors.WithCode(code.ErrDatabase, tx.Error.Error())
 	}
 	return nil
 }
 
-func (cb *categoryBrands) Update(ctx context.Context, gcb *do.CategoryBrandDO) error {
-	tx := cb.db.Save(gcb)
+func (cb *categoryBrands) Update(ctx context.Context, txn *gorm.DB, gcb *do.CategoryBrandDO) error {
+	db := cb.db.WithContext(ctx)
+	if txn != nil {
+		db = txn.WithContext(ctx)
+	}
+
+	tx := db.Save(gcb)
 	if tx.Error != nil {
 		return errors.WithCode(code.ErrDatabase, tx.Error.Error())
 	}
 	return nil
 }
 
-func (cb *categoryBrands) Delete(ctx context.Context, ID uint64) error {
-	result := cb.db.Delete(&do.CategoryBrandDO{}, ID)
+func (cb *categoryBrands) Delete(ctx context.Context, txn *gorm.DB, ID uint64) error {
+	db := cb.db.WithContext(ctx)
+	if txn != nil {
+		db = txn.WithContext(ctx)
+	}
+
+	result := db.Delete(&do.CategoryBrandDO{}, ID)
 	if result.Error != nil {
 		return errors.WithCode(code.ErrDatabase, result.Error.Error())
 	}

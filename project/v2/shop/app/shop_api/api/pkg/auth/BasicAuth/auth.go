@@ -2,7 +2,6 @@ package BasicAuth
 
 import (
 	srvUser "shop/app/shop_api/api/internal/service/user"
-
 	"shop/gmicro/server/restserver/middlewares"
 	"shop/gmicro/server/restserver/middlewares/auth"
 

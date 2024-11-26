@@ -114,7 +114,7 @@ func (gs *goodsService) Create(ctx context.Context, goods *dto.GoodsDTO) (int64,
 		}
 	}()
 
-	if err = gs.data.Goods().CreateInTxn(ctx, txn, &goods.GoodsDO); err != nil {
+	if err = gs.data.Goods().Create(ctx, txn, &goods.GoodsDO); err != nil {
 		log.Errorf("data.CreateInTxn err: %v", err)
 		return 0, err
 	}
@@ -187,7 +187,7 @@ func (gs *goodsService) Update(ctx context.Context, goods *dto.GoodsDTO) error {
 		}
 	}()
 
-	if err = gs.data.Goods().UpdateInTxn(ctx, txn, goodDO); err != nil {
+	if err = gs.data.Goods().Update(ctx, txn, goodDO); err != nil {
 		return err
 	}
 
@@ -230,7 +230,7 @@ func (gs *goodsService) Delete(ctx context.Context, id uint64) error {
 		}
 	}()
 
-	if err = gs.data.Goods().DeleteInTxn(ctx, txn, id); err != nil {
+	if err = gs.data.Goods().Delete(ctx, txn, id); err != nil {
 		return err
 	}
 

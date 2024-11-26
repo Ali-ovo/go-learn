@@ -16,9 +16,10 @@ type category struct {
 }
 
 func (c *category) Get(ctx context.Context, ID int64) (*do.CategoryDO, error) {
+	db := c.db.WithContext(ctx)
 	var ret do.CategoryDO
 
-	if err := c.db.Preload("SubCategory.SubCategory").First(&ret, ID).Error; err != nil {
+	if err := db.Preload("SubCategory.SubCategory").First(&ret, ID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.WithCode(code2.ErrCategoryNotFound, err.Error())
 		}
@@ -28,9 +29,10 @@ func (c *category) Get(ctx context.Context, ID int64) (*do.CategoryDO, error) {
 }
 
 func (c *category) List(ctx context.Context, level int32) (*do.CategoryDOList, error) {
-	ret := do.CategoryDOList{}
+	db := c.db.WithContext(ctx)
+	var ret do.CategoryDOList
 
-	query := c.db.Where("level =?", level).Find(&ret.Items)
+	query := db.Where("level =?", level).Find(&ret.Items)
 	if query.Error != nil {
 		if errors.Is(query.Error, gorm.ErrRecordNotFound) {
 			return nil, errors.WithCode(code2.ErrCategoryNotFound, query.Error.Error())
@@ -42,9 +44,10 @@ func (c *category) List(ctx context.Context, level int32) (*do.CategoryDOList, e
 }
 
 func (c *category) ListAll(ctx context.Context, orderby []string) (*do.CategoryDOList, error) {
-	ret := &do.CategoryDOList{}
-	query := c.db.Model(&do.CategoryDO{})
+	db := c.db.WithContext(ctx)
+	var ret do.CategoryDOList
 
+	query := db.Model(&do.CategoryDO{})
 	// 排序
 	for _, v := range orderby {
 		query = query.Order(v)
@@ -58,27 +61,42 @@ func (c *category) ListAll(ctx context.Context, orderby []string) (*do.CategoryD
 		}
 		return nil, errors.WithCode(code.ErrDatabase, query.Error.Error())
 	}
-	return ret, query.Error
+	return &ret, query.Error
 }
 
-func (c *category) Create(ctx context.Context, category *do.CategoryDO) error {
-	tx := c.db.Create(category)
+func (c *category) Create(ctx context.Context, txn *gorm.DB, category *do.CategoryDO) error {
+	db := c.db.WithContext(ctx)
+	if txn != nil {
+		db = txn.WithContext(ctx)
+	}
+
+	tx := db.Create(category)
 	if tx.Error != nil {
 		return errors.WithCode(code.ErrDatabase, tx.Error.Error())
 	}
 	return nil
 }
 
-func (c *category) Update(ctx context.Context, category *do.CategoryDO) error {
-	tx := c.db.Save(category)
+func (c *category) Update(ctx context.Context, txn *gorm.DB, category *do.CategoryDO) error {
+	db := c.db.WithContext(ctx)
+	if txn != nil {
+		db = txn.WithContext(ctx)
+	}
+
+	tx := db.Updates(category)
 	if tx.Error != nil {
 		return errors.WithCode(code.ErrDatabase, tx.Error.Error())
 	}
 	return nil
 }
 
-func (c *category) Delete(ctx context.Context, ID int64) error {
-	result := c.db.Delete(&do.GoodsDO{}, ID)
+func (c *category) Delete(ctx context.Context, txn *gorm.DB, ID int64) error {
+	db := c.db.WithContext(ctx)
+	if txn != nil {
+		db = txn.WithContext(ctx)
+	}
+
+	result := db.Delete(&do.GoodsDO{}, ID)
 	if result.Error != nil {
 		return errors.WithCode(code.ErrDatabase, result.Error.Error())
 	}

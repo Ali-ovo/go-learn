@@ -17,8 +17,10 @@ type goods struct {
 }
 
 func (g *goods) Get(ctx context.Context, ID uint64) (*do.GoodsDO, error) {
-	good := do.GoodsDO{}
-	if result := g.db.Preload("Category").Preload("Brands").First(&good, ID); result.RowsAffected == 0 {
+	db := g.db.WithContext(ctx)
+	var good do.GoodsDO
+
+	if result := db.Preload("Category").Preload("Brands").First(&good, ID); result.RowsAffected == 0 {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, errors.WithCode(code2.ErrGoodsNotFound, result.Error.Error())
 		}
@@ -28,10 +30,11 @@ func (g *goods) Get(ctx context.Context, ID uint64) (*do.GoodsDO, error) {
 }
 
 func (g *goods) ListByIDs(ctx context.Context, ids []uint64, orderby []string) (*do.GoodsDOList, error) {
-	ret := &do.GoodsDOList{}
+	db := g.db.WithContext(ctx)
+	var ret do.GoodsDOList
 
 	// 排序
-	query := g.db.Preload("Category").Preload("Brands")
+	query := db.Preload("Category").Preload("Brands")
 	for _, v := range orderby {
 		query = query.Order(v)
 	}
@@ -43,14 +46,15 @@ func (g *goods) ListByIDs(ctx context.Context, ids []uint64, orderby []string) (
 		}
 		return nil, errors.WithCode(code.ErrDatabase, result.Error.Error())
 	}
-	return ret, nil
+	return &ret, nil
 }
 
 func (g *goods) List(ctx context.Context, opts metav1.ListMeta, orderby []string) (*do.GoodsDOList, error) {
-	ret := &do.GoodsDOList{}
+	db := g.db.WithContext(ctx)
+	var ret do.GoodsDOList
 
 	// 加载其他表数据
-	query := g.db.Preload("Category").Preload("Brands")
+	query := db.Preload("Category").Preload("Brands")
 	// 处理分页 排序
 	query, count := paginate(query, opts.Page, opts.PageSize, orderby)
 	result := query.Find(&ret.Items)
@@ -62,54 +66,42 @@ func (g *goods) List(ctx context.Context, opts metav1.ListMeta, orderby []string
 	}
 	ret.TotalCount = count
 
-	return ret, nil
+	return &ret, nil
 }
 
-func (g *goods) Create(ctx context.Context, goods *do.GoodsDO) error {
-	tx := g.db.Create(goods)
+func (g *goods) Create(ctx context.Context, txn *gorm.DB, goods *do.GoodsDO) error {
+	db := g.db.WithContext(ctx)
+	if txn != nil {
+		db = txn.WithContext(ctx)
+	}
+
+	tx := db.Create(goods)
 	if tx.Error != nil {
 		return errors.WithCode(code.ErrDatabase, tx.Error.Error())
 	}
 	return nil
 }
 
-func (g *goods) CreateInTxn(ctx context.Context, txn *gorm.DB, goods *do.GoodsDO) error {
-	tx := txn.Create(goods)
+func (g *goods) Update(ctx context.Context, txn *gorm.DB, goods *do.GoodsDO) error {
+	db := g.db.WithContext(ctx)
+	if txn != nil {
+		db = txn.WithContext(ctx)
+	}
+
+	tx := db.Updates(goods)
 	if tx.Error != nil {
 		return errors.WithCode(code.ErrDatabase, tx.Error.Error())
 	}
 	return nil
 }
 
-func (g *goods) Update(ctx context.Context, goods *do.GoodsDO) error {
-	tx := g.db.Save(goods)
-	if tx.Error != nil {
-		return errors.WithCode(code.ErrDatabase, tx.Error.Error())
+func (g *goods) Delete(ctx context.Context, txn *gorm.DB, ID uint64) error {
+	db := g.db.WithContext(ctx)
+	if txn != nil {
+		db = txn.WithContext(ctx)
 	}
-	return nil
-}
 
-func (g *goods) UpdateInTxn(ctx context.Context, txn *gorm.DB, goods *do.GoodsDO) error {
-	tx := txn.Save(goods)
-	if tx.Error != nil {
-		return errors.WithCode(code.ErrDatabase, tx.Error.Error())
-	}
-	return nil
-}
-
-func (g *goods) Delete(ctx context.Context, ID uint64) error {
-	result := g.db.Delete(&do.GoodsDO{}, ID)
-	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return errors.WithCode(code2.ErrGoodsNotFound, result.Error.Error())
-		}
-		return errors.WithCode(code.ErrDatabase, result.Error.Error())
-	}
-	return nil
-}
-
-func (g *goods) DeleteInTxn(ctx context.Context, txn *gorm.DB, ID uint64) error {
-	result := txn.Delete(&do.GoodsDO{}, ID)
+	result := db.Delete(&do.GoodsDO{}, ID)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return errors.WithCode(code2.ErrGoodsNotFound, result.Error.Error())

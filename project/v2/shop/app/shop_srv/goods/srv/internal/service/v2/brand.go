@@ -10,6 +10,8 @@ import (
 	"shop/app/shop_srv/goods/srv/internal/service"
 	metav1 "shop/gmicro/pkg/common/meta/v1"
 	"shop/gmicro/pkg/log"
+
+	"gorm.io/gorm"
 )
 
 type brandService struct {
@@ -38,7 +40,7 @@ func (bs *brandService) List(ctx context.Context, request *goods_pb.BrandFilterR
 }
 
 func (bs *brandService) Create(ctx context.Context, brand *dto.BrandsDTO) (int64, error) {
-	if err := bs.data.Brands().Create(ctx, &brand.BrandsDO); err != nil {
+	if err := bs.data.Brands().Create(ctx, nil, &brand.BrandsDO); err != nil {
 		log.Errorf("data.Create err: %v", err)
 		return 0, err
 	}
@@ -47,6 +49,7 @@ func (bs *brandService) Create(ctx context.Context, brand *dto.BrandsDTO) (int64
 
 func (bs *brandService) Update(ctx context.Context, brand *dto.BrandsDTO) error {
 	var err error
+	var result *gorm.DB
 	var brandDO *do.BrandsDO
 
 	if brandDO, err = bs.data.Brands().Get(ctx, int64(brand.ID)); err != nil {
@@ -56,7 +59,7 @@ func (bs *brandService) Update(ctx context.Context, brand *dto.BrandsDTO) error 
 	brandDO.Name = brand.Name
 	brandDO.Logo = brand.Logo
 
-	if err = bs.data.Brands().Update(ctx, brandDO); err != nil {
+	if result, err = bs.data.Brands().Update(ctx, nil, brandDO); err != nil || result.RowsAffected == 0 {
 		//log.Errorf("data.Update err: %v", err)
 		return err
 	}
@@ -64,7 +67,7 @@ func (bs *brandService) Update(ctx context.Context, brand *dto.BrandsDTO) error 
 }
 
 func (bs *brandService) Delete(ctx context.Context, id int64) error {
-	if err := bs.data.Brands().Delete(ctx, id); err != nil {
+	if err := bs.data.Brands().Delete(ctx, nil, id); err != nil {
 		log.Errorf("data.Delete err: %v", err)
 		return err
 	}

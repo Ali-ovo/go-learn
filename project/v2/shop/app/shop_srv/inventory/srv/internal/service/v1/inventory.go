@@ -28,7 +28,7 @@ type inventoryService struct {
 }
 
 func (is *inventoryService) Create(ctx context.Context, inv *dto.InventoryDTO) error {
-	return is.data.Inventory().Create(ctx, &inv.InventoryDO)
+	return is.data.Inventory().Create(ctx, nil, &inv.InventoryDO)
 }
 
 func (is *inventoryService) Get(ctx context.Context, goodsID int64) (*dto.InventoryDTO, error) {

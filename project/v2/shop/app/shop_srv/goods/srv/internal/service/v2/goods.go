@@ -100,7 +100,7 @@ func (gs *goodsService) Create(ctx context.Context, goods *dto.GoodsDTO) (int64,
 		return 0, err
 	}
 
-	if err = gs.data.Goods().Create(ctx, &goods.GoodsDO); err != nil {
+	if err = gs.data.Goods().Create(ctx, nil, &goods.GoodsDO); err != nil {
 		log.Errorf("data.Create err: %v", err)
 		return 0, err
 	}
@@ -139,7 +139,7 @@ func (gs *goodsService) Update(ctx context.Context, goods *dto.GoodsDTO) error {
 		goodDO.GoodsFrontImage = goods.GoodsFrontImage
 	}
 
-	if err = gs.data.Goods().Update(ctx, goodDO); err != nil {
+	if err = gs.data.Goods().Update(ctx, nil, goodDO); err != nil {
 		return err
 	}
 	return nil
@@ -148,7 +148,7 @@ func (gs *goodsService) Update(ctx context.Context, goods *dto.GoodsDTO) error {
 func (gs *goodsService) Delete(ctx context.Context, id uint64) error {
 	var err error
 
-	if err = gs.data.Goods().Delete(ctx, id); err != nil {
+	if err = gs.data.Goods().Delete(ctx, nil, id); err != nil {
 		return err
 	}
 	return nil

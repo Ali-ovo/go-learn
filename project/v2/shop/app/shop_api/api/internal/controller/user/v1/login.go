@@ -28,12 +28,11 @@ func (us *userController) Login(ctx *gin.Context) {
 		return
 	}
 
-	// TODO 先关闭着
-	//// 图片验证码验证
-	//if !store.Verify(passwordLoginForm.CaptchaId, passwordLoginForm.Captcha, true) {
-	//	core.WriteResponse(ctx, errors.WithCode(code.ErrValidation, "验证码错误"), nil)
-	//	return
-	//}
+	// 图片验证码验证
+	if !store.Verify(passwordLoginForm.CaptchaId, passwordLoginForm.Captcha, true) {
+		core.WriteResponse(ctx, errors.WithCode(code.ErrValidation, "验证码错误"), nil)
+		return
+	}
 	userDTO, err := us.srv.User().MobileLogin(ctx, passwordLoginForm.Mobile, passwordLoginForm.PassWord)
 	if err != nil {
 		core.WriteResponse(ctx, errors.WithCode(code.ErrPasswordIncorrect, "登录失败"), nil)

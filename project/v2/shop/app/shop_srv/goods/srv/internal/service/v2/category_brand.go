@@ -67,7 +67,7 @@ func (cbs *CategoryBrandService) Create(ctx context.Context, categoryBrand *dto.
 		return 0, err
 	}
 
-	if err = cbs.data.CategoryBrands().Create(ctx, &categoryBrand.CategoryBrandDO); err != nil {
+	if err = cbs.data.CategoryBrands().Create(ctx, nil, &categoryBrand.CategoryBrandDO); err != nil {
 		log.Errorf("data.Create err: %v", err)
 		return 0, err
 	}
@@ -91,7 +91,7 @@ func (cbs *CategoryBrandService) Update(ctx context.Context, categoryBrand *dto.
 	categoryBrandDO.CategoryID = categoryBrand.CategoryID
 	categoryBrandDO.BrandsID = categoryBrand.BrandsID
 
-	if err = cbs.data.CategoryBrands().Update(ctx, categoryBrandDO); err != nil {
+	if err = cbs.data.CategoryBrands().Update(ctx, nil, categoryBrandDO); err != nil {
 		//log.Errorf("data.Update err: %v", err)
 		return err
 	}
@@ -99,7 +99,7 @@ func (cbs *CategoryBrandService) Update(ctx context.Context, categoryBrand *dto.
 }
 
 func (cbs *CategoryBrandService) Delete(ctx context.Context, id int64) error {
-	if err := cbs.data.Category().Delete(ctx, id); err != nil {
+	if err := cbs.data.Category().Delete(ctx, nil, id); err != nil {
 		log.Errorf("data.Delete err: %v", err)
 		return err
 	}

@@ -11,7 +11,7 @@ type InventoryStore interface {
 	// Get 查询商品的库存信息
 	Get(ctx context.Context, goodsID int64) (*do.InventoryDO, error)
 	// Create 新建库存信息
-	Create(ctx context.Context, inventoryDO *do.InventoryDO) error
+	Create(ctx context.Context, txn *gorm.DB, inventoryDO *do.InventoryDO) error
 	// GetSellDetail 查询库存销售信息
 	GetSellDetail(ctx context.Context, txn *gorm.DB, ordersn string) (*do.StockSellDetailDO, error)
 	// Reduce 扣减库存

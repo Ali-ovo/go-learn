@@ -20,7 +20,7 @@ func NewApp(basename string) *app.App {
 	cfg := config.NewConfig()
 
 	return app.NewApp(
-		"shop_api",
+		"shop-api",
 		basename,
 		app.WithOptions(cfg), // 初始 log server 配置
 		app.WithRunFunc(run(cfg)),
@@ -31,21 +31,21 @@ func NewApp(basename string) *app.App {
 
 func run(cfg *config.Config) app.RunFunc {
 	return func(basename string) error {
-		userApp, err := NewUserApp(cfg)
+		apiApp, err := NewAPIApp(cfg)
 		if err != nil {
 			return err
 		}
 
 		// 启动 HTTP 服务
-		if err := userApp.Run(); err != nil {
-			log.Errorf("run user app error: %s", err)
+		if err := apiApp.Run(); err != nil {
+			log.Errorf("run api app error: %s", err)
 			return err
 		}
 		return nil
 	}
 }
 
-func NewUserApp(cfg *config.Config) (*gapp.App, error) {
+func NewAPIApp(cfg *config.Config) (*gapp.App, error) {
 	// 初始化 log
 	log.Init(cfg.Log)
 	defer log.Flush()

@@ -16,8 +16,10 @@ type inventory struct {
 }
 
 func (i *inventory) Get(ctx context.Context, goodsID int64) (*do.InventoryDO, error) {
-	inv := do.InventoryDO{}
-	err := i.db.Where("goods = ?", goodsID).First(&inv).Error
+	db := i.db.WithContext(ctx)
+	var inv do.InventoryDO
+
+	err := db.Where("goods = ?", goodsID).First(&inv).Error
 	if err != nil {
 		//log.Errorf("get inv err: %v", err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -29,9 +31,14 @@ func (i *inventory) Get(ctx context.Context, goodsID int64) (*do.InventoryDO, er
 	return &inv, nil
 }
 
-func (i *inventory) Create(ctx context.Context, inventoryDO *do.InventoryDO) error {
+func (i *inventory) Create(ctx context.Context, txn *gorm.DB, inventoryDO *do.InventoryDO) error {
+	db := i.db.WithContext(ctx)
+	if txn != nil {
+		db = txn.WithContext(ctx)
+	}
+
 	//设置库存， 如果我要更新库存
-	tx := i.db.Create(&inventoryDO)
+	tx := db.Create(&inventoryDO)
 	if tx.Error != nil {
 		return errors.WithCode(code.ErrDatabase, tx.Error.Error())
 	}
@@ -39,11 +46,12 @@ func (i *inventory) Create(ctx context.Context, inventoryDO *do.InventoryDO) err
 }
 
 func (i *inventory) GetSellDetail(ctx context.Context, txn *gorm.DB, ordersn string) (*do.StockSellDetailDO, error) {
-	db := i.db
+	db := i.db.WithContext(ctx)
 	if txn != nil {
-		db = txn
+		db = txn.WithContext(ctx)
 	}
 	var ordersellDetail do.StockSellDetailDO
+
 	err := db.Where("order_sn = ?", ordersn).First(&ordersellDetail).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -55,26 +63,31 @@ func (i *inventory) GetSellDetail(ctx context.Context, txn *gorm.DB, ordersn str
 }
 
 func (i *inventory) Reduce(ctx context.Context, txn *gorm.DB, goodsID int64, num int32) *gorm.DB {
-	db := i.db
+	db := i.db.WithContext(ctx)
 	if txn != nil {
-		db = txn
+		db = txn.WithContext(ctx)
 	}
+
 	return db.Model(&do.InventoryDO{}).Where("goods=?", goodsID).Where("stocks >= ?", num).UpdateColumn("stocks", gorm.Expr("stocks - ?", num))
 }
 
 func (i *inventory) Increase(ctx context.Context, txn *gorm.DB, goodsID int64, num int32) error {
-	db := i.db
+	db := i.db.WithContext(ctx)
 	if txn != nil {
-		db = txn
+		db = txn.WithContext(ctx)
 	}
-	err := db.Model(&do.InventoryDO{}).Where("goods=?", goodsID).UpdateColumn("stocks", gorm.Expr("stocks + ?", num)).Error
-	return err
+
+	result := db.Model(&do.InventoryDO{}).Where("goods=?", goodsID).UpdateColumn("stocks", gorm.Expr("stocks + ?", num))
+	if result.Error != nil {
+		return errors.WithCode(code.ErrDatabase, result.Error.Error())
+	}
+	return nil
 }
 
 func (i *inventory) CreateStockSellDetail(ctx context.Context, txn *gorm.DB, detail *do.StockSellDetailDO) error {
-	db := i.db
+	db := i.db.WithContext(ctx)
 	if txn != nil {
-		db = txn
+		db = txn.WithContext(ctx)
 	}
 
 	tx := db.Create(&detail)
@@ -85,9 +98,9 @@ func (i *inventory) CreateStockSellDetail(ctx context.Context, txn *gorm.DB, det
 }
 
 func (i *inventory) UpdateStockSellDetailStatus(ctx context.Context, txn *gorm.DB, ordersn string, status int32) error {
-	db := i.db
+	db := i.db.WithContext(ctx)
 	if txn != nil {
-		db = txn
+		db = txn.WithContext(ctx)
 	}
 
 	//update语句如果没有更新的话那么不会报错，但是他会返回一个影响的行数，所以我们可以根据影响的行数来判断是否更新成功

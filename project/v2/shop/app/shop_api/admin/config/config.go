@@ -3,13 +3,13 @@ package config
 import (
 	cliflag "shop/gmicro/pkg/common/cli/flag"
 	"shop/gmicro/pkg/log"
-	"shop/pkg/options"
+	options2 "shop/pkg/options"
 )
 
 type Config struct {
-	Log      *log.Options             `json:"log" mapstructure:"log"`           // log 配置参数
-	Server   *options.ServerOptions   `json:"server" mapstructure:"server"`     // server
-	Registry *options.RegistryOptions `json:"registry" mapstructure:"registry"` // 服务注册 发现 注销 配置参数
+	Log      *log.Options              `json:"log" mapstructure:"log"`           // log 配置参数
+	Server   *options2.ServerOptions   `json:"server" mapstructure:"server"`     // server
+	Registry *options2.RegistryOptions `json:"registry" mapstructure:"registry"` // 服务注册 发现 注销 配置参数
 }
 
 func (c *Config) Validate() []error {
@@ -34,8 +34,8 @@ func (c *Config) Flags() (fss cliflag.NamedFlagSets) {
 
 func NewConfig() *Config {
 	return &Config{
-		Log:      log.NewOptions(),             // 初始化 log 配置
-		Server:   options.NewServerOptions(),   // 初始化 Server 配置
-		Registry: options.NewRegistryOptions(), // 初始化 consul 配置
+		Log:      log.NewOptions(),              // 初始化 log 配置
+		Server:   options2.NewServerOptions(),   // 初始化 Server 配置
+		Registry: options2.NewRegistryOptions(), // 初始化 consul 配置
 	}
 }
