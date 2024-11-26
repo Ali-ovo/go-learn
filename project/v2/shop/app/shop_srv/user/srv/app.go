@@ -28,7 +28,8 @@ func NewApp(basename string) *app.App {
 
 func run(cfg *config.Config) app.RunFunc {
 	return func(basename string) error {
-		userApp, err := NewUserApp(cfg)
+		userApp, err := initApp(cfg)
+		//userApp, err := NewUserApp(cfg)
 		if err != nil {
 			return err
 		}

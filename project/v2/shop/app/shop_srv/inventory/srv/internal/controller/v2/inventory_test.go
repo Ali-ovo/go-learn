@@ -15,7 +15,7 @@ import (
 
 func Conn() data.DataFactory {
 	dataFactory, err := db.GetDBfactoryOr(&options.MySQLOptions{
-		Host:      "192.168.16.192",
+		Host:      "192.168.189.128",
 		Port:      3306,
 		Username:  "root",
 		Password:  "56248123",
@@ -32,7 +32,7 @@ func Conn() data.DataFactory {
 func TestInventory_Sell(t *testing.T) {
 	dataFactory := Conn()
 	redisConfig := &storage.Config{
-		Host:          "192.168.16.192",
+		Host:          "192.168.189.128",
 		Port:          6379,
 		EnableTracing: true,
 	}
@@ -75,7 +75,7 @@ func TestInventory_Sell(t *testing.T) {
 func TestInventory_Reback(t *testing.T) {
 	dataFactory := Conn()
 	redisConfig := &storage.Config{
-		Host:          "192.168.16.192",
+		Host:          "192.168.189.128",
 		Port:          6379,
 		EnableTracing: true,
 	}

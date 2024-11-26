@@ -12,7 +12,7 @@ import (
 
 func Conn() data.DataFactory {
 	mysqlOpts := &options.MySQLOptions{
-		Host:                  "192.168.16.192",
+		Host:                  "192.168.189.128",
 		Port:                  3306,
 		Username:              "root",
 		Password:              "56248123",
