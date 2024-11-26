@@ -1,7 +1,7 @@
 package srv
 
 import (
-	"shop/app/shop_srv/inventory/srv/internal/data/v2"
+	"shop/app/shop_srv/inventory/srv/internal/data/v1"
 	"shop/app/shop_srv/inventory/srv/internal/service"
 	"shop/gmicro/pkg/storage"
 

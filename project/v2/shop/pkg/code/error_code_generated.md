@@ -29,11 +29,16 @@
 | ErrGoodsNotFound | 101101 | 404 | Goods not found |
 | ErrCategoryNotFound | 101102 | 404 | Category not found |
 | ErrBrandsNotFound | 101103 | 404 | Brand not found |
-| ErrCategoryBrandsNotFound | 101104 | 404 | CategoryBrands not found |
+| ErrBannerNotFound | 101104 | 404 | Banner not found |
+| ErrCategoryBrandsNotFound | 101105 | 404 | CategoryBrands not found |
 | ErrInventoryNotFound | 101201 | 404 | Goods not found |
 | ErrInvSellDetailNotFound | 101202 | 400 | Inventory sell detail not found |
 | ErrInvNotEnough | 101203 | 404 | Inventory not enough |
 | ErrstockNotFound | 101204 | 404 | Order not found |
+| ErrOrderNotFound | 101301 | 404 | Order not found |
+| ErrShopCartNotFound | 101302 | 404 | ShopCart not found |
+| ErrOrderDtm | 101303 | 404 | Dtm unknonwn error |
+| ErrNotGoodsSelect | 101304 | 404 | No Goods selected |
 | ErrUserNotFound | 101001 | 404 | User not found |
 | ErrUserAlreadyExists | 101002 | 400 | User already exists |
 | ErrUserPasswordIncorrect | 101003 | 400 | User password is incorrect |

@@ -1,9 +1,8 @@
 package options
 
 import (
-	"time"
-
 	"github.com/spf13/pflag"
+	"time"
 )
 
 type JwtOptions struct {

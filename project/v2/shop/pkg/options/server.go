@@ -2,7 +2,6 @@ package options
 
 import (
 	"fmt"
-
 	"github.com/spf13/pflag"
 )
 
@@ -16,7 +15,7 @@ type ServerOptions struct {
 	Port              int      `json:"port,omitempty"        mapstructure:"port"`                // port
 	HttpPort          int      `json:"http-port,omitempty"   mapstructure:"http-port"`           // http port
 	Name              string   `json:"name,omitempty"        mapstructure:"name"`                // 名称
-	HttpMode          string   `json:"http-mode,omitempty" mapstructure:"http-mode"`             // gin 模式设置
+	HttpMode          string   `json:"http-mode,omitempty"   mapstructure:"http-mode"`           // gin 模式设置
 	Middlewares       []string `json:"middlewares,omitempty" mapstructure:"middlewares"`         // Http中间件
 }
 
@@ -47,7 +46,6 @@ func (so *ServerOptions) Validate() []error {
 			errs = append(errs, fmt.Errorf("mode must be one of debug/release/test"))
 		}
 	}
-
 	return errs
 }
 

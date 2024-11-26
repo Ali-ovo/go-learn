@@ -12,7 +12,7 @@ type CategoryBrandStore interface {
 	List(ctx context.Context, opts metav1.ListMeta, orderby []string) (*do.CategoryBrandDOList, error)
 	GetBrandList(ctx context.Context, categoryID int64) (*do.CategoryBrandDOList, error)
 	Get(ctx context.Context, id int64) (*do.CategoryBrandDO, error)
-	Create(ctx context.Context, txn *gorm.DB, gcb *do.CategoryBrandDO) error
-	Update(ctx context.Context, txn *gorm.DB, gcb *do.CategoryBrandDO) error
-	Delete(ctx context.Context, txn *gorm.DB, ID uint64) error
+	Create(ctx context.Context, txn *gorm.DB, gcb *do.CategoryBrandDO) *gorm.DB
+	Update(ctx context.Context, txn *gorm.DB, gcb *do.CategoryBrandDO) *gorm.DB
+	Delete(ctx context.Context, txn *gorm.DB, ID int64) *gorm.DB
 }

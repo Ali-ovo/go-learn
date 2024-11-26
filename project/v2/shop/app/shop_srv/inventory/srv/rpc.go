@@ -4,8 +4,8 @@ import (
 	"fmt"
 	inventory_pb "shop/api/inventory/v1"
 	"shop/app/shop_srv/inventory/srv/config"
-	"shop/app/shop_srv/inventory/srv/internal/controller/v2"
-	"shop/app/shop_srv/inventory/srv/internal/data/v2/db"
+	"shop/app/shop_srv/inventory/srv/internal/controller/v1"
+	"shop/app/shop_srv/inventory/srv/internal/data/v1/db"
 	srv "shop/app/shop_srv/inventory/srv/internal/service/v2"
 	"shop/gmicro/core/trace"
 	"shop/gmicro/pkg/log"
@@ -28,7 +28,6 @@ func NewInventoryRPCServer(cfg *config.Config) (*rpcserver.Server, error) {
 	}
 	// 业务层的工厂方法
 	srvFactory := srv.NewService(dataFactory)
-
 	iServer := controller.NewInventoryServer(srvFactory)
 
 	rpcAddr := fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
@@ -38,6 +37,5 @@ func NewInventoryRPCServer(cfg *config.Config) (*rpcserver.Server, error) {
 		rpcserver.WithServerEnableTracing(cfg.Server.EnableTelemetry),
 	)
 	inventory_pb.RegisterInventoryServer(iRpcServer.Server, iServer)
-
 	return iRpcServer, nil
 }

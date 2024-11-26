@@ -4,9 +4,8 @@ import (
 	"crypto/ecdsa"
 	"crypto/rsa"
 	"errors"
-	"time"
-
 	"github.com/golang-jwt/jwt/v4"
+	"time"
 )
 
 type JwtOption func(j *JWT)

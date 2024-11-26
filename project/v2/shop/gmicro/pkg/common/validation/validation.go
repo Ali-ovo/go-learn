@@ -2,9 +2,9 @@ package validation
 
 import (
 	"fmt"
-	field2 "shop/gmicro/pkg/common/validation/field"
 	"os"
 	"reflect"
+	field2 "shop/gmicro/pkg/common/validation/field"
 
 	english "github.com/go-playground/locales/en"
 	ut "github.com/go-playground/universal-translator"

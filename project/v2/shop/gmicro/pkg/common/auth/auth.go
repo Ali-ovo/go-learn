@@ -2,9 +2,9 @@
 package auth
 
 import (
+	"github.com/dgrijalva/jwt-go/v4"
 	"time"
 
-	"github.com/dgrijalva/jwt-go/v4"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -20,13 +20,14 @@ func Compare(hashedPassword, password string) error {
 }
 
 // Sign issue a jwt token based on secretID, secretKey, iss and aud.
+// 签发一个 时间较短的 jwt token
 func Sign(secretID string, secretKey string, iss, aud string) string {
 	claims := jwt.MapClaims{
-		"exp": time.Now().Add(time.Minute).Unix(),
-		"iat": time.Now().Unix(),
-		"nbf": time.Now().Add(0).Unix(),
-		"aud": aud,
-		"iss": iss,
+		"exp": time.Now().Add(time.Minute).Unix(), // 多久过期
+		"iat": time.Now().Unix(),                  // 签发时间
+		"nbf": time.Now().Add(0).Unix(),           // 生效时间
+		"aud": aud,                                // 签发人
+		"iss": iss,                                // 接收人
 	}
 
 	// create a new token

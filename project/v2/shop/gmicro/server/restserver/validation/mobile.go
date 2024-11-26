@@ -1,11 +1,10 @@
 package validation
 
 import (
-	"regexp"
-
 	"github.com/gin-gonic/gin/binding"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
+	"regexp"
 )
 
 func RegisterMobile(translator ut.Translator) {

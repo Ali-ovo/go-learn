@@ -8,8 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/api"
 	"shop/gmicro/registry"
+
+	"github.com/hashicorp/consul/api"
 )
 
 func tcpServer(t *testing.T, lis net.Listener) {

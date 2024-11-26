@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"encoding/json"
-
 	"github.com/spf13/pflag"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"

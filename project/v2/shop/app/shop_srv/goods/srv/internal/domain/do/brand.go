@@ -1,8 +1,6 @@
 package do
 
-import (
-	"shop/pkg/gorm"
-)
+import "shop/pkg/gorm"
 
 type BrandsDO struct {
 	gorm.BaseModel

@@ -20,9 +20,11 @@ type WeightedNode interface {
 	Node
 
 	// Raw returns the original node
+	// Raw 返回 原始的 node
 	Raw() Node
 
 	// Weight is the runtime calculated weight
+	// Weight 是 运行计算时的权重
 	Weight() float64
 
 	// Pick the node

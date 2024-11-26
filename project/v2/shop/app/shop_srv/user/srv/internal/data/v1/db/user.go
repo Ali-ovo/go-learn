@@ -3,10 +3,8 @@ package db
 import (
 	"context"
 	"shop/app/shop_srv/user/srv/internal/data/v1"
-	code2 "shop/gmicro/pkg/code"
+	"shop/app/shop_srv/user/srv/internal/domain/do"
 	metav1 "shop/gmicro/pkg/common/meta/v1"
-	"shop/gmicro/pkg/errors"
-	"shop/pkg/code"
 
 	"gorm.io/gorm"
 )
@@ -23,33 +21,21 @@ type users struct {
 //	@param opts
 //	@return *dv1.UserDOList
 //	@return error
-func (u *users) List(ctx context.Context, orderby []string, opts metav1.ListMeta) (*data.UserDOList, error) {
-	// 实现 gorm 查询
-	ret := &data.UserDOList{}
+func (u *users) List(ctx context.Context, orderby []string, opts metav1.ListMeta) (*do.UserDOList, error) {
+	db := u.db.WithContext(ctx)
+	var ret do.UserDOList
 
-	// 处理分页
-	var limit, offset int
-	if opts.PageSize == 0 {
-		limit = 10
-	} else {
-		limit = opts.PageSize
-	}
-	if opts.Page > 0 {
-		offset = (opts.Page - 1) * limit
-	}
+	// 这里 赋值是为了保证 db的作用域不受影响
+	result := db.Model(&do.UserDOList{})
 
-	// 排序
-	query := u.db
-	for _, v := range orderby {
-		query = query.Order(v)
+	// 处理分页 排序
+	result, count := paginate(result, opts.Page, opts.PageSize, orderby)
+	result = result.Find(&ret.Items)
+	if result.Error != nil {
+		return nil, result.Error
 	}
-
-	// 查询 TODO: 可能存在问题 需要跑一下代码
-	d := query.Offset(offset).Limit(limit).Find(&ret.Items).Count(&ret.TotalCount)
-	if d.Error != nil {
-		return nil, errors.WithCode(code2.ErrDatabase, d.Error.Error())
-	}
-	return ret, nil
+	ret.TotalCount = count
+	return &ret, nil
 }
 
 // GetByMobile
@@ -60,15 +46,13 @@ func (u *users) List(ctx context.Context, orderby []string, opts metav1.ListMeta
 //	@param mobile: 手机号
 //	@return *dv1.UserDO
 //	@return error
-func (u *users) GetByMobile(ctx context.Context, mobile string) (*data.UserDO, error) {
-	user := data.UserDO{}
+func (u *users) GetByMobile(ctx context.Context, mobile string) (*do.UserDO, error) {
+	db := u.db.WithContext(ctx)
+	var user do.UserDO
 
 	// err 是 gorm 的error 尽量别往上抛 改成通用的错误 方便后续更换 mysql
-	if err := u.db.Where(data.UserDO{Mobile: mobile}).First(&user).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.WithCode(code.ErrUserNotFound, err.Error())
-		}
-		return nil, errors.WithCode(code2.ErrDatabase, err.Error())
+	if err := db.Where(do.UserDO{Mobile: mobile}).First(&user).Error; err != nil {
+		return nil, err
 	}
 	return &user, nil
 }
@@ -81,14 +65,12 @@ func (u *users) GetByMobile(ctx context.Context, mobile string) (*data.UserDO, e
 //	@param id: 用户 id
 //	@return *dv1.UserDO
 //	@return error
-func (u *users) GetByID(ctx context.Context, id uint64) (*data.UserDO, error) {
-	user := data.UserDO{}
+func (u *users) GetByID(ctx context.Context, id uint64) (*do.UserDO, error) {
+	db := u.db.WithContext(ctx)
+	var user do.UserDO
 
-	if err := u.db.First(&user, id).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.WithCode(code.ErrUserNotFound, err.Error())
-		}
-		return nil, errors.WithCode(code2.ErrDatabase, err.Error())
+	if err := db.First(&user, id).Error; err != nil {
+		return nil, err
 	}
 	return &user, nil
 }
@@ -100,11 +82,12 @@ func (u *users) GetByID(ctx context.Context, id uint64) (*data.UserDO, error) {
 //	@param ctx
 //	@param user: 用户 DO 结构体
 //	@return error
-func (u *users) Create(ctx context.Context, user *data.UserDO) error {
-	if err := u.db.Create(user).Error; err != nil {
-		return errors.WithCode(code2.ErrDatabase, err.Error())
+func (u *users) Create(ctx context.Context, txn *gorm.DB, user *do.UserDO) *gorm.DB {
+	db := u.db.WithContext(ctx)
+	if txn != nil {
+		db = txn.WithContext(ctx)
 	}
-	return nil
+	return db.Create(user)
 }
 
 // Update
@@ -114,15 +97,14 @@ func (u *users) Create(ctx context.Context, user *data.UserDO) error {
 //	@param ctx
 //	@param user
 //	@return error
-func (u *users) Update(ctx context.Context, user *data.UserDO) error {
-	if err := u.db.Save(user).Error; err != nil {
-		return errors.WithCode(code2.ErrDatabase, err.Error())
+func (u *users) Update(ctx context.Context, txn *gorm.DB, user *do.UserDO) *gorm.DB {
+	db := u.db.WithContext(ctx)
+	if txn != nil {
+		db = txn.WithContext(ctx)
 	}
-	return nil
+	return db.Updates(user)
 }
 
-func NewUsers(db *gorm.DB) *users {
-	return &users{db: db}
+func newUsers(factory *mysqlFactory) data.UserStore {
+	return &users{db: factory.db}
 }
-
-var _ data.UserStore = &users{}

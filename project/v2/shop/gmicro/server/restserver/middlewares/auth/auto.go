@@ -24,6 +24,7 @@ type AutoStrategy struct {
 var _ middlewares.AuthStrategy = &AutoStrategy{}
 
 // NewAutoStrategy create auto strategy with basic strategy and jwt strategy.
+// NewAutoStrategy 使用 basic策略 和 jwt策略 创建自动策略
 func NewAutoStrategy(basic BasicStrategy, jwt JWTStrategy) AutoStrategy {
 	return AutoStrategy{
 		basic: basic,

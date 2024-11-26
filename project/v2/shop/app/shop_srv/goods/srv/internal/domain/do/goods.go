@@ -133,10 +133,10 @@ type GoodsDO struct {
 	IsHot    bool `gorm:"default:false;not null" json:"is_hot"`
 
 	Name            string   `gorm:"type:varchar(100);not null" json:"name"`
-	GoodsSn         string   `gorm:"type:varchar(50);not null" json:"goods_sn"`
-	ClickNum        int32    `gorm:"type:int;default:0;not null" json:"click_num"`
-	SoldNum         int32    `gorm:"type:int;default:0;not null" json:"sold_num"`
-	FavNum          int32    `gorm:"type:int;default:0;not null" json:"fav_num"`
+	GoodsSn         string   `gorm:"type:varchar(50);not null" json:"goods_sn"`    // 商品编号
+	ClickNum        int32    `gorm:"type:int;default:0;not null" json:"click_num"` // 点击次数	TODO 单独创建一张表
+	SoldNum         int32    `gorm:"type:int;default:0;not null" json:"sold_num"`  // 购买次数
+	FavNum          int32    `gorm:"type:int;default:0;not null" json:"fav_num"`   // 收藏次数
 	MarketPrice     float32  `gorm:"not null" json:"market_price"`
 	ShopPrice       float32  `gorm:"not null" json:"shop_price"`
 	GoodsBrief      string   `gorm:"type:varchar(100);not null" json:"goods_brief"`

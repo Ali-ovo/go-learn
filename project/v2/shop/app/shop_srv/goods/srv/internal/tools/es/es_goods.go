@@ -20,7 +20,7 @@ import (
 )
 
 func Mysql2Es() {
-	dsn := "root:123456@tcp(192.168.189.128:3306)/shop_goods_srv?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := "root:56248123@tcp(192.168.101.49:3306)/shop_goods_srv?charset=utf8mb4&parseTime=True&loc=Local"
 
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
@@ -44,7 +44,7 @@ func Mysql2Es() {
 	}
 
 	// 初始化连接
-	host := "http://192.168.189.128:9200"
+	host := "http://192.168.101.49:9200"
 	esClient, err := elasticsearch.NewClient(
 		elasticsearch.Config{
 			Addresses: []string{host},

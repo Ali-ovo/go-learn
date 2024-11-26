@@ -8,6 +8,7 @@ import (
 )
 
 // JWTStrategy defines jwt bearer authentication strategy.
+// JWTStrategy定义了jwt承载身份验证策略.
 type JWTStrategy struct {
 	ginjwt.GinJWTMiddleware
 }

@@ -53,10 +53,10 @@ func NewNode(scheme, addr string, ins *registry.ServiceInstance) Node {
 		addr:   addr,
 	}
 	if ins != nil {
-		n.name = ins.Name
-		n.version = ins.Version
-		n.metadata = ins.Metadata
-		if str, ok := ins.Metadata["weight"]; ok {
+		n.name = ins.Name                          // 服务发现设置的名字
+		n.version = ins.Version                    // 服务发现设置的版本号
+		n.metadata = ins.Metadata                  // 元数据
+		if str, ok := ins.Metadata["weight"]; ok { // 是否 元数据中携带 初始权重
 			if weight, err := strconv.ParseInt(str, 10, 64); err == nil {
 				n.weight = &weight
 			}

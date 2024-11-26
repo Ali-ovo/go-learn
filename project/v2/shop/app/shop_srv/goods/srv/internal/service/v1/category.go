@@ -7,7 +7,12 @@ import (
 	"shop/app/shop_srv/goods/srv/internal/domain/do"
 	"shop/app/shop_srv/goods/srv/internal/domain/dto"
 	"shop/app/shop_srv/goods/srv/internal/service"
+	"shop/gmicro/pkg/code"
+	"shop/gmicro/pkg/errors"
 	"shop/gmicro/pkg/log"
+	code2 "shop/pkg/code"
+
+	"gorm.io/gorm"
 )
 
 type CategoryService struct {
@@ -20,7 +25,10 @@ func (cs *CategoryService) AllList(ctx context.Context) (*dto.CategoryDTOList, e
 
 	categoryList, err := cs.data.Category().ListAll(ctx, []string{})
 	if err != nil {
-		return nil, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.WithCode(code2.ErrCategoryNotFound, err.Error())
+		}
+		return nil, errors.WithCode(code.ErrDatabase, err.Error())
 	}
 	ret.TotalCount = categoryList.TotalCount
 	for _, value := range categoryList.Items {
@@ -36,7 +44,10 @@ func (cs *CategoryService) List(ctx context.Context, level int32) (*dto.Category
 
 	categoryList, err := cs.data.Category().List(ctx, level)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.WithCode(code2.ErrCategoryNotFound, err.Error())
+		}
+		return nil, errors.WithCode(code.ErrDatabase, err.Error())
 	}
 	ret.TotalCount = categoryList.TotalCount
 	for _, value := range categoryList.Items {
@@ -52,26 +63,37 @@ func (cs *CategoryService) Get(ctx context.Context, id int64) (*dto.CategoryDTO,
 
 	category, err := cs.data.Category().Get(ctx, id)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.WithCode(code2.ErrCategoryNotFound, err.Error())
+		}
+		return nil, errors.WithCode(code.ErrDatabase, err.Error())
 	}
 	ret.CategoryDO = *category
 	return &ret, nil
 }
 
 func (cs *CategoryService) Create(ctx context.Context, category *dto.CategoryDTO) (int64, error) {
-	if err := cs.data.Category().Create(ctx, nil, &category.CategoryDO); err != nil {
-		log.Errorf("data.Create err: %v", err)
-		return 0, err
+	result := cs.data.Category().Create(ctx, nil, &category.CategoryDO)
+	if result.RowsAffected == 0 {
+		log.Errorf("data.Ceate err: %v", result.Error)
+		if result.Error != nil {
+			return 0, errors.WithCode(code.ErrDatabase, result.Error.Error())
+		}
+		return 0, errors.WithCode(code2.ErrCategoryNotFound, "Create category failure")
 	}
-	return int64(category.ID), nil
+	return category.ID, nil
 }
 
 func (cs *CategoryService) Update(ctx context.Context, category *dto.CategoryDTO) error {
 	var err error
+	var result *gorm.DB
 	var categoryDO *do.CategoryDO
 
-	if categoryDO, err = cs.data.Category().Get(ctx, int64(category.ID)); err != nil {
-		return err
+	if categoryDO, err = cs.data.Category().Get(ctx, category.ID); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.WithCode(code2.ErrCategoryNotFound, err.Error())
+		}
+		return errors.WithCode(code.ErrDatabase, err.Error())
 	}
 
 	categoryDO.Name = category.Name
@@ -79,17 +101,23 @@ func (cs *CategoryService) Update(ctx context.Context, category *dto.CategoryDTO
 	categoryDO.Level = category.Level
 	categoryDO.IsTab = category.IsTab
 
-	if err = cs.data.Category().Update(ctx, nil, &category.CategoryDO); err != nil {
+	if result = cs.data.Category().Update(ctx, nil, &category.CategoryDO); result.RowsAffected == 0 {
 		//log.Errorf("data.Update err: %v", err)
-		return err
+		if result.Error != nil {
+			return errors.WithCode(code.ErrDatabase, result.Error.Error())
+		}
+		return errors.WithCode(code2.ErrCategoryNotFound, "Update category failure")
 	}
 	return nil
 }
 
 func (cs *CategoryService) Delete(ctx context.Context, id int64) error {
-	if err := cs.data.Category().Delete(ctx, nil, id); err != nil {
-		log.Errorf("data.Delete err: %v", err)
-		return err
+	if result := cs.data.Category().Delete(ctx, nil, id); result.RowsAffected == 0 {
+		log.Errorf("data.Delete err: %v", result.Error)
+		if result.Error != nil {
+			return errors.WithCode(code.ErrDatabase, result.Error.Error())
+		}
+		return errors.WithCode(code2.ErrCategoryNotFound, "Delete category failure")
 	}
 	return nil
 }

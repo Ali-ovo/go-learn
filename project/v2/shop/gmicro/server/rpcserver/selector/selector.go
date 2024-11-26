@@ -53,6 +53,7 @@ type Node interface {
 }
 
 // DoneInfo is callback info when RPC invoke done.
+// DoneInfo 当 RPC 调用完成 回调的函数
 type DoneInfo struct {
 	// Response Error
 	Err error

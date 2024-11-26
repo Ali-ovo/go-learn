@@ -47,8 +47,8 @@ func NewGoodsApp(cfg *config.Config) (*gapp.App, error) {
 	log.Init(cfg.Log)
 	defer log.Flush()
 
-	// 运行 canal 监控 数据库 刷入 rocketmq 中
-	RocketmqToEs(cfg)
+	// 启动 rocketmq 监听消息
+	RocketmqConsumer(cfg)
 
 	// 服务注册
 	register := NewRegistrar(cfg.Registry)

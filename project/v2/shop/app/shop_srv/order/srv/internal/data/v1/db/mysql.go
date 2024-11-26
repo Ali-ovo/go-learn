@@ -2,7 +2,6 @@ package db
 
 import (
 	"fmt"
-	"shop/app/shop_srv/order/srv/internal/data/v1"
 	"shop/gmicro/pkg/conn"
 	"shop/gmicro/pkg/errors"
 	"shop/gmicro/pkg/log"
@@ -12,12 +11,8 @@ import (
 	"gorm.io/gorm"
 )
 
-var (
-	dbFactory data.DataFactory
-)
-
 func NewOrderSQLClient(mysqlOpts *options.MySQLOptions) (*gorm.DB, error) {
-	if mysqlOpts == nil && dbFactory == nil {
+	if mysqlOpts == nil {
 		return nil, fmt.Errorf("failed to get mysql store factory")
 	}
 
@@ -29,8 +24,9 @@ func NewOrderSQLClient(mysqlOpts *options.MySQLOptions) (*gorm.DB, error) {
 	//// 定义一个表结构, 将表结构直接生成对应的表 - migrations
 	//// 迁移 schema
 	//_ = msqDB.AutoMigrate(
-	//	&do.InventoryDO{},
-	//	&do.StockSellDetailDO{},
+	//	&do.OrderInfoDO{},
+	//	&do.OrderGoods{},
+	//	&do.ShoppingCartDO{},
 	//)
 
 	log.Info("[order-srv] 初始化 Mysql 完成")

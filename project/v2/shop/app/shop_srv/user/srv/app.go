@@ -17,11 +17,11 @@ func NewApp(basename string) *app.App {
 	cfg := config.NewConfig()
 
 	return app.NewApp(
-		"user_srv",
+		"user-srv",
 		basename,
 		app.WithOptions(cfg), // 初始 log server 配置
 		app.WithRunFunc(run(cfg)),
-		// go run .\main.go --server.port=8081 --server.host=xxx --consul.address=xxx
+		// go run .\main.go --server.port=8081 --server.host=192.168.16.151 --consul.address=192.168.16.105:8500
 		//app.WithNoConfig(), // 设置不读取配置文件
 	)
 }
@@ -65,6 +65,8 @@ func NewUserApp(cfg *config.Config) (*gapp.App, error) {
 
 func NewRegistrar(registry *options.RegistryOptions) registry.Registrar {
 	c := api.DefaultConfig()
+	// 我们使用 discovery:///shop-goods-srv 的原因在这里
+	// 正确的方法是: discovery://192.168.101.49:8500/shop-goods-srv
 	c.Address = registry.Address
 	c.Scheme = registry.Scheme
 	cli, err := api.NewClient(c)

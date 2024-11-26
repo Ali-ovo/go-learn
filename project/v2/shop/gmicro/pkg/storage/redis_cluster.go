@@ -30,7 +30,7 @@ type Config struct {
 	Password              string
 	Database              int
 	MaxIdle               int
-	MaxActive             int
+	MaxActive             int // 设置最大连接数
 	Timeout               int
 	EnableCluster         bool
 	UseSSL                bool
@@ -73,7 +73,10 @@ func shouldConnect() bool {
 	return true
 }
 
-// Connected returns true if we are connected to redis.
+// Connected returns true if we are connected to redis. 如果 redis 正常 则返回 true
+//
+//	@Description:
+//	@return bool
 func Connected() bool {
 	if v := redisUp.Load(); v != nil {
 		return v.(bool)
@@ -126,8 +129,8 @@ func connectSingleton(cache bool, config *Config) bool {
 // RedisCluster is a storage manager that uses the redis database.
 // RedisCluster 是使用redis数据库的存储管理器
 type RedisCluster struct {
-	KeyPrefix string
-	HashKeys  bool
+	KeyPrefix string // redis 设置 key 前面添加的字符串
+	HashKeys  bool   // 是否开启 Hash 加密 key
 	IsCache   bool
 }
 
@@ -256,7 +259,6 @@ func NewRedisClusterPool(isCache bool, config *Config) redis.UniversalClient {
 		log.Info("--> [REDIS] Creating cluster client")
 		// 创建 redis Cluster 分布式 redis 节点都存储部分数据 以支持更大的数据集和更高的并发请求 分片架构
 		client = redis.NewClusterClient(opts.cluster())
-
 	} else {
 		log.Info("--> [REDIS] Creating single-node client")
 		// 创建 单节点 redis
@@ -411,6 +413,11 @@ func (r *RedisCluster) cleanKey(keyName string) string {
 	return strings.Replace(keyName, r.KeyPrefix, "", 1)
 }
 
+// up 判断 redis 是否正常
+//
+//	@Description:
+//	@receiver r
+//	@return error
 func (r *RedisCluster) up() error {
 	if !Connected() {
 		return ErrRedisIsDown
@@ -425,6 +432,7 @@ func (r *RedisCluster) GetKey(ctx context.Context, keyName string) (string, erro
 		return "", err
 	}
 
+	// 获取 redis 连接
 	cluster := r.singleton()
 
 	value, err := cluster.Get(ctx, r.fixKey(keyName)).Result()
@@ -556,9 +564,11 @@ func (r *RedisCluster) SetKey(ctx context.Context, keyName, session string, time
 	log.Debugf("[STORE] SET Raw key is: %s", keyName)
 	log.Debugf("[STORE] Setting key: %s", r.fixKey(keyName))
 
+	// 判断 redis 是否健康
 	if err := r.up(); err != nil {
 		return err
 	}
+	// 设置 值到 redis 中
 	err := r.singleton().Set(ctx, r.fixKey(keyName), session, timeout).Err()
 	if err != nil {
 		log.Errorf("Error trying to set value: %s", err.Error())

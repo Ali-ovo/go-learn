@@ -88,7 +88,7 @@ func GoodsSaveToES(Esopts *options.EsOptions) func(ctx context.Context, msgs ...
 			var goodsSearchDOList []*do.GoodsSearchDO
 			if err := json.Unmarshal(msg.Body, &data); err != nil {
 				log.Error(err.Error())
-				return consumer.ConsumeRetryLater, err
+				return consumer.ConsumeSuccess, err // 解析失败 说明 传递错误的数据进来
 			}
 
 			if err := json.Unmarshal(data.Data, &mapGoods); err != nil {
@@ -113,7 +113,6 @@ func GoodsSaveToES(Esopts *options.EsOptions) func(ctx context.Context, msgs ...
 					}
 				}
 			case "UPDATE":
-				// TODO 有bug
 				for _, goodsSearchDO := range goodsSearchDOList {
 					if goodsSearchDO.DeleteAt == nil || !goodsSearchDO.DeleteAt.IsZero() {
 						//log.Infof("[goods-srv] 删除数据 %v", goodsSearchDO)

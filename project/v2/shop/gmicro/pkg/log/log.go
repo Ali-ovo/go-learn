@@ -34,7 +34,8 @@ func New(opts *Options) *Logger {
 	if err := zapLevel.UnmarshalText([]byte(opts.Level)); err != nil { // 获取 opts.Level 等级 需要转化一下
 		zapLevel = zapcore.InfoLevel
 	}
-	encodeLevel := zapcore.CapitalLevelEncoder //将Level序列化为全大写字符串。例如, InfoLevel被序列化为INFO
+	//将Level序列化为全大写字符串。例如, InfoLevel被序列化为INFO
+	encodeLevel := zapcore.CapitalLevelEncoder
 	// 当输出到本地路径时，禁止带颜色
 	if opts.Format == consoleFormat && opts.EnableColor {
 		encodeLevel = zapcore.CapitalColorLevelEncoder // 将Level序列化为全大写字符串并添加颜色。例如，InfoLevel被序列化为INFO，并被标记为蓝色。
@@ -43,15 +44,15 @@ func New(opts *Options) *Logger {
 	encoderConfig := zapcore.EncoderConfig{ // 设置 编码器
 		MessageKey:     "message",
 		LevelKey:       "level",
-		TimeKey:        "timestamp",
+		TimeKey:        "time", // 设置 json 格式下 表示 时间的 key 的名称
 		NameKey:        "logger",
 		CallerKey:      "caller",
 		StacktraceKey:  "stacktrace",
 		LineEnding:     zapcore.DefaultLineEnding,   // 每行结束 换行
 		EncodeLevel:    encodeLevel,                 // log 等级
-		EncodeTime:     timeEncoder,                 // TODO 注释看看
+		EncodeTime:     timeEncoder,                 // 设置时间格式
 		EncodeDuration: milliSecondsDurationEncoder, // TODO 注释看看
-		EncodeCaller:   zapcore.ShortCallerEncoder,  // 注释看看 是什么样的
+		EncodeCaller:   zapcore.ShortCallerEncoder,  // 日志等级 是否添加颜色 默认 不添加
 	}
 
 	loggerConfig := &zap.Config{
@@ -97,6 +98,10 @@ func New(opts *Options) *Logger {
 			3. 日志信息错乱：如果将 log 模块的日志信息和 zap 日志库的信息分别输出到不同的文件或控制台中，就可能会出现信息错乱或混杂的情况。
 		因此，我们可以使用 zap.RedirectStdLog 方法将 log 模块的日志信息重定向到 zap 日志库中，从而避免上述问题。
 		这个方法的作用是将 log 模块的输出重定向到 zap 日志库中，从而使得两者的日志信息都能够被 zap 日志库捕获和处理，同时也能够保证日志信息的统一、完整和正确输出。
+
+		将标准库的日志输出定向到给定的 zap Logger 实例 l
+		具体来说，它会将 log.Print、log.Panic、log.Fatal 等函数输出的内容重定向到 l.Info、l.Panic、l.Fatal 等方法，从而让标准库的日志输出也能够使用 zap 的格式和级别进行记录\
+		意思是 你使用 go log基础包 输出格式 也会尽量向 zap 中的设置 靠齐 具体内容看相关源码
 	*/
 	zap.RedirectStdLog(l)
 
@@ -201,6 +206,7 @@ func Errorf(format string, v ...interface{}) {
 	std.Logger.Sugar().Errorf(format, v...)
 }
 
+// ErrorfC method output error level log. 并且在 链路追踪上添加对于log
 func ErrorfC(ctx context.Context, format string, v ...interface{}) {
 	std.ErrorfContext(ctx, format, v...)
 }

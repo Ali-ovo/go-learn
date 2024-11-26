@@ -2,9 +2,9 @@ package field
 
 import (
 	"fmt"
+	"reflect"
 	"shop/gmicro/pkg/common/util/sets"
 	utilerrors "shop/gmicro/pkg/errors"
-	"reflect"
 	"strconv"
 	"strings"
 )

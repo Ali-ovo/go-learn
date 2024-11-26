@@ -49,7 +49,6 @@ func NewServer(opts ...ServerOption) *Server {
 		opt(srv)
 	}
 
-	// TODO 希望用户不设置拦截器的情况下, 会自动默认加上一些必须的拦截器, crash, tracingtry
 	unaryInts := []grpc.UnaryServerInterceptor{
 		srvintc.UnaryRecoverInterceptor, // 一元拦截器 异常处理(而不是一层层抛出 然后停止程序)
 	}

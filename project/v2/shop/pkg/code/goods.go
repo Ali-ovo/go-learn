@@ -12,6 +12,9 @@ const (
 	// ErrBrandsNotFound - 404: Brand not found.
 	ErrBrandsNotFound
 
+	// ErrBannerNotFound - 404: Banner not found.
+	ErrBannerNotFound
+
 	// ErrCategoryBrandsNotFound - 404: CategoryBrands not found.
 	ErrCategoryBrandsNotFound
 )

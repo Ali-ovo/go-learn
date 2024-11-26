@@ -2,9 +2,9 @@ package validation
 
 import (
 	"fmt"
-	field2 "shop/gmicro/pkg/common/validation/field"
 	"net"
 	"regexp"
+	field2 "shop/gmicro/pkg/common/validation/field"
 	"strings"
 	"unicode"
 )

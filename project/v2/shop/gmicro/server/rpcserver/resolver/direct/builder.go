@@ -1,9 +1,8 @@
 package direct
 
 import (
-	"strings"
-
 	"google.golang.org/grpc/resolver"
+	"strings"
 )
 
 func init() {

@@ -1,3 +1,5 @@
+//go:generate codegen -type=int -doc -output ./error_code_generated.md
+//go:generate codegen -type=int
 package code
 
 const (
@@ -16,12 +18,6 @@ const (
 	// ErrJWTDeploy - 500: JWT deploy error.
 	ErrJWTDeploy
 
-	// ErrCodeNotExist - 400: Sms code incorrect or expired.
-	ErrCodeNotExist
-
-	// ErrCodeExpired - 400: Sms code expired.
-	ErrCodeExpired
-
 	// ErrJWTReadFiled - 500: JWT read field error.
 	ErrJWTReadFiled
 
@@ -30,4 +26,10 @@ const (
 
 	// ErrFailedTokenCreation - 500: indicates JWT Token failed to create, reason unknown.
 	ErrFailedTokenCreation
+
+	// ErrCodeNotExist - 400: Sms code incorrect or expired.
+	ErrCodeNotExist
+
+	// ErrCodeExpired - 400: Sms code expired.
+	ErrCodeExpired
 )

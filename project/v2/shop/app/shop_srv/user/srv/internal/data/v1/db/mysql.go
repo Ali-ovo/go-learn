@@ -2,8 +2,10 @@ package db
 
 import (
 	"fmt"
+	"shop/app/shop_srv/user/srv/internal/data/v1"
 	"shop/gmicro/pkg/conn"
 	"shop/gmicro/pkg/errors"
+	"shop/gmicro/pkg/log"
 	"shop/pkg/code"
 	"shop/pkg/options"
 	"sync"
@@ -12,9 +14,23 @@ import (
 )
 
 var (
-	dbFactory *gorm.DB
+	dbFactory data.DataFactory
 	once      sync.Once
 )
+
+type mysqlFactory struct {
+	db *gorm.DB
+}
+
+func (mf *mysqlFactory) User() data.UserStore {
+	return newUsers(mf)
+}
+
+func (mf *mysqlFactory) Begin() *gorm.DB {
+	return mf.db.Begin()
+}
+
+var _ data.DataFactory = (*mysqlFactory)(nil)
 
 // GetDBfactoryOr
 //
@@ -22,7 +38,7 @@ var (
 //	@param myqslOpts
 //	@return *gorm.DB
 //	@return error
-func GetDBfactoryOr(mysqlOpts *options.MySQLOptions) (*gorm.DB, error) {
+func GetDBfactoryOr(mysqlOpts *options.MySQLOptions) (data.DataFactory, error) {
 	if mysqlOpts == nil && dbFactory == nil {
 		return nil, fmt.Errorf("failed to get mysql store factory")
 	}
@@ -30,10 +46,21 @@ func GetDBfactoryOr(mysqlOpts *options.MySQLOptions) (*gorm.DB, error) {
 	var err error
 
 	once.Do(func() {
-		dbFactory, err = conn.NewMySQLClient((*conn.MySQLOptions)(mysqlOpts))
+		msqDB, err := conn.NewMySQLClient((*conn.MySQLOptions)(mysqlOpts))
 		if err != nil {
 			return
 		}
+
+		//// 定义一个表结构, 将表结构直接生成对应的表 - migrations
+		//// 迁移 schema
+		//_ = dbFactory.AutoMigrate(
+		//	&users{},
+		//)
+
+		dbFactory = &mysqlFactory{
+			db: msqDB,
+		}
+		log.Info("[user-srv] 初始化 Mysql 完成")
 	})
 
 	if dbFactory == nil || err != nil {

@@ -13,6 +13,7 @@ import (
 type RocketmqOptions struct {
 	Addr      []string `mapstructure:"addr"       json:"addr,omitempty"`
 	GroupName string   `mapstructure:"group-name" json:"group-name,omitempty"`
+	Retry     int      `mapstructure:"retry"      json:"retry,omitempty"`
 }
 
 func NewRocketmqOptions() *RocketmqOptions {
@@ -45,4 +46,5 @@ func (ro *RocketmqOptions) Validate() []error {
 func (ro *RocketmqOptions) AddFlags(fs *pflag.FlagSet) {
 	fs.StringArrayVar(&ro.Addr, "rocketmq.addr", ro.Addr, "RocketMQ server address")
 	fs.StringVar(&ro.GroupName, "rocketmq.group-name", ro.GroupName, "RocketMQ group name")
+	fs.IntVar(&ro.Retry, "rocketmq.retry", ro.Retry, "RocketMQ retry")
 }

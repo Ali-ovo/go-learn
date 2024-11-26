@@ -71,10 +71,10 @@ func main() {
 	flag.Usage = Usage         // flag.Usage 是一个函数类型的变量，它定义了如何输出在用户输入无效参数时应该显示的消息
 	flag.Parse()               // 解析命令行参数
 
-	// 调试用
-	// *typeNames = "int"
+	//// 调试用
+	//*typeNames = "int"
 	//*doc = true
-	//*output = "C:/Users/CZC/Desktop/CZC_pro/go-shop/project/v2/shop/pkg/code/error_code_generated.md"
+	//*output = "C:/Users/CZC/Desktop/go-shop/project/v2/shop/pkg/code/error_code_generated.md"
 
 	if len(*typeNames) == 0 {
 		flag.Usage()
@@ -91,8 +91,8 @@ func main() {
 	if len(args) == 0 {
 		// Default: 在当前目录下执行
 		args = []string{"."}
-		// 调试用
-		// args = []string{"C:/Users/CZC/Desktop/CZC_pro/go-shop/project/v2/shop/pkg/code"}
+		//// 调试用
+		//args = []string{"C:/Users/CZC/Desktop/go-shop_api/project/v2/shop_api/pkg/code"}
 	}
 
 	// 只需解析一次包
@@ -127,11 +127,9 @@ func main() {
 	for _, typeName := range types {
 		if *doc {
 			g.generateDocs(typeName)
-			// src = g.buf.Bytes()
 		} else {
 			g.generate(typeName)
-			// Format the output.
-			// src = g.format()
+
 		}
 	}
 
@@ -178,6 +176,7 @@ type Generator struct {
 }
 
 // Printf like fmt.Printf, but add the string to g.buf.
+// Printf 将格式化后的字符串写入 g.buf.
 func (g *Generator) Printf(format string, args ...interface{}) {
 	fmt.Fprintf(&g.buf, format, args...)
 }

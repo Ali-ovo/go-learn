@@ -30,9 +30,9 @@ type Watcher interface {
 
 type ServiceInstance struct {
 	// Service ID registered with the registry center. 注册到注册中心的服务id
-	ID string `json:"id"`
+	ID string `json:"id"` // 注册id
 	// Service name
-	Name string `json:"name"`
+	Name string `json:"name"` // 注册名称
 	// Service version
 	Version string `json:"version"`
 	// Service metadata 服务元数据
@@ -40,5 +40,5 @@ type ServiceInstance struct {
 	// Service path
 	// http://127.0.0.1:8000
 	// grpc://127.0.0.1:9000
-	Endpoints []string `json:"endpoints"`
+	Endpoints []string `json:"endpoints"` // 用于服务发现 填写被发现的ip和端口 如: gin客户端 grpc服务端  等
 }

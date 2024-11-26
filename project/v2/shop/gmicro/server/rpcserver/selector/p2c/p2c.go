@@ -26,8 +26,8 @@ func New() selector2.Selector {
 
 // Balancer is p2c selector.
 type Balancer struct {
-	mu     sync.Mutex
-	r      *rand.Rand
+	mu     sync.Mutex // 锁
+	r      *rand.Rand // 随机
 	picked int64
 }
 
@@ -55,9 +55,9 @@ func (s *Balancer) Pick(ctx context.Context, nodes []selector2.WeightedNode) (se
 	}
 
 	var pc, upc selector2.WeightedNode
-	nodeA, nodeB := s.prePick(nodes)
+	nodeA, nodeB := s.prePick(nodes) // 获取 2个 Node
 	// meta.Weight is the weight set by the service publisher in discovery
-	if nodeB.Weight() > nodeA.Weight() {
+	if nodeB.Weight() > nodeA.Weight() { // 比较权重
 		pc, upc = nodeB, nodeA
 	} else {
 		pc, upc = nodeA, nodeB
@@ -65,9 +65,10 @@ func (s *Balancer) Pick(ctx context.Context, nodes []selector2.WeightedNode) (se
 
 	// If the failed node has never been selected once during forceGap, it is forced to be selected once
 	// Take advantage of forced opportunities to trigger updates of success rate and delay
+	// atomic.CompareAndSwapInt64(&s.picked, 0, 1) 进行比较 如果 s.picked 是默认值0 则 把1 赋值进去 并且返回 true
 	if upc.PickElapsed() > forcePick && atomic.CompareAndSwapInt64(&s.picked, 0, 1) {
 		pc = upc
-		atomic.StoreInt64(&s.picked, 0)
+		atomic.StoreInt64(&s.picked, 0) // 执行完成后 重新赋值 0
 	}
 	done := pc.Pick()
 	return pc, done, nil
@@ -76,8 +77,8 @@ func (s *Balancer) Pick(ctx context.Context, nodes []selector2.WeightedNode) (se
 // NewBuilder returns a selector builder with p2c balancer
 func NewBuilder() selector2.Builder {
 	return &selector2.DefaultBuilder{
-		Balancer: &Builder{},
 		Node:     &ewma.Builder{},
+		Balancer: &Builder{},
 	}
 }
 

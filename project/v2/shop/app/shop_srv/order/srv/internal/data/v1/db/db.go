@@ -18,39 +18,40 @@ import (
 	"gorm.io/gorm"
 )
 
-var once sync.Once
+var (
+	dbFactory data.DataFactory
+	once      sync.Once
+)
 
-type DataFactory struct {
+type dataFactory struct {
 	db              *gorm.DB
 	goodsClient     goods_pb.GoodsClient
 	inventoryClient inventory_pb.InventoryClient
 }
 
-func (df *DataFactory) Orders() data.OrderStore {
-	panic("not implemented")
+func (df *dataFactory) Orders() data.OrderStore {
+	return newOrders(df)
 }
 
-func (df *DataFactory) ShopCarts() data.ShopCartStore {
-	panic("not implemented")
+func (df *dataFactory) ShopCarts() data.ShopCartStore {
+	return newShopCarts(df)
 }
 
-func (df *DataFactory) Goods() goods_pb.GoodsClient {
-	//TODO implement me
-	panic("implement me")
+func (df *dataFactory) Goods() goods_pb.GoodsClient {
+	return df.goodsClient
 }
 
-func (df *DataFactory) Inventory() inventory_pb.InventoryClient {
-	//TODO implement me
-	panic("implement me")
+func (df *dataFactory) Inventory() inventory_pb.InventoryClient {
+	return df.inventoryClient
 }
 
-func (df *DataFactory) Begin() *gorm.DB {
+func (df *dataFactory) Begin() *gorm.DB {
 	return df.db.Begin()
 }
 
 func GetDataFactoryOr(options *config.Config) (data.DataFactory, error) {
 	if options == nil && dbFactory == nil {
-		return nil, fmt.Errorf("failed to get grpc store factory")
+		return nil, fmt.Errorf("failed to get data store factory")
 	}
 
 	var err error
@@ -71,7 +72,7 @@ func GetDataFactoryOr(options *config.Config) (data.DataFactory, error) {
 		discovery := NewDiscovery(options.Registry)
 		InventoryClient, err = NewInventoryServiceClient(discovery)
 		goodsClient, err = NewGoodsServiceClient(discovery)
-		dbFactory = &DataFactory{gormDB, goodsClient, InventoryClient}
+		dbFactory = &dataFactory{gormDB, goodsClient, InventoryClient}
 	})
 
 	if dbFactory == nil || err != nil {

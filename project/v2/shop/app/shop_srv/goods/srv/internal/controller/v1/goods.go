@@ -40,7 +40,6 @@ func (gs *GoodsServer) BatchGetGoods(ctx context.Context, info *goods_pb.BatchGo
 }
 
 func (gs *GoodsServer) CreateGoods(ctx context.Context, info *goods_pb.CreateGoodsInfo) (*goods_pb.GoodsInfoResponse, error) {
-	// TODO 库存服务也需要添加 用canal
 	var ret goods_pb.GoodsInfoResponse
 
 	goodsDO := do.GoodsDO{

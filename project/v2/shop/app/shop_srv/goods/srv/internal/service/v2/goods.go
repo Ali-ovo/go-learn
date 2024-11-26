@@ -8,8 +8,13 @@ import (
 	"shop/app/shop_srv/goods/srv/internal/domain/do"
 	"shop/app/shop_srv/goods/srv/internal/domain/dto"
 	"shop/app/shop_srv/goods/srv/internal/service"
+	"shop/gmicro/pkg/code"
+	"shop/gmicro/pkg/errors"
 	"shop/gmicro/pkg/log"
+	code2 "shop/pkg/code"
 	"shop/pkg/mr"
+
+	"gorm.io/gorm"
 )
 
 type goodsService struct {
@@ -61,7 +66,10 @@ func (gs *goodsService) List(ctx context.Context, req *goods_pb.GoodsFilterReque
 	}
 	goodsData, err := gs.data.Goods().ListByIDs(ctx, goodsIDs, req.Orderby)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.WithCode(code2.ErrGoodsNotFound, err.Error())
+		}
+		return nil, errors.WithCode(code.ErrDatabase, err.Error())
 	}
 	ret.TotalCount = goodsList.TotalCount
 	for _, value := range goodsData.Items {
@@ -75,8 +83,10 @@ func (gs *goodsService) List(ctx context.Context, req *goods_pb.GoodsFilterReque
 func (gs *goodsService) Get(ctx context.Context, ID uint64) (*dto.GoodsDTO, error) {
 	good, err := gs.data.Goods().Get(ctx, ID)
 	if err != nil {
-		log.ErrorfC(ctx, "data.Get err: %v", err)
-		return nil, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.WithCode(code2.ErrGoodsNotFound, err.Error())
+		}
+		return nil, errors.WithCode(code.ErrDatabase, err.Error())
 	}
 	return &dto.GoodsDTO{
 		GoodsDO: *good,
@@ -93,6 +103,8 @@ func (gs *goodsService) Create(ctx context.Context, goods *dto.GoodsDTO) (int64,
 			然后设置一个定时任务, 定时向ES执行 失败的数据的数据 (根据 记录的 ID 从mysql中 读取并且再次执行)
 	*/
 	var err error
+	var result *gorm.DB
+
 	if _, err = gs.data.Brands().Get(ctx, int64(goods.BrandsID)); err != nil {
 		return 0, err
 	}
@@ -100,15 +112,19 @@ func (gs *goodsService) Create(ctx context.Context, goods *dto.GoodsDTO) (int64,
 		return 0, err
 	}
 
-	if err = gs.data.Goods().Create(ctx, nil, &goods.GoodsDO); err != nil {
+	if result = gs.data.Goods().Create(ctx, nil, &goods.GoodsDO); result.RowsAffected == 0 {
 		log.Errorf("data.Create err: %v", err)
-		return 0, err
+		if result.Error != nil {
+			return 0, errors.WithCode(code.ErrDatabase, result.Error.Error())
+		}
+		return 0, errors.WithCode(code2.ErrGoodsNotFound, "Create Goods failure")
 	}
 	return goods.ID, nil
 }
 
 func (gs *goodsService) Update(ctx context.Context, goods *dto.GoodsDTO) error {
 	var err error
+	var result *gorm.DB
 	var goodDO *do.GoodsDO
 
 	if goodDO, err = gs.data.Goods().Get(ctx, uint64(goods.ID)); err != nil {
@@ -139,17 +155,23 @@ func (gs *goodsService) Update(ctx context.Context, goods *dto.GoodsDTO) error {
 		goodDO.GoodsFrontImage = goods.GoodsFrontImage
 	}
 
-	if err = gs.data.Goods().Update(ctx, nil, goodDO); err != nil {
-		return err
+	if result = gs.data.Goods().Update(ctx, nil, goodDO); result.RowsAffected == 0 {
+		if result.Error != nil {
+			return errors.WithCode(code.ErrDatabase, result.Error.Error())
+		}
+		return errors.WithCode(code2.ErrGoodsNotFound, "Update Goods failure")
 	}
 	return nil
 }
 
 func (gs *goodsService) Delete(ctx context.Context, id uint64) error {
-	var err error
+	var result *gorm.DB
 
-	if err = gs.data.Goods().Delete(ctx, nil, id); err != nil {
-		return err
+	if result = gs.data.Goods().Delete(ctx, nil, id); result.RowsAffected == 0 {
+		if result.Error != nil {
+			return errors.WithCode(code.ErrDatabase, result.Error.Error())
+		}
+		return errors.WithCode(code2.ErrGoodsNotFound, "Delete Goods failure")
 	}
 	return nil
 }
@@ -167,7 +189,7 @@ func (gs *goodsService) BatchGet(ctx context.Context, ids []int64) ([]*dto.Goods
 		callFuncs = append(callFuncs, func() (*dto.GoodsDTO, error) {
 			goodsDTO, err := gs.Get(ctx, uint64(tmp))
 			if err != nil {
-				return goodsDTO, err
+				return nil, err
 			}
 			return goodsDTO, nil
 		})

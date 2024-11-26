@@ -2,16 +2,14 @@ package srv
 
 import (
 	"fmt"
-	"log"
 	upb "shop/api/user/v1"
-
-	"shop/gmicro/core/trace"
-	"shop/gmicro/server/rpcserver"
-
 	"shop/app/shop_srv/user/srv/config"
 	"shop/app/shop_srv/user/srv/internal/controller/v1"
 	"shop/app/shop_srv/user/srv/internal/data/v1/db"
-	"shop/app/shop_srv/user/srv/internal/service/v1"
+	srv "shop/app/shop_srv/user/srv/internal/service/v1"
+	"shop/gmicro/core/trace"
+	"shop/gmicro/pkg/log"
+	"shop/gmicro/server/rpcserver"
 )
 
 func NewUserRPCServer(cfg *config.Config) (*rpcserver.Server, error) {
@@ -24,23 +22,20 @@ func NewUserRPCServer(cfg *config.Config) (*rpcserver.Server, error) {
 	})
 
 	// 有点繁琐, wire, ioc-golang
-	gormDB, err := db.GetDBfactoryOr(cfg.Mysql)
+	dataFactory, err := db.GetDBfactoryOr(cfg.Mysql)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	data := db.NewUsers(gormDB)
-	srv := service.NewUserService(data)
-	userver := controller.NewUserServer(srv)
+	srvFactory := srv.NewService(dataFactory)
+	iServer := controller.NewUserServer(srvFactory)
 
 	rpcAddr := fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
-
 	urpcServer := rpcserver.NewServer(
 		rpcserver.WithAddress(rpcAddr),
 		rpcserver.WithServerMetrics(cfg.Server.EnableMetrics),
 		rpcserver.WithServerEnableTracing(cfg.Server.EnableTelemetry),
 	)
-
-	upb.RegisterUserServer(urpcServer.Server, userver)
+	upb.RegisterUserServer(urpcServer.Server, iServer)
 
 	return urpcServer, nil
 }

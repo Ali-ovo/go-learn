@@ -14,7 +14,7 @@ const serverNamespace = "rpc_client"
 
 /*
 两个基本指标: 1. 每个请求的耗时( histogram ) 2. 每个请求的状态计数器( counter )
-/user 状态码 有label 主要是状态码
+/v1 状态码 有label 主要是状态码
 */
 
 var (
@@ -40,7 +40,7 @@ func UnaryPrometheusInterceptor(ctx context.Context, method string, req, reply a
 	startTime := time.Now()
 	// 记录了耗时
 	err := invoker(ctx, method, req, reply, cc, opts...)
-	// 参数 截至时间 以 毫秒为单位 rpc 的方法名作为标签
+	// 参数 v: 截至时间 以 毫秒为单位, labels: rpc的方法名作为标签
 	metricServerReqDur.Observe(int64(time.Since(startTime)/time.Millisecond), method)
 	// 记录状态码 和 访问次数
 	metricServerReqCodeTotal.Inc(method, strconv.Itoa(int(status.Code(err))))

@@ -4,13 +4,12 @@ import (
 	"context"
 	"fmt"
 	user_pb "shop/api/user/v1"
-	"shop/app/shop_srv/user/srv/internal/service/v1"
-
+	"shop/app/shop_srv/user/srv/internal/service"
 	"testing"
 )
 
 func TestCheckPassWord(t *testing.T) {
-	var srv service.UserSrv
+	var srv service.ServiceFactory
 	userServer := NewUserServer(srv)
 	info := &user_pb.PasswordCheckInfo{
 		Password:          "56248123",
@@ -18,7 +17,7 @@ func TestCheckPassWord(t *testing.T) {
 	}
 	word, err := userServer.CheckPassWord(context.Background(), info)
 	if err != nil {
-		panic(err)
+		t.Error(err)
 	}
 	fmt.Println(word)
 }

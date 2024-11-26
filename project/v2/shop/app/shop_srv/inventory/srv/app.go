@@ -20,7 +20,7 @@ func NewApp(basename string) *app.App {
 	cfg := config.NewConfig()
 
 	return app.NewApp(
-		"user-srv",
+		"inventory-srv",
 		basename,
 		app.WithOptions(cfg), // 初始 log server 配置
 		app.WithRunFunc(run(cfg)),
@@ -31,27 +31,28 @@ func NewApp(basename string) *app.App {
 
 func run(cfg *config.Config) app.RunFunc {
 	return func(basename string) error {
-		userApp, err := NewUserApp(cfg)
+		userApp, err := NewInventoryApp(cfg)
 		if err != nil {
 			return err
 		}
 
 		// 启动 RPC 服务
 		if err := userApp.Run(); err != nil {
-			log.Errorf("run user app error: %s", err)
+			log.Errorf("run inventory app error: %s", err)
 			return err
 		}
 		return nil
 	}
 }
 
-func NewUserApp(cfg *config.Config) (*gapp.App, error) {
+func NewInventoryApp(cfg *config.Config) (*gapp.App, error) {
 	// 初始化 log
 	log.Init(cfg.Log)
 	defer log.Flush()
 
 	// 服务注册
 	register := NewRegistrar(cfg.Registry)
+
 	// 连接redis
 	redisConfig := &storage.Config{
 		Host:                  cfg.Redis.Host,
@@ -73,6 +74,7 @@ func NewUserApp(cfg *config.Config) (*gapp.App, error) {
 	wg.Add(1)
 	go storage.ConnectToRedis(context.Background(), &wg, redisConfig)
 	wg.Wait()
+
 	// 生成 rpc 服务
 	rpcServer, err := NewInventoryRPCServer(cfg)
 	if err != nil {

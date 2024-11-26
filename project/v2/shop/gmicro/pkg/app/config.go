@@ -2,9 +2,9 @@ package app
 
 import (
 	"fmt"
-	"shop/gmicro/pkg/common/util/homedir"
 	"os"
 	"path/filepath"
+	"shop/gmicro/pkg/common/util/homedir"
 	"strings"
 
 	"github.com/gosuri/uitable"
@@ -45,6 +45,7 @@ func addConfigFlag(basename string, fs *pflag.FlagSet) {
 	// Viper 将尝试读取环境变量 DATABASE_USERNAME，并将点和连字符替换为下划线。
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 
+	// cobra.OnInitialize 用来注册一个函数，在每个 cobra.Command 执行之前调用
 	cobra.OnInitialize(func() {
 		if cfgFile != "" {
 			// 设置 config 读取文件地址

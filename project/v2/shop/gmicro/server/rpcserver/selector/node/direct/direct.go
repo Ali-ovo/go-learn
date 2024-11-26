@@ -35,6 +35,7 @@ func (*Builder) Build(n selector2.Node) selector2.WeightedNode {
 
 func (n *Node) Pick() selector2.DoneFunc {
 	now := time.Now().UnixNano()
+	// 原子性操作  讲 now 存储到 n.lastPick
 	atomic.StoreInt64(&n.lastPick, now)
 	return func(ctx context.Context, di selector2.DoneInfo) {}
 }

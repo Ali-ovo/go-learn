@@ -2,8 +2,8 @@ package globalflag
 
 import (
 	"flag"
-	cliflag "shop/gmicro/pkg/common/cli/flag"
 	"reflect"
+	cliflag "shop/gmicro/pkg/common/cli/flag"
 	"sort"
 	"strings"
 	"testing"

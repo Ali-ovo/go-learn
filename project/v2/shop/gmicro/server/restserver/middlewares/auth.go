@@ -3,11 +3,12 @@ package middlewares
 import "github.com/gin-gonic/gin"
 
 // AuthStrategy defines the set of methods used to resource authentication.
+// AuthStrategy 定义了用于资源认证的一组方法
 type AuthStrategy interface {
 	AuthFunc() gin.HandlerFunc
 }
 
-// AuthOperator used to switch between different authentication strategy.
+// AuthOperator 用于不同认证策略之间的切换
 type AuthOperator struct {
 	strategy AuthStrategy
 }

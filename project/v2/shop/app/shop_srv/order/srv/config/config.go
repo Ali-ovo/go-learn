@@ -12,6 +12,8 @@ type Config struct {
 	Registry  *options.RegistryOptions  `json:"registry" mapstructure:"registry"`   // 服务注册发现注销 相关配置
 	Telemetry *options.TelemetryOptions `json:"telemetry" mapstructure:"telemetry"` // 链路追踪 相关配置
 	Mysql     *options.MySQLOptions     `json:"mysql" mapstructure:"mysql"`         // mysql 相关配置
+	Dtm       *options.DtmOptions       `json:"dtm" mapstructure:"dtm"`             // dtm 相关配置
+	Rocketmq  *options.RocketmqOptions  `json:"rocketmq" mapstructure:"rocketmq"`   // rocketmq 相关配置
 }
 
 func (c *Config) Validate() []error {
@@ -21,6 +23,8 @@ func (c *Config) Validate() []error {
 	errors = append(errors, c.Registry.Validate()...)
 	errors = append(errors, c.Telemetry.Validate()...)
 	errors = append(errors, c.Mysql.Validate()...)
+	errors = append(errors, c.Dtm.Validate()...)
+	errors = append(errors, c.Rocketmq.Validate()...)
 	return errors
 }
 
@@ -35,6 +39,8 @@ func (c *Config) Flags() (fss cliflag.NamedFlagSets) {
 	c.Registry.AddFlags(fss.FlagSet("registry"))
 	c.Telemetry.AddFlags(fss.FlagSet("telemetry"))
 	c.Mysql.AddFlags(fss.FlagSet("mysql"))
+	c.Dtm.AddFlags(fss.FlagSet("dtm"))
+	c.Rocketmq.AddFlags(fss.FlagSet("rocketmq"))
 	return fss
 }
 
@@ -45,5 +51,7 @@ func NewConfig() *Config {
 		Registry:  options.NewRegistryOptions(),  // 初始化 consul 配置
 		Telemetry: options.NewTelemetryOptions(), // 初始化 telemetry 配置
 		Mysql:     options.NewMySQLOptions(),     // 初始化 mysql 配置
+		Dtm:       options.NewDtmOptions(),       // 初始化 dtm 配置
+		Rocketmq:  options.NewRocketmqOptions(),  // 初始化 rocketmq 配置
 	}
 }

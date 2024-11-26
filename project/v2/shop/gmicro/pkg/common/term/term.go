@@ -7,7 +7,7 @@ import (
 	"github.com/moby/term"
 )
 
-// TerminalSize returns the current width and height of the user's terminal. If it isn't a terminal,
+// TerminalSize returns the current width and height of the v1's terminal. If it isn't a terminal,
 // nil is returned. On error, zero values are returned for width and height.
 // Usually w must be the stdout of the process. Stderr won't work.
 func TerminalSize(w io.Writer) (int, int, error) {

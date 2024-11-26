@@ -5,6 +5,7 @@ import (
 	user_pb "shop/api/user/v1"
 	metav1 "shop/gmicro/pkg/common/meta/v1"
 	"shop/gmicro/pkg/errors"
+	"shop/gmicro/pkg/log"
 )
 
 /*
@@ -17,12 +18,12 @@ controller 依赖了 service 并不是直接依赖了具体的 struct 而是依�
 */
 
 func (uc *userServer) GetUserList(ctx context.Context, request *user_pb.PageInfo) (*user_pb.UserListResponse, error) {
-	//log.Info("GetUserList is called")
+	log.Info("GetUserList is called")
 	srvOpts := metav1.ListMeta{
 		Page:     int(request.Pn),
 		PageSize: int(request.PSize),
 	}
-	dtoList, err := uc.srv.List(ctx, []string{}, srvOpts)
+	dtoList, err := uc.srv.User().List(ctx, []string{}, srvOpts)
 	if err != nil {
 		return nil, errors.ToGrpcError(err)
 	}

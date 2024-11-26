@@ -8,8 +8,11 @@ import (
 	"shop/app/shop_srv/goods/srv/internal/domain/do"
 	"shop/app/shop_srv/goods/srv/internal/domain/dto"
 	"shop/app/shop_srv/goods/srv/internal/service"
+	"shop/gmicro/pkg/code"
 	metav1 "shop/gmicro/pkg/common/meta/v1"
+	"shop/gmicro/pkg/errors"
 	"shop/gmicro/pkg/log"
+	code2 "shop/pkg/code"
 
 	"gorm.io/gorm"
 )
@@ -28,7 +31,7 @@ func (bs *brandService) List(ctx context.Context, request *goods_pb.BrandFilterR
 
 	brandList, err := bs.data.Brands().List(ctx, page, request.Orderby)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithCode(code.ErrDatabase, err.Error())
 	}
 	ret.TotalCount = brandList.TotalCount
 	for _, value := range brandList.Items {
@@ -40,9 +43,12 @@ func (bs *brandService) List(ctx context.Context, request *goods_pb.BrandFilterR
 }
 
 func (bs *brandService) Create(ctx context.Context, brand *dto.BrandsDTO) (int64, error) {
-	if err := bs.data.Brands().Create(ctx, nil, &brand.BrandsDO); err != nil {
-		log.Errorf("data.Create err: %v", err)
-		return 0, err
+	if result := bs.data.Brands().Create(ctx, nil, &brand.BrandsDO); result.RowsAffected == 0 {
+		log.Errorf("data.Create err: %v", result.Error)
+		if result.Error != nil {
+			return 0, errors.WithCode(code.ErrDatabase, result.Error.Error())
+		}
+		return 0, errors.WithCode(code2.ErrBrandsNotFound, "Create Brands failure")
 	}
 	return brand.ID, nil
 }
@@ -52,24 +58,33 @@ func (bs *brandService) Update(ctx context.Context, brand *dto.BrandsDTO) error 
 	var result *gorm.DB
 	var brandDO *do.BrandsDO
 
-	if brandDO, err = bs.data.Brands().Get(ctx, int64(brand.ID)); err != nil {
-		return err
+	if brandDO, err = bs.data.Brands().Get(ctx, brand.ID); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.WithCode(code2.ErrBrandsNotFound, err.Error())
+		}
+		return errors.WithCode(code.ErrDatabase, err.Error())
 	}
 
 	brandDO.Name = brand.Name
 	brandDO.Logo = brand.Logo
 
-	if result, err = bs.data.Brands().Update(ctx, nil, brandDO); err != nil || result.RowsAffected == 0 {
-		//log.Errorf("data.Update err: %v", err)
-		return err
+	if result = bs.data.Brands().Update(ctx, nil, brandDO); result.RowsAffected == 0 {
+		log.Errorf("data.Update err: %v", result.Error)
+		if result.Error != nil {
+			return errors.WithCode(code.ErrDatabase, result.Error.Error())
+		}
+		return errors.WithCode(code2.ErrBrandsNotFound, "Update Brands failure")
 	}
 	return nil
 }
 
 func (bs *brandService) Delete(ctx context.Context, id int64) error {
-	if err := bs.data.Brands().Delete(ctx, nil, id); err != nil {
-		log.Errorf("data.Delete err: %v", err)
-		return err
+	if result := bs.data.Brands().Delete(ctx, nil, id); result.RowsAffected == 0 {
+		log.Errorf("data.Delete err: %v", result.Error)
+		if result.Error != nil {
+			return errors.WithCode(code.ErrDatabase, result.Error.Error())
+		}
+		return errors.WithCode(code2.ErrBrandsNotFound, "Delete Brands failure")
 	}
 	return nil
 }

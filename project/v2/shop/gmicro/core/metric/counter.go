@@ -45,7 +45,6 @@ func NewCounterVec(cfg *CounterVecOpts) CounterVec {
 		Help:      cfg.Help,      // 指标的相关信息
 	}, cfg.Labels) // 指标的标签名
 	prom.MustRegister(vec)
-	// vec.WithLabelValues().Inc()
 	// 存储到 自定义的结构体 自己在此基础上进行封装
 	cv := &promCounterVec{
 		counter: vec,

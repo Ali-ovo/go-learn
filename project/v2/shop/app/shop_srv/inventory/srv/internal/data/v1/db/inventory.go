@@ -4,9 +4,6 @@ import (
 	"context"
 	"shop/app/shop_srv/inventory/srv/internal/data/v1"
 	"shop/app/shop_srv/inventory/srv/internal/domain/do"
-	"shop/gmicro/pkg/code"
-	"shop/gmicro/pkg/errors"
-	code2 "shop/pkg/code"
 
 	"gorm.io/gorm"
 )
@@ -22,42 +19,27 @@ func (i *inventory) Get(ctx context.Context, goodsID int64) (*do.InventoryDO, er
 	err := db.Where("goods = ?", goodsID).First(&inv).Error
 	if err != nil {
 		//log.Errorf("get inv err: %v", err)
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.WithCode(code2.ErrInventoryNotFound, err.Error())
-		}
-		return nil, errors.WithCode(code.ErrDatabase, err.Error())
+		return nil, err
 	}
 
 	return &inv, nil
 }
 
-func (i *inventory) Create(ctx context.Context, txn *gorm.DB, inventoryDO *do.InventoryDO) error {
+func (i *inventory) Create(ctx context.Context, txn *gorm.DB, inventoryDO *do.InventoryDO) *gorm.DB {
 	db := i.db.WithContext(ctx)
 	if txn != nil {
 		db = txn.WithContext(ctx)
 	}
-
-	//设置库存， 如果我要更新库存
-	tx := db.Create(&inventoryDO)
-	if tx.Error != nil {
-		return errors.WithCode(code.ErrDatabase, tx.Error.Error())
-	}
-	return nil
+	return db.Create(&inventoryDO)
 }
 
-func (i *inventory) GetSellDetail(ctx context.Context, txn *gorm.DB, ordersn string) (*do.StockSellDetailDO, error) {
+func (i *inventory) GetSellDetail(ctx context.Context, ordersn string) (*do.StockSellDetailDO, error) {
 	db := i.db.WithContext(ctx)
-	if txn != nil {
-		db = txn.WithContext(ctx)
-	}
 	var ordersellDetail do.StockSellDetailDO
 
 	err := db.Where("order_sn = ?", ordersn).First(&ordersellDetail).Error
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.WithCode(code2.ErrInvSellDetailNotFound, err.Error())
-		}
-		return nil, errors.WithCode(code.ErrDatabase, err.Error())
+		return nil, err
 	}
 	return &ordersellDetail, err
 }
@@ -67,54 +49,31 @@ func (i *inventory) Reduce(ctx context.Context, txn *gorm.DB, goodsID int64, num
 	if txn != nil {
 		db = txn.WithContext(ctx)
 	}
-
 	return db.Model(&do.InventoryDO{}).Where("goods=?", goodsID).Where("stocks >= ?", num).UpdateColumn("stocks", gorm.Expr("stocks - ?", num))
 }
 
-func (i *inventory) Increase(ctx context.Context, txn *gorm.DB, goodsID int64, num int32) error {
+func (i *inventory) Increase(ctx context.Context, txn *gorm.DB, goodsID int64, num int32) *gorm.DB {
 	db := i.db.WithContext(ctx)
 	if txn != nil {
 		db = txn.WithContext(ctx)
 	}
-
-	result := db.Model(&do.InventoryDO{}).Where("goods=?", goodsID).UpdateColumn("stocks", gorm.Expr("stocks + ?", num))
-	if result.Error != nil {
-		return errors.WithCode(code.ErrDatabase, result.Error.Error())
-	}
-	return nil
+	return db.Model(&do.InventoryDO{}).Where("goods=?", goodsID).UpdateColumn("stocks", gorm.Expr("stocks + ?", num))
 }
 
-func (i *inventory) CreateStockSellDetail(ctx context.Context, txn *gorm.DB, detail *do.StockSellDetailDO) error {
+func (i *inventory) CreateStockSellDetail(ctx context.Context, txn *gorm.DB, detail *do.StockSellDetailDO) *gorm.DB {
 	db := i.db.WithContext(ctx)
 	if txn != nil {
 		db = txn.WithContext(ctx)
 	}
-
-	tx := db.Create(&detail)
-	if tx.Error != nil {
-		return errors.WithCode(code.ErrDatabase, tx.Error.Error())
-	}
-	return nil
+	return db.Create(&detail)
 }
 
-func (i *inventory) UpdateStockSellDetailStatus(ctx context.Context, txn *gorm.DB, ordersn string, status int32) error {
+func (i *inventory) UpdateStockSellDetailStatus(ctx context.Context, txn *gorm.DB, ordersn string, status int32) *gorm.DB {
 	db := i.db.WithContext(ctx)
 	if txn != nil {
 		db = txn.WithContext(ctx)
 	}
-
-	//update语句如果没有更新的话那么不会报错，但是他会返回一个影响的行数，所以我们可以根据影响的行数来判断是否更新成功
-	result := db.Model(do.StockSellDetailDO{}).Where("order_sn = ?", ordersn).Update("status", status)
-	if result.Error != nil {
-		return errors.WithCode(code.ErrDatabase, result.Error.Error())
-	}
-
-	//这里应该在service层去写代码判断更合理
-	//有两种情况都会导致影响的行数为0，一种是没有找到，一种是没有更新
-	//if result.RowsAffected == 0 {
-	//	return errors.WithCode(code.ErrInvSellDetailNotFound, "inventory sell detail not found")
-	//}
-	return nil
+	return db.Model(do.StockSellDetailDO{}).Where("order_sn = ?", ordersn).Update("status", status)
 }
 
 func newInventory(factory *mysqlFactory) data.InventoryStore {

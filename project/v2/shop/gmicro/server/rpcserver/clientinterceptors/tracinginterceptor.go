@@ -40,6 +40,7 @@ func UnaryTracingInterceptor(ctx context.Context, method string, req, reply inte
 		}
 		return err
 	}
+
 	trace2.MessageReceived.Event(ctx, 1, reply)
 
 	span.SetAttributes(trace2.StatusCodeAttr(gcodes.OK))

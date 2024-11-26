@@ -11,7 +11,7 @@ import (
 type BrandsStore interface {
 	Get(ctx context.Context, ID int64) (*do.BrandsDO, error)
 	List(ctx context.Context, opts metav1.ListMeta, orderby []string) (*do.BrandsDOList, error)
-	Create(ctx context.Context, txn *gorm.DB, brands *do.BrandsDO) error
-	Update(ctx context.Context, txn *gorm.DB, brands *do.BrandsDO) (*gorm.DB, error)
-	Delete(ctx context.Context, txn *gorm.DB, ID int64) error
+	Create(ctx context.Context, txn *gorm.DB, brands *do.BrandsDO) *gorm.DB
+	Update(ctx context.Context, txn *gorm.DB, brands *do.BrandsDO) *gorm.DB
+	Delete(ctx context.Context, txn *gorm.DB, ID int64) *gorm.DB
 }

@@ -8,9 +8,6 @@ const (
 	// ErrSuccess - 200: OK.
 	ErrSuccess int = iota + 100001
 
-	// ErrDataNotFound - 500: Data not found.
-	ErrDataNotFound
-
 	// ErrUnknown - 500: Internal server error.
 	ErrUnknown
 
@@ -31,6 +28,8 @@ const (
 const (
 	// ErrDatabase - 500: Database error.
 	ErrDatabase int = iota + 100101
+	// ErrDataNotFound - 500: Data not found.
+	ErrDataNotFound
 )
 
 // common: authorization and authentication errors.

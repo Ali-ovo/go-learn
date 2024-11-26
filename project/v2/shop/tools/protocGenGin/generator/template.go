@@ -51,7 +51,6 @@ func (m *method) initPathParams() {
 			m.PathParams = append(m.PathParams, paths[i][1:])
 		}
 	}
-
 	m.Path = strings.Join(paths, "/")
 }
 

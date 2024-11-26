@@ -18,15 +18,16 @@ type formatInfo struct {
 // Format implements fmt.Formatter. https://golang.org/pkg/fmt/#hdr-Printing
 //
 // Verbs:
-//     %s  - Returns the user-safe error string mapped to the error code or
-//       ┊   the error message if none is specified.
-//     %v      Alias for %s
+//
+//	%s  - Returns the user-safe error string mapped to the error code or
+//	  ┊   the error message if none is specified.
+//	%v      Alias for %s
 //
 // Flags:
-//      #      JSON formatted output, useful for logging
-//      -      Output caller details, useful for troubleshooting
-//      +      Output full error stack details, useful for debugging
 //
+//	#      JSON formatted output, useful for logging
+//	-      Output caller details, useful for troubleshooting
+//	+      Output full error stack details, useful for debugging
 func (w *withCode) Format(state fmt.State, verb rune) {
 	switch verb {
 	case 'v':

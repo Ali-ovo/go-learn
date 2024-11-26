@@ -4,6 +4,7 @@ import (
 	"context"
 	user_pb "shop/api/user/v1"
 	"shop/gmicro/pkg/errors"
+	"shop/gmicro/pkg/log"
 )
 
 // GetUserById
@@ -15,8 +16,8 @@ import (
 //	@return *user_pb.UserListResponse
 //	@return error
 func (uc *userServer) GetUserById(ctx context.Context, request *user_pb.IdRequest) (*user_pb.UserInfoResponse, error) {
-	//log.Info("get user by id function called.")
-	user, err := uc.srv.GetByID(ctx, uint64(request.Id))
+	log.Info("get user by id function called.")
+	user, err := uc.srv.User().GetByID(ctx, uint64(request.Id))
 	if err != nil {
 		//log.Errorf("get user by id: %s, error: %v", request.Id, err)
 		return nil, errors.ToGrpcError(err)

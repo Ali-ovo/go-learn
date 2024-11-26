@@ -4,10 +4,7 @@ import (
 	"context"
 	"shop/app/shop_srv/goods/srv/internal/data/v1"
 	"shop/app/shop_srv/goods/srv/internal/domain/do"
-	"shop/gmicro/pkg/code"
 	metav1 "shop/gmicro/pkg/common/meta/v1"
-	"shop/gmicro/pkg/errors"
-	code2 "shop/pkg/code"
 
 	"gorm.io/gorm"
 )
@@ -21,10 +18,7 @@ func (b *Brands) Get(ctx context.Context, ID int64) (*do.BrandsDO, error) {
 	var ret do.BrandsDO
 
 	if err := db.Where("id =?", ID).First(ret).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.WithCode(code2.ErrBrandsNotFound, err.Error())
-		}
-		return nil, errors.WithCode(code.ErrDatabase, err.Error())
+		return nil, err
 	}
 	return &ret, nil
 }
@@ -34,55 +28,40 @@ func (b *Brands) List(ctx context.Context, opts metav1.ListMeta, orderby []strin
 	var ret do.BrandsDOList
 
 	// 这里 赋值是为了保证 db的作用域不受影响
-	query := db.Model(&do.BrandsDO{})
+	result := db.Model(&do.BrandsDO{})
 	// 处理分页 排序
-	query, count := paginate(query, opts.Page, opts.PageSize, orderby)
-	query.Find(&ret.Items)
-	if query.Error != nil {
-		return nil, errors.WithCode(code.ErrDatabase, query.Error.Error())
+	result, count := paginate(result, opts.Page, opts.PageSize, orderby)
+	result.Find(&ret.Items)
+	if result.Error != nil {
+		return nil, result.Error
 	}
 	ret.TotalCount = count
 
 	return &ret, nil
 }
 
-func (b *Brands) Create(ctx context.Context, txn *gorm.DB, brands *do.BrandsDO) error {
+func (b *Brands) Create(ctx context.Context, txn *gorm.DB, brands *do.BrandsDO) *gorm.DB {
 	db := b.db.WithContext(ctx)
 	if txn != nil {
 		db = txn.WithContext(ctx)
 	}
-
-	tx := db.Create(brands)
-	if tx.Error != nil {
-		return errors.WithCode(code.ErrDatabase, tx.Error.Error())
-	}
-	return nil
+	return db.Create(brands)
 }
 
-func (b *Brands) Update(ctx context.Context, txn *gorm.DB, brands *do.BrandsDO) (*gorm.DB, error) {
+func (b *Brands) Update(ctx context.Context, txn *gorm.DB, brands *do.BrandsDO) *gorm.DB {
 	db := b.db.WithContext(ctx)
 	if txn != nil {
 		db = txn.WithContext(ctx)
 	}
-
-	tx := db.Updates(brands)
-	if tx.Error != nil {
-		return nil, errors.WithCode(code.ErrDatabase, tx.Error.Error())
-	}
-	return tx, nil
+	return db.Updates(brands)
 }
 
-func (b *Brands) Delete(ctx context.Context, txn *gorm.DB, ID int64) error {
+func (b *Brands) Delete(ctx context.Context, txn *gorm.DB, ID int64) *gorm.DB {
 	db := b.db.WithContext(ctx)
 	if txn != nil {
 		db = txn.WithContext(ctx)
 	}
-
-	result := db.Delete(&do.BrandsDO{}, ID)
-	if result.Error != nil {
-		return errors.WithCode(code.ErrDatabase, result.Error.Error())
-	}
-	return nil
+	return db.Delete(&do.BrandsDO{}, ID)
 }
 
 func newBrand(factory *mysqlFactory) data.BrandsStore {

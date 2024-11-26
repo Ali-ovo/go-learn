@@ -8,7 +8,7 @@ import (
 type OrderGoods struct {
 	gorm.BaseModel
 	Order int32 `gorm:"type:int;index"`
-	Goods int32 `gorm:"type:int;index"`
+	Goods int64 `gorm:"type:int;index"`
 
 	// 把商品的信息保存下来了	字段冗余, 实际高并发系统中我们一般都不会遵循三范式	做镜像 比如那个时候 商品的价格是多少
 	GoodsName  string  `gorm:"type:varchar(100);index"`
@@ -23,9 +23,9 @@ func (OrderGoods) TableName() string {
 
 type OrderInfoDO struct {
 	gorm.BaseModel
-	OrderGoods   []*OrderGoods `gorm:"foreignKey:Order;references:ID" json:"goods"`
-	User         int32         `gorm:"type:int;index"`
-	OrderSn      string        `gorm:"type:varchar(30) comment '订单号';index"` // 自己生成的订单号
+	OrderGoods   []*OrderGoods `gorm:"foreignKey:Order;references:ID" json:"goods"` // 一对多 设置 OrderGoods 表的 Order 为外键 参考 OrderInfoDO 的 ID
+	User         int64         `gorm:"type:int;index"`
+	OrderSn      string        `gorm:"type:varchar(32) comment '订单号';index"` // 自己生成的订单号
 	PayType      string        `gorm:"type:varchar(20) comment 'alipay(支付宝)， wechat(微信)'"`
 	Status       string        `gorm:"type:varchar(20)  comment 'PAYING(待支付), TRADE_SUCCESS(成功)， TRADE_CLOSED(超时关闭), WAIT_BUYER_PAY(交易创建), TRADE_FINISHED(交易结束)'"` //status大家可以考虑使用iota来做
 	TradeNo      string        `gorm:"type:varchar(100) comment '交易号'"`                                                                                            // 交易号就是支付宝的订单号 查账

@@ -2,21 +2,22 @@ package controller
 
 import (
 	user_pb "shop/api/user/v1"
-	"shop/app/shop_srv/user/srv/internal/service/v1"
+	"shop/app/shop_srv/user/srv/internal/domain/dto"
+	"shop/app/shop_srv/user/srv/internal/service"
 )
 
 type userServer struct {
 	user_pb.UnimplementedUserServer
-	srv service.UserSrv
+	srv service.ServiceFactory
 }
 
-func NewUserServer(srv service.UserSrv) *userServer {
+func NewUserServer(srv service.ServiceFactory) *userServer {
 	return &userServer{srv: srv}
 }
 
 var _ user_pb.UserServer = &userServer{}
 
-func DTOToResponse(userDTO service.UserDTO) *user_pb.UserInfoResponse {
+func DTOToResponse(userDTO dto.UserDTO) *user_pb.UserInfoResponse {
 	userInfoRsp := user_pb.UserInfoResponse{
 		Id:       userDTO.ID,
 		Mobile:   userDTO.Mobile,

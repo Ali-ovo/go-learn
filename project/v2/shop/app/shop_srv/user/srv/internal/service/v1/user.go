@@ -1,36 +1,23 @@
-package service
+package srv
 
 import (
 	"context"
 	"shop/app/shop_srv/user/srv/internal/data/v1"
+	"shop/app/shop_srv/user/srv/internal/domain/dto"
+	"shop/app/shop_srv/user/srv/internal/service"
+	code2 "shop/gmicro/pkg/code"
 	metav1 "shop/gmicro/pkg/common/meta/v1"
 	"shop/gmicro/pkg/errors"
 	"shop/pkg/code"
+
+	"gorm.io/gorm"
 )
 
-type UserDTO struct {
-	// 这里偷个懒, 应为业务层和 底层 字段没有太大变动
-	data.UserDO
-}
-
-type UserSrv interface {
-	// List 获取 用户列表页
-	List(ctx context.Context, orderby []string, opts metav1.ListMeta) (*UserDTOList, error)
-	// GetByMobile 通过手机号码查询用户
-	GetByMobile(ctx context.Context, mobile string) (*UserDTO, error)
-	// GetByID 通过 id 查询用户
-	GetByID(ctx context.Context, id uint64) (*UserDTO, error)
-	// Create 添加用户
-	Create(ctx context.Context, user *UserDTO) error
-	// Update 更新用户
-	Update(ctx context.Context, user *UserDTO) error
-}
-
 type userService struct {
-	data data.UserStore // 数据的来源
+	data data.DataFactory
 }
 
-func (u *userService) List(ctx context.Context, orderby []string, opts metav1.ListMeta) (*UserDTOList, error) {
+func (u *userService) List(ctx context.Context, orderby []string, opts metav1.ListMeta) (*dto.UserDTOList, error) {
 	// 业务逻辑1
 
 	/*
@@ -40,79 +27,91 @@ func (u *userService) List(ctx context.Context, orderby []string, opts metav1.Li
 			2. 去删除一些数据
 		3. 如果 data 层的方法有bug 代码想要具备 良好可测试性
 	*/
-	doList, err := u.data.List(ctx, orderby, opts)
+	doList, err := u.data.User().List(ctx, orderby, opts)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithCode(code2.ErrDatabase, err.Error())
 	}
 	// 业务逻辑2
 	// 代码不方便 会导致写单元测试用例难写
-	var userDTOList UserDTOList
+	var userDTOList dto.UserDTOList
 	for _, value := range doList.Items {
-		projectDTO := UserDTO{*value}
+		projectDTO := dto.UserDTO{UserDO: *value}
 		userDTOList.Items = append(userDTOList.Items, &projectDTO)
 	}
 
 	return &userDTOList, nil
 }
 
-func (u *userService) GetByMobile(ctx context.Context, mobile string) (*UserDTO, error) {
-	userDo, err := u.data.GetByMobile(ctx, mobile)
+func (u *userService) GetByMobile(ctx context.Context, mobile string) (*dto.UserDTO, error) {
+	userDo, err := u.data.User().GetByMobile(ctx, mobile)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.WithCode(code.ErrUserNotFound, err.Error())
+		}
+		return nil, errors.WithCode(code2.ErrDatabase, err.Error())
 	}
 
-	return &UserDTO{UserDO: *userDo}, nil
+	return &dto.UserDTO{UserDO: *userDo}, nil
 }
 
-func (u *userService) GetByID(ctx context.Context, id uint64) (*UserDTO, error) {
-	userDo, err := u.data.GetByID(ctx, id)
+func (u *userService) GetByID(ctx context.Context, id uint64) (*dto.UserDTO, error) {
+	userDo, err := u.data.User().GetByID(ctx, id)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.WithCode(code.ErrUserNotFound, err.Error())
+		}
+		return nil, errors.WithCode(code2.ErrDatabase, err.Error())
 	}
 
-	return &UserDTO{UserDO: *userDo}, nil
+	return &dto.UserDTO{UserDO: *userDo}, nil
 }
 
-func (u *userService) Create(ctx context.Context, user *UserDTO) error {
+func (u *userService) Create(ctx context.Context, user *dto.UserDTO) error {
 	// 先判断用户号码是否存在
-	_, err := u.data.GetByMobile(ctx, user.Mobile)
-	if errors.IsCode(err, code.ErrUserNotFound) {
-		return u.data.Create(ctx, &user.UserDO)
-	}
-
-	// 说明 数据库存在问题
+	_, err := u.data.User().GetByMobile(ctx, user.Mobile)
 	if err != nil {
-		return err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			if result := u.data.User().Create(ctx, nil, &user.UserDO); result != nil {
+				if result.Error != nil {
+					return errors.WithCode(code2.ErrDatabase, err.Error())
+				}
+				return errors.WithCode(code.ErrUserNotFound, "Create User failure")
+			}
+			return nil
+		}
+		// 说明 数据库存在问题
+		return errors.WithCode(code2.ErrDatabase, err.Error())
 	}
 
 	return errors.WithCode(code.ErrUserAlreadyExists, "用户已经存在")
 }
 
-func (u *userService) Update(ctx context.Context, user *UserDTO) error {
+func (u *userService) Update(ctx context.Context, user *dto.UserDTO) error {
 	// 先判断用户id 是否存在
-	userDO, err := u.data.GetByID(ctx, uint64(user.ID))
-	if errors.IsCode(err, code.ErrUserNotFound) {
-		return errors.WithCode(code.ErrUserAlreadyExists, "用户不存在")
-	}
-	// 说明 数据库存在问题
+	userDO, err := u.data.User().GetByID(ctx, uint64(user.ID))
 	if err != nil {
-		return err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.WithCode(code.ErrUserAlreadyExists, "用户不存在")
+		}
+		// 说明 数据库存在问题
+		return errors.WithCode(code2.ErrDatabase, err.Error())
 	}
+
 	userDO.NickName = user.NickName
 	userDO.Birthday = user.Birthday
 	userDO.Gender = user.Gender
 
-	return u.data.Update(ctx, userDO)
-}
-
-func NewUserService(us data.UserStore) UserSrv {
-	return &userService{
-		data: us,
+	if result := u.data.User().Update(ctx, nil, userDO); result.RowsAffected == 0 {
+		if result.Error != nil {
+			return errors.WithCode(code2.ErrDatabase, result.Error.Error())
+		}
+		return errors.WithCode(code.ErrUserNotFound, "用户不存在")
 	}
+	return nil
 }
 
-// UserDTOList 返回 自定义的结构体 解耦
-type UserDTOList struct {
-	TotalCount int64      `json:"totalCount,omitempty"` // 总数
-	Items      []*UserDTO `json:"data"`                 // 数据
+func newUser(srv *serviceFactory) service.UserSrv {
+	return &userService{
+		data: srv.data,
+	}
 }

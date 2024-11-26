@@ -94,10 +94,9 @@ package errors
 
 import (
 	"fmt"
-	"io"
-
 	gCodes "google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"io"
 )
 
 // New 返回一条带有指定信息的错误信息
@@ -170,7 +169,7 @@ func ToGrpcError(err error) error {
 		err := status.Error(gCodes.Code(perr.code), perr.err.Error())
 		return err
 	}
-	// return status.Error(gCodes.Unknown, err.Error())
+	//return status.Error(gCodes.Unknown, err.Error())
 	return err
 }
 
