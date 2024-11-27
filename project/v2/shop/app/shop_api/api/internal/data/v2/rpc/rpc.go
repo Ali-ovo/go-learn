@@ -48,7 +48,7 @@ func NewDiscovery(options *options.RegistryOptions) registry.Discovery {
 	if err != nil {
 		panic(err)
 	}
-	return consul.New(cli, consul.WithHealthCheck(true))
+	return consul.New(cli)
 }
 
 // GetDataFactoryOr gRPC 的连接  基于服务发现

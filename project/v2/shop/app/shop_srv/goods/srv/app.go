@@ -51,7 +51,7 @@ func NewGoodsApp(cfg *config.Config) (*gapp.App, error) {
 	RocketmqConsumer(cfg)
 
 	// 服务注册
-	register := NewRegistrar(cfg.Registry)
+	register := NewRegistrar(cfg.Registry, cfg.Server)
 	// 生成 rpc 服务
 	rpcServer, err := NewGoodsRPCServer(cfg)
 	if err != nil {
@@ -65,7 +65,7 @@ func NewGoodsApp(cfg *config.Config) (*gapp.App, error) {
 	), nil
 }
 
-func NewRegistrar(registry *options.RegistryOptions) registry.Registrar {
+func NewRegistrar(registry *options.RegistryOptions, server *options.ServerOptions) registry.Registrar {
 	c := api.DefaultConfig()
 	c.Address = registry.Address
 	c.Scheme = registry.Scheme
@@ -73,5 +73,5 @@ func NewRegistrar(registry *options.RegistryOptions) registry.Registrar {
 	if err != nil {
 		panic(err)
 	}
-	return consul.New(cli, consul.WithHealthCheck(true))
+	return consul.New(cli, consul.WithHealthCheck(server.EnableHealthCheck))
 }

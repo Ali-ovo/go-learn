@@ -17,8 +17,7 @@ type NacosOptions struct {
 	LogDir               string
 	LogLevel             string
 	CacheDir             string
-	DataID               string
-	Group                string
+	NamespaceId          string
 }
 
 func NewNacosClient(opts *NacosOptions) (config_client.IConfigClient, error) {
@@ -33,7 +32,7 @@ func NewNacosClient(opts *NacosOptions) (config_client.IConfigClient, error) {
 	}
 
 	var clientOpts []constant.ClientOption
-	if opts.User != "" {
+	if opts.User != "" && opts.Password != "" {
 		clientOpts = append(clientOpts, constant.WithUsername(opts.User), constant.WithPassword(opts.Password))
 	}
 	if opts.TimeOut != 0 {
@@ -53,6 +52,9 @@ func NewNacosClient(opts *NacosOptions) (config_client.IConfigClient, error) {
 	}
 	if opts.CacheDir != "" {
 		clientOpts = append(clientOpts, constant.WithCacheDir(opts.CacheDir))
+	}
+	if opts.NamespaceId != "" {
+		clientOpts = append(clientOpts, constant.WithNamespaceId(opts.NamespaceId))
 	}
 	clientConfig := *constant.NewClientConfig(clientOpts...)
 

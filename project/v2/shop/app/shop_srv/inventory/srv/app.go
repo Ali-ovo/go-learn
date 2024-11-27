@@ -51,7 +51,7 @@ func NewInventoryApp(cfg *config.Config) (*gapp.App, error) {
 	defer log.Flush()
 
 	// 服务注册
-	register := NewRegistrar(cfg.Registry)
+	register := NewRegistrar(cfg.Registry, cfg.Server)
 
 	// 连接redis
 	redisConfig := &storage.Config{
@@ -88,7 +88,7 @@ func NewInventoryApp(cfg *config.Config) (*gapp.App, error) {
 	), nil
 }
 
-func NewRegistrar(registry *options.RegistryOptions) registry.Registrar {
+func NewRegistrar(registry *options.RegistryOptions, server *options.ServerOptions) registry.Registrar {
 	c := api.DefaultConfig()
 	c.Address = registry.Address
 	c.Scheme = registry.Scheme
@@ -96,5 +96,5 @@ func NewRegistrar(registry *options.RegistryOptions) registry.Registrar {
 	if err != nil {
 		panic(err)
 	}
-	return consul.New(cli, consul.WithHealthCheck(true))
+	return consul.New(cli, consul.WithHealthCheck(server.EnableHealthCheck))
 }

@@ -26,7 +26,7 @@ func (u *users) List(ctx context.Context, orderby []string, opts metav1.ListMeta
 	var ret do.UserDOList
 
 	// 这里 赋值是为了保证 db的作用域不受影响
-	result := db.Model(&do.UserDOList{})
+	result := db.Model(&do.UserDO{})
 
 	// 处理分页 排序
 	result, count := paginate(result, opts.Page, opts.PageSize, orderby)

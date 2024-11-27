@@ -14,7 +14,7 @@ import (
 	"github.com/hashicorp/consul/api"
 )
 
-var ProviderSet = wire.NewSet(NewUserApp, NewRegistrar, NewUserRPCServer)
+var ProviderSet = wire.NewSet(NewUserApp, NewRegistrar, NewUserRPCServer, NewNacosDataSource)
 
 // NewApp 会读取相关配置 (用来集成 pkg/app 用来完成 外部参数校验和映射)
 func NewApp(basename string) *app.App {
@@ -32,7 +32,7 @@ func NewApp(basename string) *app.App {
 
 func run(cfg *config.Config) app.RunFunc {
 	return func(basename string) error {
-		userApp, err := initApp(cfg.Log, cfg.Server, cfg.Registry, cfg.Telemetry, cfg.Mysql)
+		userApp, err := initApp(cfg.Log, cfg.Server, cfg.Registry, cfg.Telemetry, cfg.Mysql, cfg.Nacos)
 		//userApp, err := NewUserApp(cfg)
 		if err != nil {
 			return err
@@ -80,7 +80,7 @@ func NewUserApp(logOpts *log.Options, serverOpts *options.ServerOptions, rpcServ
 //	), nil
 //}
 
-func NewRegistrar(registry *options.RegistryOptions) registry.Registrar {
+func NewRegistrar(registry *options.RegistryOptions, server *options.ServerOptions) registry.Registrar {
 	c := api.DefaultConfig()
 	// 我们使用 discovery:///shop-goods-srv 的原因在这里
 	// 正确的方法是: discovery://192.168.101.49:8500/shop-goods-srv
@@ -90,5 +90,5 @@ func NewRegistrar(registry *options.RegistryOptions) registry.Registrar {
 	if err != nil {
 		panic(err)
 	}
-	return consul.New(cli, consul.WithHealthCheck(true))
+	return consul.New(cli, consul.WithHealthCheck(server.EnableHealthCheck))
 }

@@ -17,18 +17,22 @@ import (
 
 // Injectors from wire.go:
 
-func initApp(logOptions *log.Options, serverOptions *options.ServerOptions, registryOptions *options.RegistryOptions, telemetryOptions *options.TelemetryOptions, mySQLOptions *options.MySQLOptions) (*app.App, error) {
+func initApp(logOptions *log.Options, serverOptions *options.ServerOptions, registryOptions *options.RegistryOptions, telemetryOptions *options.TelemetryOptions, mySQLOptions *options.MySQLOptions, nacosOptions *options.NacosOptions) (*app.App, error) {
 	dataFactory, err := db.GetDBfactoryOr(mySQLOptions)
 	if err != nil {
 		return nil, err
 	}
 	serviceFactory := srv.NewService(dataFactory)
 	userServer := controller.NewUserServer(serviceFactory)
-	server, err := NewUserRPCServer(telemetryOptions, serverOptions, userServer)
+	nacosDataSource, err := NewNacosDataSource(nacosOptions)
 	if err != nil {
 		return nil, err
 	}
-	registrar := NewRegistrar(registryOptions)
+	server, err := NewUserRPCServer(telemetryOptions, serverOptions, userServer, nacosDataSource)
+	if err != nil {
+		return nil, err
+	}
+	registrar := NewRegistrar(registryOptions, serverOptions)
 	appApp, err := NewUserApp(logOptions, serverOptions, server, registrar)
 	if err != nil {
 		return nil, err

@@ -61,7 +61,7 @@ func main() {
 		conn, err := rpc.DialInsecure(
 			context.Background(),
 			rpc.WithBanlancerName("selector"),
-			rpc.WithDiscovery(consul.New(cli, consul.WithHealthCheck(true))),
+			rpc.WithDiscovery(consul.New(cli)),
 			rpc.WithEndpoint("discovery:///shop-inventory-srv"),
 			rpc.WithClientEnableTracing(false),
 			rpc.WithClientUnaryInterceptor(clientinterceptors.UnaryTracingInterceptor),
