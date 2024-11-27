@@ -47,7 +47,7 @@ func NewMySQLOptions() *MySQLOptions {
 //	@receiver o
 //	@return []error
 func (mo *MySQLOptions) Validate() []error {
-	errs := []error{}
+	var errs []error
 	if !net.IsValidPort(mo.Port) {
 		errs = append(errs, fmt.Errorf("not a valid http port: %d", mo.Port))
 	}

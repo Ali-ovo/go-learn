@@ -11,7 +11,7 @@ type userServer struct {
 	srv service.ServiceFactory
 }
 
-func NewUserServer(srv service.ServiceFactory) *userServer {
+func NewUserServer(srv service.ServiceFactory) user_pb.UserServer {
 	return &userServer{srv: srv}
 }
 

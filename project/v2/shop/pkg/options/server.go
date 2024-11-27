@@ -2,12 +2,13 @@ package options
 
 import (
 	"fmt"
+
 	"github.com/spf13/pflag"
 )
 
 type ServerOptions struct {
-	EnableProfiling   bool     `json:"profiling"             mapstructure:"profiling"`
-	EnableLimit       bool     `json:"limit"                 mapstructure:"limit"`               // 是否开启 pprof
+	EnableProfiling   bool     `json:"profiling"             mapstructure:"profiling"`           // 是否开启 pprof
+	EnableLimit       bool     `json:"limit"                 mapstructure:"limit"`               // 是否开启 限流设置
 	EnableMetrics     bool     `json:"enable-metrics"        mapstructure:"enable-metrics"`      // 是否开启 metrics
 	EnableHealthCheck bool     `json:"enable-health-check"   mapstructure:"enable-health-check"` // 是否开启 health check
 	EnableTelemetry   bool     `json:"enable-telemetry"      mapstructure:"enable-telemetry"`    // 是否开启 telemetry 链路追踪
